@@ -136,14 +136,27 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
+            width: 100%; /* Make buttons full width inside actions */
         }
         .btn-primary {
             background-color: var(--accent-color);
             color: white;
-            flex-grow: 1; /* Make button fill remaining space */
         }
         .btn-primary:hover {
             background-color: var(--accent-hover);
+        }
+        .btn-secondary {
+            background-color: #e5e7eb;
+            color: var(--text-primary);
+        }
+        .btn-secondary:hover {
+            background-color: #d1d5db;
+        }
+        .card-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: auto;
         }
         
         /* --- Footer --- */
@@ -189,7 +202,7 @@
                     </p>
                     <form class="interactive-form" id="taylorForm">
                         <input type="number" id="taylorN" class="form-input" placeholder="n" min="1" step="1" required>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" style="width: auto; flex-grow: 1;">
                             <i class="fa-solid fa-rocket"></i>
                             Visualize
                         </button>
@@ -199,15 +212,24 @@
 
             <div class="card">
                  <div class="card-image">
-                    <i class="fa-solid fa-flask-vial fa-4x"></i>
+                    <i class="fa-solid fa-file-medical fa-4x"></i>
                 </div>
                 <div class="card-content">
-                    <h2 class="card-title">Next Awesome Project</h2>
+                    <h2 class="card-title">PEP-3 Development Assessment</h2>
                     <p class="card-description">
-                        A brief and engaging description of your next project. 
-                        Explain its purpose and the technologies used.
+                        An interactive tool to create and customize psychological development assessment charts. Supports exporting to JPG, PDF, and CSV.
                     </p>
+                    <div class="card-actions">
+                        <a href="PEP3 THANG DANH GIA PHAT TRIEN.html" class="btn btn-primary">
+                            <i class="fa-solid fa-chart-line"></i>
+                            Open Tool
+                        </a>
+                        <a href="https://github.com/hydrostructai/hydrostructai.github.io/blob/main/PEP3%20THANG%20DANH%20GIA%20PHAT%20TRIEN.html" class="btn btn-secondary" target="_blank">
+                            <i class="fa-brands fa-github"></i>
+                            Source Code
+                        </a>
                     </div>
+                </div>
             </div>
 
         </main>
@@ -237,5 +259,3 @@
 
 </body>
 </html>
-
-
