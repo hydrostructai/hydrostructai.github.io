@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tr?c quan hóa chu?i Taylor cho sin(x)</title>
+    <title>Trá»±c quan hÃ³a chuá»—i Taylor cho sin(x)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --background-color: #0d1117;
@@ -20,7 +21,7 @@
             padding: 0;
             overflow: hidden;
             background-color: var(--background-color);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+            font-family: 'Poppins', sans-serif; ;
         }
 
         canvas {
@@ -92,7 +93,7 @@
         const State = {
             degree: 0,
             maxDegree: 15,
-            isPaused: true, // Kh?i d?ng ? tr?ng thái t?m d?ng
+            isPaused: true, // Kh?i d?ng ? tr?ng thÃ¡i t?m d?ng
             animationTimer: null,
             animationInterval: 1500, // ms
             mouse: { x: 0, y: 0 },
@@ -246,15 +247,15 @@
                 ctx.fillText("Interactive Taylor Series for sin(x)", Canvas.width / 2, 40);
                 
                 // Equation Box
-                let equationLines = [`T(x) ˜ x`];
-                if (State.degree > 1) equationLines[0] += ` - x³/3!`;
+                let equationLines = [`T(x) Â˜ x`];
+                if (State.degree > 1) equationLines[0] += ` - xÂ³/3!`;
                 if (State.degree > 2) equationLines[0] += ` + x5/5!`;
                 if (State.degree > 3) {
                     const finalTermN = (State.degree - 1) * 2 + 1;
                     equationLines[0] += ` + ... + (-1)^${State.degree-1} * x^${finalTermN}/${finalTermN}!`;
                 }
 
-                if (State.degree == 0) equationLines = [`T(x) ˜ 0`];
+                if (State.degree == 0) equationLines = [`T(x) Â˜ 0`];
                 UI.drawTextPanel(equationLines, 20, 60);
             }
         };
@@ -278,7 +279,7 @@
             },
             setDegree(newDegree) {
                 State.degree = parseInt(newDegree, 10);
-                // C?p nh?t tr?ng thái và d?ng animation n?u dang ch?y
+                // C?p nh?t tr?ng thÃ¡i vÃ  d?ng animation n?u dang ch?y
                 if (!State.isPaused) {
                     this.stopTimer();
                     if (State.degree < State.maxDegree) this.startTimer();
@@ -354,3 +355,4 @@
 </script>
 </body>
 </html>
+
