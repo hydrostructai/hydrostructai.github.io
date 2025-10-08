@@ -1,42 +1,44 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HydroStructAI Projects | Các dự án học thuật</title>
+    <title>HydroStructAI | Academic & Learning Projects</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <style>
         :root {
-            --bg-color: #f8f9fa; /* Nền trắng xám nhẹ */
-            --card-bg-color: #ffffff; /* Nền thẻ trắng */
-            --text-color: #212529; /* Chữ đen đậm */
-            --secondary-text-color: #6c757d; /* Chữ phụ xám */
-            --primary-color: #007bff; /* Màu nhấn xanh dương */
-            --border-color: #dee2e6;
-            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --bg-color: #f9fafb;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-color: #4f46e5;
+            --accent-hover: #4338ca;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Poppins', sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-primary);
             margin: 0;
-            line-height: 1.7;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 960px;
+            max-width: 1024px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 50px 24px;
         }
 
-        /* --- Header --- */
+        /* --- Header Section --- */
         .header {
             text-align: center;
             margin-bottom: 60px;
@@ -44,173 +46,194 @@
         .header h1 {
             font-size: 3rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            letter-spacing: -1px;
+            margin-bottom: 1rem;
         }
         .header p {
-            font-size: 1.15rem;
-            color: var(--secondary-text-color);
-            max-width: 600px;
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            max-width: 650px;
             margin: 0 auto;
         }
 
         /* --- Project Grid --- */
         .project-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 32px;
         }
 
         /* --- Project Card --- */
         .card {
-            background-color: var(--card-bg-color);
+            background-color: var(--card-bg);
             border-radius: 12px;
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow-sm);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
         }
-        .card-image-placeholder {
-            height: 180px;
-            background-color: #e9ecef;
+        .card-image {
+            height: 200px;
+            background-color: #f3f4f6;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--secondary-text-color);
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
         }
         .card-content {
-            padding: 25px;
+            padding: 24px;
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
         .card-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin: 0 0 10px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0 0 12px 0;
         }
         .card-description {
-            color: var(--secondary-text-color);
-            margin-bottom: 20px;
-            flex-grow: 1; /* Đẩy phần nút xuống dưới */
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            flex-grow: 1;
         }
-        .card-actions {
+        
+        /* --- Interactive Form for Taylor Series --- */
+        .interactive-form {
             display: flex;
-            gap: 10px;
-            margin-top: auto; /* Đảm bảo các nút luôn ở cuối thẻ */
+            gap: 12px;
+            align-items: center;
         }
+        .form-input {
+            width: 80px; /* Adjust width as needed */
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .form-input:focus {
+            outline: 2px solid var(--accent-color);
+            border-color: transparent;
+        }
+        
         .btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             padding: 10px 20px;
             border-radius: 8px;
             text-decoration: none;
-            font-weight: 500;
-            transition: background-color 0.3s ease;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
         .btn-primary {
-            background-color: var(--primary-color);
+            background-color: var(--accent-color);
             color: white;
+            flex-grow: 1; /* Make button fill remaining space */
         }
         .btn-primary:hover {
-            background-color: #0056b3;
-        }
-        .btn-secondary {
-            background-color: #e9ecef;
-            color: var(--text-color);
-        }
-        .btn-secondary:hover {
-            background-color: #ced4da;
+            background-color: var(--accent-hover);
         }
         
         /* --- Footer --- */
         .footer {
             text-align: center;
             margin-top: 80px;
-            padding: 20px;
-            color: var(--secondary-text-color);
+            padding-top: 40px;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
         }
         .footer a {
-             color: var(--primary-color);
+             color: var(--accent-color);
+             font-weight: 600;
              text-decoration: none;
         }
         .footer a:hover {
             text-decoration: underline;
         }
-
     </style>
 </head>
 <body>
 
     <div class="container">
         <header class="header">
-            <h1>HydroStructAI Learning Hub</h1>
+            <h1>Learning & Project Hub</h1>
             <p>
-                Chào mừng đến với không gian học tập và chia sẻ kiến thức.
-                Nơi tổng hợp các dự án, mã nguồn và tài liệu hữu ích về lập trình và khoa học dữ liệu.
+                Welcome to my personal space for academic exploration.
+                This collection showcases projects, source code, and useful materials in programming and data science.
             </p>
         </header>
 
         <main class="project-grid">
 
             <div class="card">
-                <div class="card-image-placeholder">
-                    <i class="fa-solid fa-chart-line fa-3x"></i>
+                <div class="card-image">
+                    <i class="fa-solid fa-infinity fa-4x"></i>
                 </div>
                 <div class="card-content">
-                    <h2 class="card-title">Trực quan hóa Chuỗi Taylor</h2>
+                    <h2 class="card-title">Taylor Series Visualization</h2>
                     <p class="card-description">
-                        Một công cụ tương tác minh họa cách chuỗi Taylor xấp xỉ hàm số sin(x),
-                        được xây dựng bằng JavaScript và HTML Canvas.
+                        An interactive tool to demonstrate how a Taylor Series approximates the sin(x) function. 
+                        Enter a positive integer 'n' for the number of terms.
                     </p>
-                    <div class="card-actions">
-                        <a href="taylorseries.html?n=1" class="btn btn-primary">
-                            <i class="fa-solid fa-play"></i>
-                            Xem Demo
-                        </a>
-                        <a href="https://github.com/hydrostructai/hydrostructai.github.io/blob/main/taylorseries.html" class="btn btn-secondary" target="_blank">
-                            <i class="fa-brands fa-github"></i>
-                            Mã nguồn
-                        </a>
-                    </div>
+                    <form class="interactive-form" id="taylorForm">
+                        <input type="number" id="taylorN" class="form-input" placeholder="n" min="1" step="1" required>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa-solid fa-rocket"></i>
+                            Visualize
+                        </button>
+                    </form>
                 </div>
             </div>
 
             <div class="card">
-                 <div class="card-image-placeholder">
-                    <i class="fa-solid fa-calculator fa-3x"></i>
+                 <div class="card-image">
+                    <i class="fa-solid fa-flask-vial fa-4x"></i>
                 </div>
                 <div class="card-content">
-                    <h2 class="card-title">Dự án tiếp theo</h2>
+                    <h2 class="card-title">Next Awesome Project</h2>
                     <p class="card-description">
-                        Mô tả ngắn gọn về dự án mới của bạn ở đây. Giải thích mục đích
-                        và công nghệ sử dụng.
+                        A brief and engaging description of your next project. 
+                        Explain its purpose and the technologies used.
                     </p>
-                    <div class="card-actions">
-                        <a href="#" class="btn btn-primary">
-                            <i class="fa-solid fa-play"></i>
-                            Xem Demo
-                        </a>
-                        <a href="#" class="btn btn-secondary" target="_blank">
-                            <i class="fa-brands fa-github"></i>
-                            Mã nguồn
-                        </a>
                     </div>
-                </div>
             </div>
 
-            </main>
+        </main>
 
         <footer class="footer">
-            <p>&copy; 2024 HydroStructAI. Phát triển bởi <a href="https://github.com/hydrostructai" target="_blank">HydroStructAI</a>.</p>
+            <p>&copy; 2024 HydroStructAI. Developed by <a href="https://github.com/hydrostructai" target="_blank">HydroStructAI</a>.</p>
         </footer>
     </div>
+    
+    <script>
+        // JavaScript to handle the Taylor Series form submission
+        document.getElementById('taylorForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting the traditional way
+            
+            const n_value = document.getElementById('taylorN').value;
+            
+            // Basic validation: check if n is a positive integer
+            if (n_value && parseInt(n_value) > 0) {
+                // Redirect to the visualization page with the 'n' parameter
+                window.location.href = `taylorseries.html?n=${n_value}`;
+            } else {
+                // Optional: Provide feedback to the user
+                alert('Please enter a positive integer for n.');
+            }
+        });
+    </script>
 
 </body>
 </html>
