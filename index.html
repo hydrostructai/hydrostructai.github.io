@@ -3,65 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C�c d? �n h?c t?p c?a t�i</title>
+    <title>HydroStructAI Projects | Các dự án học thuật</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <style>
+        :root {
+            --bg-color: #f8f9fa; /* Nền trắng xám nhẹ */
+            --card-bg-color: #ffffff; /* Nền thẻ trắng */
+            --text-color: #212529; /* Chữ đen đậm */
+            --secondary-text-color: #6c757d; /* Chữ phụ xám */
+            --primary-color: #007bff; /* Màu nhấn xanh dương */
+            --border-color: #dee2e6;
+            --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 2em;
-            background-color: #f4f4f9;
-            color: #333;
+            line-height: 1.7;
         }
+
         .container {
-            max-width: 800px;
+            max-width: 960px;
             margin: 0 auto;
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            padding: 40px 20px;
         }
-        h1, h2 {
-            color: #0056b3;
+
+        /* --- Header --- */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background-color: #e7f3ff;
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
             margin-bottom: 10px;
-            border-radius: 5px;
+        }
+        .header p {
+            font-size: 1.15rem;
+            color: var(--secondary-text-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* --- Project Grid --- */
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        /* --- Project Card --- */
+        .card {
+            background-color: var(--card-bg-color);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        .card-image-placeholder {
+            height: 180px;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-text-color);
+        }
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+        }
+        .card-description {
+            color: var(--secondary-text-color);
+            margin-bottom: 20px;
+            flex-grow: 1; /* Đẩy phần nút xuống dưới */
+        }
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto; /* Đảm bảo các nút luôn ở cuối thẻ */
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
             transition: background-color 0.3s ease;
         }
-        li:hover {
-            background-color: #cce4ff;
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
         }
-        a {
-            display: block;
-            padding: 15px;
-            color: #0056b3;
-            text-decoration: none;
-            font-weight: bold;
+        .btn-primary:hover {
+            background-color: #0056b3;
         }
+        .btn-secondary {
+            background-color: #e9ecef;
+            color: var(--text-color);
+        }
+        .btn-secondary:hover {
+            background-color: #ced4da;
+        }
+        
+        /* --- Footer --- */
+        .footer {
+            text-align: center;
+            margin-top: 80px;
+            padding: 20px;
+            color: var(--secondary-text-color);
+        }
+        .footer a {
+             color: var(--primary-color);
+             text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>T?ng h?p c�c d? �n h?c t?p</h1>
-        
-        <h2>D? �n: Tr?c quan h�a chu?i Taylor</h2>
-        <p>Ch?n b?c (n, s? th�nh ph?n) c?a chu?i Taylor d? xem d? th? x?p x? h�m sin(x):</p>
-        <ul>
-            <li><a href="taylorseriessinx.html?n=1">Khai tri?n Taylor b?c 1 (n=1)</a></li>
-            <li><a href="taylorseriessinx.html?n=3">Khai tri?n Taylor b?c 3 (n=3)</a></li>
-            <li><a href="taylorseriessinx.html?n=5">Khai tri?n Taylor b?c 5 (n=5)</a></li>
-            <li><a href="taylorseriessinx.html?n=9">Khai tri?n Taylor b?c 9 (n=9)</a></li>
-        </ul>
 
-        <h2>C�c d? �n kh�c</h2>
-        <ul>
-        </ul>
+    <div class="container">
+        <header class="header">
+            <h1>HydroStructAI Learning Hub</h1>
+            <p>
+                Chào mừng đến với không gian học tập và chia sẻ kiến thức.
+                Nơi tổng hợp các dự án, mã nguồn và tài liệu hữu ích về lập trình và khoa học dữ liệu.
+            </p>
+        </header>
+
+        <main class="project-grid">
+
+            <div class="card">
+                <div class="card-image-placeholder">
+                    <i class="fa-solid fa-chart-line fa-3x"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Trực quan hóa Chuỗi Taylor</h2>
+                    <p class="card-description">
+                        Một công cụ tương tác minh họa cách chuỗi Taylor xấp xỉ hàm số sin(x),
+                        được xây dựng bằng JavaScript và HTML Canvas.
+                    </p>
+                    <div class="card-actions">
+                        <a href="taylorseries.html?n=1" class="btn btn-primary">
+                            <i class="fa-solid fa-play"></i>
+                            Xem Demo
+                        </a>
+                        <a href="https://github.com/hydrostructai/hydrostructai.github.io/blob/main/taylorseries.html" class="btn btn-secondary" target="_blank">
+                            <i class="fa-brands fa-github"></i>
+                            Mã nguồn
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                 <div class="card-image-placeholder">
+                    <i class="fa-solid fa-calculator fa-3x"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Dự án tiếp theo</h2>
+                    <p class="card-description">
+                        Mô tả ngắn gọn về dự án mới của bạn ở đây. Giải thích mục đích
+                        và công nghệ sử dụng.
+                    </p>
+                    <div class="card-actions">
+                        <a href="#" class="btn btn-primary">
+                            <i class="fa-solid fa-play"></i>
+                            Xem Demo
+                        </a>
+                        <a href="#" class="btn btn-secondary" target="_blank">
+                            <i class="fa-brands fa-github"></i>
+                            Mã nguồn
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 HydroStructAI. Phát triển bởi <a href="https://github.com/hydrostructai" target="_blank">HydroStructAI</a>.</p>
+        </footer>
     </div>
+
 </body>
 </html>
