@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tr?c quan hóa chu?i Taylor cho sin(x)</title>
+    <style>
+        :root {
+            --background-color: #0d1117;
+            --text-color: #c9d1d9;
+            --axis-color: #8b949e;
+            --primary-color: #58a6ff;   /* Taylor Series */
+            --secondary-color: #3fb950; /* sin(x) */
+            --control-bg: #161b22;
+            --border-color: #30363d;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--background-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--control-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        #controls button, #controls label, #controls span {
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        #controls button {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        #controls button:hover {
+            background-color: #79c0ff;
+        }
+
+        #controls input[type="range"] {
+            cursor: pointer;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="taylorCanvas"></canvas>
+    <div id="controls">
+        <button id="playPauseBtn">Play</button>
+        <button id="resetBtn">Reset</button>
+        <label for="degreeSlider">Terms (n):</label>
+        <input type="range" id="degreeSlider" min="0" max="15" value="0">
+        <span id="degreeLabel">0</span>
+    </div>
+
+<script>
+    (() => {
+        // --- DOM Elements ---
+        const canvasEl = document.getElementById('taylorCanvas');
+        const ctx = canvasEl.getContext('2d');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const degreeSlider = document.getElementById('degreeSlider');
+        const degreeLabel = document.getElementById('degreeLabel');
+        
+        // --- Application State ---
+        const State = {
+            degree: 0,
+            maxDegree: 15,
+            isPaused: true, // Kh?i d?ng ? tr?ng thái t?m d?ng
+            animationTimer: null,
+            animationInterval: 1500, // ms
+            mouse: { x: 0, y: 0 },
+            scale: 50, // pixels per unit
+        };
+
+        // --- Canvas & Coordinate Management ---
+        const Canvas = {
+            width: 0,
+            height: 0,
+            origin: { x: 0, y: 0 },
+
+            setup() {
+                this.width = canvasEl.width = window.innerWidth;
+                this.height = canvasEl.height = window.innerHeight;
+                this.origin.x = this.width / 2;
+                this.origin.y = this.height / 2;
+                degreeSlider.max = State.maxDegree;
+            },
+            clear() {
+                ctx.fillStyle = '#0d1117';
+                ctx.fillRect(0, 0, this.width, this.height);
+            },
+            mapToPixels(mathX, mathY) {
+                const pixelX = this.origin.x + mathX * State.scale;
+                const pixelY = this.origin.y - mathY * State.scale; // Y is inverted
+                return { x: pixelX, y: pixelY };
+            },
+            mapToMath(pixelX, pixelY) {
+                const mathX = (pixelX - this.origin.x) / State.scale;
+                const mathY = (this.origin.y - pixelY) / State.scale;
+                return { x: mathX, y: mathY };
+            }
+        };
+
+        // --- Mathematical Functions ---
+        const MathFuncs = {
+            factorialCache: [1],
+            factorial(n) {
+                if (n < 0) return NaN;
+                if (n < this.factorialCache.length) return this.factorialCache[n];
+                let result = this.factorialCache[this.factorialCache.length - 1];
+                for (let i = this.factorialCache.length; i <= n; i++) {
+                    result *= i;
+                    this.factorialCache.push(result);
+                }
+                return result;
+            },
+            taylorPolynomial(x, n) { // New function for sin(x)
+                let sum = 0;
+                for (let i = 0; i < n; i++) { // n is number of terms
+                    let term = (Math.pow(-1, i) / this.factorial(2 * i + 1)) * Math.pow(x, 2 * i + 1);
+                    sum += term;
+                }
+                return sum;
+            }
+        };
+
+        // --- Drawing & UI Rendering ---
+        const Graph = {
+            drawAxes() {
+                ctx.strokeStyle = '#8b949e';
+                ctx.fillStyle = '#8b949e';
+                ctx.lineWidth = 1;
+                ctx.font = '12px "Courier New", monospace';
+                
+                const tickSize = 5;
+                const xMin = -Canvas.origin.x / State.scale;
+                const xMax = (Canvas.width - Canvas.origin.x) / State.scale;
+                const yMin = -(Canvas.height - Canvas.origin.y) / State.scale;
+                const yMax = Canvas.origin.y / State.scale;
+                // Axes
+                ctx.beginPath();
+                ctx.moveTo(0, Canvas.origin.y); ctx.lineTo(Canvas.width, Canvas.origin.y);
+                ctx.moveTo(Canvas.origin.x, 0); ctx.lineTo(Canvas.origin.x, Canvas.height);
+                ctx.stroke();
+                // X-axis Ticks
+                for (let i = Math.floor(xMin); i <= xMax; i++) {
+                    if (i === 0) continue;
+                    const pos = Canvas.mapToPixels(i, 0);
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x, pos.y - tickSize); ctx.lineTo(pos.x, pos.y + tickSize);
+                    ctx.stroke();
+                    ctx.fillText(i, pos.x - 3, pos.y + 15);
+                }
+                // Y-axis Ticks
+                for (let i = Math.floor(yMin); i <= yMax; i++) {
+                    if (i === 0) continue;
+                    const pos = Canvas.mapToPixels(0, i);
+                    ctx.beginPath();
+                    ctx.moveTo(pos.x - tickSize, pos.y); ctx.lineTo(pos.x + tickSize, pos.y);
+                    ctx.stroke();
+                    ctx.fillText(i, pos.x + 10, pos.y + 4);
+                }
+            },
+            plotFunction(func, color, lineWidth, isDashed = false) {
+                ctx.strokeStyle = color;
+                ctx.lineWidth = lineWidth;
+                ctx.beginPath();
+                if (isDashed) ctx.setLineDash([5, 8]);
+
+                const step = 1 / State.scale; // Plot at every pixel
+                const startX = -Canvas.origin.x / State.scale;
+                const endX = (Canvas.width - Canvas.origin.x) / State.scale;
+
+                for (let x = startX; x <= endX; x += step) {
+                    const y = func(x);
+                    const { x: px, y: py } = Canvas.mapToPixels(x, y);
+                    if (py > -50 && py < Canvas.height + 50) {
+                        (x === startX) ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+                    }
+                }
+                ctx.stroke();
+                if (isDashed) ctx.setLineDash([]); // Reset dash
+            }
+        };
+        
+        const UI = {
+            drawTextPanel(lines, x, y, padding = 10) {
+                ctx.font = '16px "Courier New", monospace';
+                const lineHeight = 20;
+                const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
+                
+                ctx.fillStyle = 'rgba(22, 27, 34, 0.8)';
+                ctx.strokeStyle = '#30363d';
+                ctx.lineWidth = 1;
+
+                ctx.beginPath();
+                ctx.roundRect(x, y, maxWidth + 2 * padding, lines.length * lineHeight + 2 * padding, 5);
+                ctx.fill();
+                ctx.stroke();
+
+                ctx.fillStyle = '#c9d1d9';
+                ctx.textAlign = 'left';
+                lines.forEach((line, index) => {
+                    ctx.fillText(line, x + padding, y + padding + (index + 1) * lineHeight - 5);
+                });
+            },
+            
+            updateControls() {
+                playPauseBtn.textContent = State.isPaused ? 'Play' : 'Pause';
+                degreeSlider.value = State.degree;
+                degreeLabel.textContent = State.degree;
+            },
+
+            render() {
+                // Title
+                ctx.fillStyle = '#c9d1d9';
+                ctx.font = 'bold 24px "Segoe UI", sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText("Interactive Taylor Series for sin(x)", Canvas.width / 2, 40);
+                
+                // Equation Box
+                let equationLines = [`T(x) ˜ x`];
+                if (State.degree > 1) equationLines[0] += ` - x³/3!`;
+                if (State.degree > 2) equationLines[0] += ` + x5/5!`;
+                if (State.degree > 3) {
+                    const finalTermN = (State.degree - 1) * 2 + 1;
+                    equationLines[0] += ` + ... + (-1)^${State.degree-1} * x^${finalTermN}/${finalTermN}!`;
+                }
+
+                if (State.degree == 0) equationLines = [`T(x) ˜ 0`];
+                UI.drawTextPanel(equationLines, 20, 60);
+            }
+        };
+
+        // --- Animation & Control Logic ---
+        const App = {
+            togglePlayPause() {
+                State.isPaused = !State.isPaused;
+                if (!State.isPaused && State.degree < State.maxDegree) {
+                    this.startTimer();
+                } else {
+                    this.stopTimer();
+                }
+                UI.updateControls();
+            },
+            reset() {
+                State.degree = 0;
+                State.isPaused = false;
+                this.startTimer();
+                UI.updateControls();
+            },
+            setDegree(newDegree) {
+                State.degree = parseInt(newDegree, 10);
+                // C?p nh?t tr?ng thái và d?ng animation n?u dang ch?y
+                if (!State.isPaused) {
+                    this.stopTimer();
+                    if (State.degree < State.maxDegree) this.startTimer();
+                }
+                UI.updateControls();
+            },
+            startTimer() {
+                this.stopTimer(); // Ensure no multiple timers
+                State.animationTimer = setInterval(() => {
+                    if (State.degree < State.maxDegree) {
+                        State.degree++;
+                        UI.updateControls();
+                    } else {
+                        this.stopTimer();
+                        State.isPaused = true; // Auto-pause at the end
+                        UI.updateControls();
+                    }
+                }, State.animationInterval);
+            },
+            stopTimer() {
+                clearInterval(State.animationTimer);
+                State.animationTimer = null;
+            },
+            
+            mainLoop() {
+                Canvas.clear();
+                Graph.drawAxes();
+                
+                // Plot sin(x) (dashed reference line)
+                Graph.plotFunction(Math.sin, "#3fb950", 2, true);
+                
+                // Plot Taylor Polynomial (solid interactive line)
+                Graph.plotFunction((x) => MathFuncs.taylorPolynomial(x, State.degree), "#58a6ff", 3);
+                
+                UI.render();
+                requestAnimationFrame(this.mainLoop.bind(this));
+            },
+
+            init() {
+                Canvas.setup();
+                
+                // Initial setup from URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const nFromUrl = parseInt(urlParams.get('n'));
+
+                // Set the initial degree if it's a valid number, else default to 1
+                if (!isNaN(nFromUrl) && nFromUrl >= 0 && nFromUrl <= State.maxDegree) {
+                    State.degree = nFromUrl;
+                } else {
+                    State.degree = 1; // Default to 1 term if nothing is specified
+                }
+                
+                UI.updateControls();
+                
+                // Event Listeners
+                window.addEventListener('resize', () => Canvas.setup());
+                playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+                resetBtn.addEventListener('click', () => this.reset());
+                degreeSlider.addEventListener('input', (e) => this.setDegree(e.target.value));
+                canvasEl.addEventListener('mousemove', (e) => {
+                    State.mouse.x = e.clientX;
+                    State.mouse.y = e.clientY;
+                });
+                
+                // Start
+                this.mainLoop();
+            }
+        };
+
+        App.init();
+
+    })();
+</script>
+</body>
+</html>
