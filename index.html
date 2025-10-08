@@ -111,7 +111,7 @@
             align-items: center;
         }
         .form-input {
-            width: 80px; /* Adjust width as needed */
+            width: 80px;
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -136,7 +136,7 @@
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
-            width: 100%; /* Make buttons full width inside actions */
+            width: 100%;
         }
         .btn-primary {
             background-color: var(--accent-color);
@@ -144,13 +144,6 @@
         }
         .btn-primary:hover {
             background-color: var(--accent-hover);
-        }
-        .btn-secondary {
-            background-color: #e5e7eb;
-            color: var(--text-primary);
-        }
-        .btn-secondary:hover {
-            background-color: #d1d5db;
         }
         .card-actions {
             display: flex;
@@ -201,7 +194,7 @@
                         Enter a positive integer 'n' for the number of terms.
                     </p>
                     <form class="interactive-form" id="taylorForm">
-                        <input type="number" id="taylorN" class="form-input" placeholder="n" min="1" step="1" required>
+                        <input type="number" id="taylorN" class="form-input" placeholder="n" min="1" step="1" required value="1">
                         <button type="submit" class="btn btn-primary" style="width: auto; flex-grow: 1;">
                             <i class="fa-solid fa-rocket"></i>
                             Visualize
@@ -224,10 +217,6 @@
                             <i class="fa-solid fa-chart-line"></i>
                             Open Tool
                         </a>
-                        <a href="https://github.com/hydrostructai/hydrostructai.github.io/blob/main/PEP3%20THANG%20DANH%20GIA%20PHAT%20TRIEN.html" class="btn btn-secondary" target="_blank">
-                            <i class="fa-brands fa-github"></i>
-                            Source Code
-                        </a>
                     </div>
                 </div>
             </div>
@@ -242,8 +231,20 @@
                         A brief and engaging description of your next project will go here. 
                         Explain its purpose and the technologies used.
                     </p>
-                    </div>
+                </div>
             </div>
+
+            <div class="card">
+                <div class="card-image">
+                   <i class="fa-solid fa-lightbulb fa-4x"></i>
+                </div>
+                <div class="card-content">
+                   <h2 class="card-title">Future Idea</h2>
+                   <p class="card-description">
+                       This is a placeholder for another future project or idea.
+                   </p>
+                </div>
+             </div>
 
         </main>
 
@@ -255,17 +256,15 @@
     <script>
         // JavaScript to handle the Taylor Series form submission
         document.getElementById('taylorForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+            event.preventDefault();
             
             const n_value = document.getElementById('taylorN').value;
             
-            // Basic validation: check if n is a positive integer
             if (n_value && parseInt(n_value) > 0) {
-                // Redirect to the visualization page with the 'n' parameter
                 window.location.href = `taylorseries.html?n=${n_value}`;
             } else {
-                // Optional: Provide feedback to the user
                 alert('Please enter a positive integer for n.');
+                document.getElementById('taylorN').value = '1';
             }
         });
     </script>
