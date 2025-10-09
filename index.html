@@ -145,6 +145,12 @@
         .btn-primary:hover {
             background-color: var(--accent-hover);
         }
+        /* Style for disabled-like button */
+        .btn-placeholder {
+            background-color: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
         .card-actions {
             display: flex;
             flex-direction: column;
@@ -194,7 +200,7 @@
                         Enter a positive integer 'n' for the number of terms.
                     </p>
                     <form class="interactive-form" id="taylorForm">
-                        <input type="number" id="taylorN" class="form-input" placeholder="1" min="1" step="1" required value="1">
+                        <input type="number" id="taylorN" class="form-input" placeholder="n" min="1" step="1" required value="1">
                         <button type="submit" class="btn btn-primary" style="width: auto; flex-grow: 1;">
                             <i class="fa-solid fa-rocket"></i>
                             Visualize
@@ -213,7 +219,7 @@
                         An interactive tool to create and customize psychological development assessment charts. Supports exporting to JPG, PDF, and CSV.
                     </p>
                     <div class="card-actions">
-                        <a href="PEP3 THANG DANH GIA PHAT TRIEN.html" class="btn btn-primary">
+                        <a href="PEP3 THANG DANH GIA PHAT TRIEN.html" class="btn btn-primary" target="_blank">
                             <i class="fa-solid fa-chart-line"></i>
                             Open Tool
                         </a>
@@ -226,36 +232,24 @@
                     <i class="fa-solid fa-flask-vial fa-4x"></i>
                 </div>
                 <div class="card-content">
-                    <h2 class="card-title">BHH PROJECT</h2>
+                    <h2 class="card-title">Next Awesome Project</h2>
                     <p class="card-description">
                         A brief and engaging description of your next project will go here. 
                         Explain its purpose and the technologies used.
                     </p>
                     <div class="card-actions">
-                        <a href="https://earth.google.com/web/data=Mj0KOwo5CiExa0VWZXVMVXdjYUtZUW4tRmVpYURXMzVtck04bWxTdHkSEgoQNTdDQzU0MDE2MTAwMDAwMSABQgIIAEoICO2z_sQHEAE" class="btn btn-primary">
-                            <i class="fa-solid fa-chart-line"></i>
-                            Open Tool
+                        <a class="btn btn-placeholder">
+                            <i class="fa-solid fa-hourglass-start"></i>
+                            Coming Soon
                         </a>
                     </div>
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-image">
-                   <i class="fa-solid fa-lightbulb fa-4x"></i>
-                </div>
-                <div class="card-content">
-                   <h2 class="card-title">Future Idea</h2>
-                   <p class="card-description">
-                       This is a placeholder for another future project or idea.
-                   </p>
-                </div>
-             </div>
-
         </main>
 
         <footer class="footer">
-            <p>&copy; 2024 HydroStructAI. Developed by <a href="https://hhc2tech.blogspot.com" target="_blank">HydroStructAI</a>.</p>
+            <p>&copy; 2024 HydroStructAI. Developed by <a href="https://github.com/hydrostructai" target="_blank">HydroStructAI</a>.</p>
         </footer>
     </div>
     
@@ -267,7 +261,8 @@
             const n_value = document.getElementById('taylorN').value;
             
             if (n_value && parseInt(n_value) > 0) {
-                window.location.href = `taylorseries.html?n=${n_value}`;
+                // SỬA Ở ĐÂY: Mở tab mới bằng JavaScript
+                window.open(`taylorseries.html?n=${n_value}`, '_blank');
             } else {
                 alert('Please enter a positive integer for n.');
                 document.getElementById('taylorN').value = '1';
@@ -277,5 +272,3 @@
 
 </body>
 </html>
-
-
