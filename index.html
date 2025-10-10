@@ -145,12 +145,6 @@
         .btn-primary:hover {
             background-color: var(--accent-hover);
         }
-        /* Style for disabled-like button */
-        .btn-placeholder {
-            background-color: #e5e7eb;
-            color: #9ca3af;
-            cursor: not-allowed;
-        }
         .card-actions {
             display: flex;
             flex-direction: column;
@@ -229,6 +223,24 @@
 
             <div class="card">
                  <div class="card-image">
+                    <i class="fa-solid fa-atom fa-4x"></i>
+                </div>
+                <div class="card-content">
+                    <h2 class="card-title">Hypocycloid Art Canvas</h2>
+                    <p class="card-description">
+                        A creative drawing tool that generates beautiful geometric patterns (hypocycloids). Customize parameters to create unique art.
+                    </p>
+                    <div class="card-actions">
+                        <a href="hypocycloid.html" class="btn btn-primary" target="_blank">
+                            <i class="fa-solid fa-palette"></i>
+                            Open Canvas
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                 <div class="card-image">
                     <i class="fa-solid fa-flask-vial fa-4x"></i>
                 </div>
                 <div class="card-content">
@@ -237,12 +249,6 @@
                         A brief and engaging description of your next project will go here. 
                         Explain its purpose and the technologies used.
                     </p>
-                    <div class="card-actions">
-                        <a class="btn btn-placeholder">
-                            <i class="fa-solid fa-hourglass-start"></i>
-                            Coming Soon
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -261,7 +267,6 @@
             const n_value = document.getElementById('taylorN').value;
             
             if (n_value && parseInt(n_value) > 0) {
-                // SỬA Ở ĐÂY: Mở tab mới bằng JavaScript
                 window.open(`taylorseries.html?n=${n_value}`, '_blank');
             } else {
                 alert('Please enter a positive integer for n.');
