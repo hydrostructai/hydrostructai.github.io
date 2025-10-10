@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quỹ Đạo Hypocycloid</title>
+    <style>
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #333;
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .main-container {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .controls-container {
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .input-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        input[type="number"], input[type="color"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            width: 120px;
+        }
+
+        input[type="color"] {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border: none;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            background-color: var(--primary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        canvas {
+            display: block;
+            border-radius: var(--border-radius);
+            background-color: #fff;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 768px) {
+            .control-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="controls-container">
+            <div class="control-group">
+                <div class="input-item">
+                    <label for="largeRadius">Bán kính vòng lớn (R)</label>
+                    <input type="number" id="largeRadius" value="200" step="10">
+                </div>
+                <div class="input-item">
+                    <label for="smallRadius">Bán kính vòng nhỏ (r)</label>
+                    <input type="number" id="smallRadius" value="40" step="5">
+                </div>
+                <div class="input-item">
+                    <label for="speed">Tốc độ (speed)</label>
+                    <input type="number" id="speed" value="0.05" step="0.01">
+                </div>
+                <div class="input-item">
+                    <label for="bgColor">Màu nền</label>
+                    <input type="color" id="bgColor" value="#ffffff">
+                </div>
+                <div class="input-item">
+                    <label for="largeCircleColor">Màu vòng lớn</label>
+                    <input type="color" id="largeCircleColor" value="#4A90E2">
+                </div>
+                <div class="input-item">
+                    <label for="smallCircleColor">Màu vòng nhỏ</label>
+                    <input type="color" id="smallCircleColor" value="#333333">
+                </div>
+                <div class="input-item">
+                    <label for="pathColor">Màu quỹ đạo</label>
+                    <input type="color" id="pathColor" value="#D0021B">
+                </div>
+                <div class="button-group">
+                    <button id="runBtn">Vẽ Quỹ Đạo</button>
+                    <button id="resetBtn">Đặt Lại</button>
+                </div>
+            </div>
+        </div>
+        <canvas id="hypocycloidCanvas"></canvas>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('hypocycloidCanvas');
+        const ctx = canvas.getContext('2d');
+        const largeRadiusInput = document.getElementById('largeRadius');
+        const smallRadiusInput = document.getElementById('smallRadius');
+        const speedInput = document.getElementById('speed');
+        const runBtn = document.getElementById('runBtn');
+        const resetBtn = document.getElementById('resetBtn');
+
+        const bgColorInput = document.getElementById('bgColor');
+        const largeCircleColorInput = document.getElementById('largeCircleColor');
+        const smallCircleColorInput = document.getElementById('smallCircleColor');
+        const pathColorInput = document.getElementById('pathColor');
+
+        let R, r, speed, path = [], angle = 0, isRunning = false, animationFrameId;
+
+        function setCanvasSize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+        }
+
+        window.addEventListener('resize', () => {
+            if (isRunning) {
+                cancelAnimationFrame(animationFrameId);
+                path = [];
+                drawStaticElements();
+                animationFrameId = requestAnimationFrame(animate);
+            }
+            setCanvasSize();
+        });
+
+        function drawStaticElements() {
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = bgColorInput.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            // Vẽ vòng tròn lớn
+            ctx.beginPath();
+            ctx.strokeStyle = largeCircleColorInput.value;
+            ctx.lineWidth = 2;
+            ctx.arc(0, 0, R, 0, 2 * Math.PI);
+            ctx.stroke();
+        }
+
+        function animate() {
+            if (!isRunning) return;
+
+            // Xóa canvas
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = bgColorInput.value;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            // Tính toán tọa độ
+            const Cx = (R - r) * Math.cos(angle);
+            const Cy = (R - r) * Math.sin(angle);
+            const x = Cx + r * Math.cos((R/r - 1) * angle);
+            const y = Cy - r * Math.sin((R/r - 1) * angle);
+
+            // Thêm điểm vào quỹ đạo
+            path.push({x, y});
+
+            // Vẽ vòng tròn lớn
+            ctx.beginPath();
+            ctx.strokeStyle = largeCircleColorInput.value;
+            ctx.lineWidth = 2;
+            ctx.arc(0, 0, R, 0, 2 * Math.PI);
+            ctx.stroke();
+
+            // Vẽ vòng tròn nhỏ
+            ctx.beginPath();
+            ctx.strokeStyle = smallCircleColorInput.value;
+            ctx.lineWidth = 2;
+            ctx.arc(Cx, Cy, r, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Vẽ điểm trên vòng tròn nhỏ
+            ctx.beginPath();
+            ctx.fillStyle = pathColorInput.value;
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Vẽ quỹ đạo
+            ctx.beginPath();
+            ctx.strokeStyle = pathColorInput.value;
+            ctx.lineWidth = 2;
+            for (let i = 0; i < path.length; i++) {
+                ctx.lineTo(path[i].x, path[i].y);
+            }
+            ctx.stroke();
+            
+            angle += speed;
+
+            // Điều kiện dừng
+            if (angle < (R / r) * 2 * Math.PI + speed) {
+                animationFrameId = requestAnimationFrame(animate);
+            } else {
+                isRunning = false;
+                runBtn.textContent = 'Vẽ Lại';
+            }
+        }
+
+        function runAnimation() {
+            if (isRunning) return;
+
+            R = parseFloat(largeRadiusInput.value);
+            r = parseFloat(smallRadiusInput.value);
+            speed = parseFloat(speedInput.value);
+            path = [];
+            angle = 0;
+            isRunning = true;
+            runBtn.textContent = 'Đang vẽ...';
+            
+            setCanvasSize();
+            animationFrameId = requestAnimationFrame(animate);
+        }
+
+        function reset() {
+            cancelAnimationFrame(animationFrameId);
+            isRunning = false;
+            runBtn.textContent = 'Vẽ Quỹ Đạo';
+            path = [];
+            angle = 0;
+            setCanvasSize();
+        }
+
+        runBtn.addEventListener('click', runAnimation);
+        resetBtn.addEventListener('click', reset);
+        
+        // Khởi tạo ban đầu
+        setCanvasSize();
+        drawStaticElements();
+    </script>
+</body>
+</html>
