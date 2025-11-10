@@ -3,7 +3,7 @@ title: "HydroStructAI"
 title_separator: "|" # Ký tự phân cách tiêu đề
 email: "your-email@example.com"
 description: "Blog kỹ thuật và Web App (WASM, FEM, AI) cho Kỹ thuật Xây dựng."
-url: "https://hydrostructai.github.io" # URL chính thức
+url: "https://hydrostructai.com" # URL chính thức MỚI
 baseurl: "" # Để trống
 repository: "hydrostructai/hydrostructai.github.io"
 
