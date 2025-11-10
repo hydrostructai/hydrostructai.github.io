@@ -1,47 +1,47 @@
 ---
 layout: page
-title: V? HydroStructAI
+title: Về HydroStructAI
 permalink: /about/
-description: "T?m nh�n v� s? m?nh c?a HydroStructAI - D�n ch? h�a c�ng c? ph�n t�ch k? thu?t (FEM, WASM, AI) cho ng�nh X�y d?ng."
+description: "Tầm nhìn và sứ mệnh của HydroStructAI - Dân chủ hóa công cụ phân tích kỹ thuật (FEM, WASM, AI) cho ngành Xây dựng."
 ---
 
-### S? m?nh c?a Ch�ng t�i
+### Sứ mệnh của Chúng tôi
 
-**HydroStructAI** l� m?t s�ng ki?n du?c sinh ra t? ng� tu c?a K? thu?t X�y d?ng v� C�ng ngh? Th�ng tin.
+**HydroStructAI** là một sáng kiến được sinh ra từ ngã tư của Kỹ thuật Xây dựng và Công nghệ Thông tin.
 
-S? m?nh c?a ch�ng t�i l� **d�n ch? h�a c�c c�ng c? ph�n t�ch k? thu?t ph?c t?p**. Ch�ng t�i tin r?ng m?i k? su, nh� nghi�n c?u v� sinh vi�n d?u x?ng d�ng c� quy?n truy c?p v�o c�c ph?n m?m m� ph?ng m?nh m? m� kh�ng b? r�o c?n b?i chi ph� b?n quy?n d?t d? hay y�u c?u ph?n c?ng n?ng n?.
+Sứ mệnh của chúng tôi là **dân chủ hóa các công cụ phân tích kỹ thuật phức tạp**. Chúng tôi tin rằng mọi kỹ sư, nhà nghiên cứu và sinh viên đều xứng đáng có quyền truy cập vào các phần mềm mô phỏng mạnh mẽ mà không bị rào cản bởi chi phí bản quyền đắt đỏ hay yêu cầu phần cứng nặng nề.
 
-Ch�ng t�i t?p trung v�o ba tr? c?t ch�nh c?a ng�nh: **`Hydro`** (Th?y l?c, T�i nguy�n nu?c), **`Struct`** (K?t c?u, �?a k? thu?t), v� **`AI`** (Tr� tu? Nh�n t?o ?ng d?ng).
+Chúng tôi tập trung vào ba trụ cột chính của ngành: **`Hydro`** (Thủy lực, Tài nguyên nước), **`Struct`** (Kết cấu, Địa kỹ thuật), và **`AI`** (Trí tuệ Nhân tạo ứng dụng).
 
-### T?m nh�n: K? thu?t tr�n n?n t?ng Web (Engineering-on-the-Web)
+### Tầm nhìn: Kỹ thuật trên nền tảng Web (Engineering-on-the-Web)
 
-Trong nhi?u th?p k?, c�c ph?n m?m K? thu?t (CAE, FEM, CFD) lu�n b? "tr�i bu?c" v�o c�c m�y tr?m (workstations) c?ng k?nh.
+Trong nhiều thập kỷ, các phần mềm Kỹ thuật (CAE, FEM, CFD) luôn bị "trói buộc" vào các máy trạm (workstations) cồng kềnh.
 
-T?m nh�n c?a ch�ng t�i l� m?t tuong lai noi c�c ph�n t�ch ph?c t?p � t? m� ph?ng Ph?n t? H?u h?n (FEM) cho m?t tu?ng c? v�n, d?n m� h�nh th?y l?c cho m?t luu v?c s�ng � d?u c� th? du?c th?c hi?n **ngay tr�n tr�nh duy?t web** c?a b?n.
+Tầm nhìn của chúng tôi là một tương lai nơi các phân tích phức tạp — từ mô phỏng Phần tử Hữu hạn (FEM) cho một tường cừ ván, đến mô hình thủy lực cho một lưu vực sông — đều có thể được thực hiện **ngay trên trình duyệt web** của bạn.
 
-B?ng c�ch khai th�c s?c m?nh c?a **WebAssembly (WASM)**, ch�ng t�i c� th? "g�i" c�c l�i t�nh to�n hi?u su?t cao (thu?ng du?c vi?t b?ng C++, Fortran, ho?c Rust) v� mang ch�ng d?n b?t k? thi?t b? n�o, ? b?t k? d�u.
+Bằng cách khai thác sức mạnh của **WebAssembly (WASM)**, chúng tôi có thể "gói" các lõi tính toán hiệu suất cao (thường được viết bằng C++, Fortran, hoặc Rust) và mang chúng đến bất kỳ thiết bị nào, ở bất kỳ đâu.
 
-### C�ch ti?p c?n c?a Ch�ng t�i
+### Cách tiếp cận của Chúng tôi
 
-Ch�ng t�i x�y d?ng d? �n n�y d?a tr�n tri?t l� "Freemium" m?t c�ch minh b?ch:
+Chúng tôi xây dựng dự án này dựa trên triết lý "Freemium" một cách minh bạch:
 
-1.  **Mi?n ph� cho Gi�o d?c & C?ng d?ng (Free):**
-    C�c c�ng c? c?t l�i (nhu `SheetPileFEM-WASM`, `Taylor Series Visualizer`) s? lu�n c� m?t phi�n b?n mi?n ph�, d?y d? ch?c nang co b?n. Ch�ng du?c cung c?p tr�n trang web n�y (GitHub Pages) nhu m?t t�i nguy�n m? d? h? tr? sinh vi�n h?c t?p, k? su tra c?u nhanh, v� th�c d?y s? s�ng t?o trong c?ng d?ng.
+1.  **Miễn phí cho Giáo dục & Cộng đồng (Free):**
+    Các công cụ cốt lõi (như `SheetPileFEM-WASM`, `Taylor Series Visualizer`) sẽ luôn có một phiên bản miễn phí, đầy đủ chức năng cơ bản. Chúng được cung cấp trên trang web này (GitHub Pages) như một tài nguyên mở để hỗ trợ sinh viên học tập, kỹ sư tra cứu nhanh, và thúc đẩy sự sáng tạo trong cộng đồng.
 
-2.  **Chuy�n nghi?p cho Doanh nghi?p (SaaS - Software as a Service):**
-    �? duy tr� v� ph�t tri?n d? �n, ch�ng t�i cung c?p c�c phi�n b?n "Pro" (du?i d?ng D?ch v? SaaS) cho c�c c�ng ty v� k? su chuy�n nghi?p. C�c phi�n b?n n�y s? m? kh�a c�c t�nh nang n�ng cao (v� d?: kh�ng gi?i h?n s? l?p d?t, t�nh to�n neo, luu/t?i d? �n, xu?t b�o c�o chuy�n nghi?p) v� y�u c?u m?t License Key d? x�c th?c.
+2.  **Chuyên nghiệp cho Doanh nghiệp (SaaS - Software as a Service):**
+    Để duy trì và phát triển dự án, chúng tôi cung cấp các phiên bản "Pro" (dưới dạng Dịch vụ SaaS) cho các công ty và kỹ sư chuyên nghiệp. Các phiên bản này sẽ mở khóa các tính năng nâng cao (ví dụ: không giới hạn số lớp đất, tính toán neo, lưu/tải dự án, xuất báo cáo chuyên nghiệp) và yêu cầu một License Key để xác thực.
 
-3.  **Blog l� T�i li?u (Blog-as-Documentation):**
-    M?t c�ng c? l� v� d?ng n?u ngu?i d�ng kh�ng hi?u l� thuy?t d?ng sau n�. Blog c?a HydroStructAI kh�ng ch? l� noi chia s? ki?n th?c, m� c�n l� t�i li?u chuy�n s�u gi?i th�ch "T?i sao?" v� "Nhu th? n�o?" d?ng sau m?i web app ch�ng t�i x�y d?ng.
+3.  **Blog là Tài liệu (Blog-as-Documentation):**
+    Một công cụ là vô dụng nếu người dùng không hiểu lý thuyết đằng sau nó. Blog của HydroStructAI không chỉ là nơi chia sẻ kiến thức, mà còn là tài liệu chuyên sâu giải thích "Tại sao?" và "Như thế nào?" đằng sau mỗi web app chúng tôi xây dựng.
 
-### V? T�c gi?
+### Về Tác giả
 
-T�i l� **Nguy?n H?i H�**, Ti?n si k? thu?t **K? thu?t x�y d?ng c�ng tr�nh th?y, chuy�n gia v? C�ng tr�nh Th?y l?i/ K? thu?t b? bi?n/ K?t c?u c�ng tr�nh/ �?a k? thu?t]** v?i ni?m dam m� s�u s?c v? l?p tr�nh v� ?ng d?ng c�ng ngh? d? gi?i quy?t c�c b�i to�n k? thu?t th?c t?.
+Tôi là **Nguyễn Hải Hà**, Tiến sĩ kỹ thuật **Kỹ thuật xây dựng công trình thủy, chuyên gia về Công trình Thủy lợi/ Kỹ thuật bờ biển/ Kết cấu công trình/ Địa kỹ thuật]** với niềm đam mê sâu sắc về lập trình và ứng dụng công nghệ để giải quyết các bài toán kỹ thuật thực tế.
 
-HydroStructAI l� n? l?c c?a t�i nh?m k?t n?i hai th? gi?i: s? ch�nh x�c c?a K? thu?t D�n d?ng v� s? linh ho?t c?a Ph�t tri?n Web hi?n d?i.
+HydroStructAI là nỗ lực của tôi nhằm kết nối hai thế giới: sự chính xác của Kỹ thuật Dân dụng và sự linh hoạt của Phát triển Web hiện đại.
 
-### K?t n?i
+### Kết nối
 
-Ch�ng t�i lu�n t�m ki?m s? h?p t�c, ph?n h?i v� c�c � tu?ng m?i. N?u b?n c� b?t k? c�u h?i n�o, ho?c mu?n d�ng g�p cho d? �n, xin vui l�ng li�n h? qua **[Email c?a b?n]** ho?c k?t n?i tr�n **[Link LinkedIn/GitHub c?a b?n]**.
+Chúng tôi luôn tìm kiếm sự hợp tác, phản hồi và các ý tưởng mới. Nếu bạn có bất kỳ câu hỏi nào, hoặc muốn đóng góp cho dự án, xin vui lòng liên hệ qua **[Email của bạn]** hoặc kết nối trên **[Link LinkedIn/GitHub của bạn]**.
 
-H�y b?t d?u b?ng c�ch kh�m ph� c�c [?ng d?ng](/apps/) c?a ch�ng t�i!
+Hãy bắt đầu bằng cách khám phá các [ứng dụng](/apps/) của chúng tôi!

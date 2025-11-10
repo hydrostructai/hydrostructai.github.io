@@ -1,32 +1,31 @@
 ---
-# ��y l� trang ch? c?a to�n b? website
+# Đây là trang chủ của toàn bộ website
 layout: home
 author_profile: true
 
-# --- V�ng "Hero" (Gi?i thi?u ch�nh) ---
+# --- Vùng "Hero" (Giới thiệu chính) ---
 header:
   overlay_color: "#333"
   overlay_filter: "0.5"
-  overlay_image: "/assets/images/hero-engineering.jpg" # B?n c?n th�m m?t ?nh d?p v�o v? tr� n�y
-  caption: "?nh: Unsplash"
+  overlay_image: "/assets/images/hero-engineering.jpg" # Bạn cần thêm một ảnh đẹp vào vị trí này
+  caption: "Ảnh: Unsplash"
   
-  # --- N�t K�u g?i H�nh d?ng (CTA) ---
-  # ��y l� li�n k?t ch�nh t?i c�c Web App
-  cta_label: "Kh�m ph� C�c Web App K? thu?t"
+  # --- Nút Kêu gọi Hành động (CTA) ---
+  # Đây là liên kết chính tới các Web App
+  cta_label: "Khám phá Các Web App Kỹ thuật"
   cta_url: "/apps/"
   
-excerpt: "Blog chuy�n m�n v� C�c ?ng d?ng Web (WASM, FEM) cho K? thu?t X�y d?ng."
+excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM) cho Kỹ thuật Xây dựng."
 ---
 
-## Ch�o m?ng d?n v?i HydroStructAI
+## Chào mừng đến với HydroStructAI
 
-Noi K? thu?t X�y d?ng (Civil Engineering) g?p g? C�ng ngh? Web Hi?n d?i.
+Nơi Kỹ thuật Xây dựng (Civil Engineering) gặp gỡ Công nghệ Web Hiện đại.
 
-Trang web n�y l� m?t d? �n c� nh�n nh?m chia s? c�c ki?n th?c, b�i vi?t chuy�n m�n v? �?a k? thu?t, K?t c?u, v� c�c c�ng c? l?p tr�nh ?ng d?ng (AI, FEM).
+Trang web này là một dự án cá nhân nhằm chia sẻ các kiến thức, bài viết chuyên môn về Địa kỹ thuật, Kết cấu, và các công cụ lập trình ứng dụng (AI, FEM).
 
-M?c ti�u ch�nh l� x�y d?ng c�c **Web App** g?n nh?, m?nh m? (s? d?ng **WebAssembly**) d? gi�p k? su v� sinh vi�n c� th? th?c hi?n c�c ph�n t�ch ph?c t?p ngay tr�n tr�nh duy?t.
+Mục tiêu chính là xây dựng các **Web App** gọn nhẹ, mạnh mẽ (sử dụng **WebAssembly**) để giúp kỹ sư và sinh viên có thể thực hiện các phân tích phức tạp ngay trên trình duyệt.
 
-**B?n c� th?:**
-* **Kh�m ph� c�c Web App** c?a ch�ng t�i (nhu `SheetPileFEM`, `Taylor Series`, ...) b?ng c�ch nh?n n�t b�n tr�n.
-* **�?c c�c b�i vi?t k? thu?t** m?i nh?t c?a t�i ? danh s�ch b�n du?i.
-
+**Bạn có thể:**
+* **Khám phá các Web App** của chúng tôi (như `SheetPileFEM`, `Taylor Series`, ...) bằng cách nhấn nút bên trên.
+* **Đọc các bài viết kỹ thuật** mới nhất của tôi ở danh sách bên dưới.
