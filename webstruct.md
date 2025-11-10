@@ -1,111 +1,111 @@
 hydrostructai.github.io/
-¶
-+-- _config.yml               # [R?t quan tr?ng] C?u hÏnh chÌnh
-+-- Gemfile                   # [Quan tr?ng] Khai b·o plugins
-¶
+¬¶
++-- _config.yml               # [R?t quan tr?ng] C?u h√¨nh ch√≠nh
++-- Gemfile                   # [Quan tr?ng] Khai b√°o plugins
+¬¶
 +-- index.md                  # Trang ch? (layout d?c bi?t)
 +-- apps.md                   # Trang portfolio apps
 +-- about.md                  # Trang gi?i thi?u
-¶
+¬¶
 +-- _data/                    # Thu m?c ch?a d? li?u
-¶   +-- navigation.yml        # –?nh nghia thanh menu chÌnh
-¶
+¬¶   +-- navigation.yml        # √ê?nh nghia thanh menu ch√≠nh
+¬¶
 +-- _posts/                   # Thu m?c blog
-¶   +-- 2025-10-28-sheet-pile-fem-wasm-intro.md
-¶
-+-- assets/                   # Thu m?c t‡i nguyÍn
-¶   +-- images/               # (Ch?a ?nh logo, avatar, ?nh b‡i post)
-¶   ¶   +-- logo.png
-¶   ¶   +-- my-avatar.png
-¶   +-- css/                  # (N?u b?n mu?n t˘y bi?n s‚u hon)
-¶       +-- main.scss
-¶
-+-- apps/                     # Thu m?c ch?a c·c app (Jekyll b? qua)
+¬¶   +-- 2025-10-28-sheet-pile-fem-wasm-intro.md
+¬¶
++-- assets/                   # Thu m?c t√†i nguy√™n
+¬¶   +-- images/               # (Ch?a ?nh logo, avatar, ?nh b√†i post)
+¬¶   ¬¶   +-- logo.png
+¬¶   ¬¶   +-- my-avatar.png
+¬¶   +-- css/                  # (N?u b?n mu?n t√πy bi?n s√¢u hon)
+¬¶       +-- main.scss
+¬¶
++-- apps/                     # Thu m?c ch?a c√°c app (Jekyll b? qua)
     +-- sheetpilefem/
-    ¶   +-- index.html
-    +-- (c·c app kh·c...)
+    ¬¶   +-- index.html
+    +-- (c√°c app kh√°c...)
     
 =====================================================
-Ch‡o b?n, d‚y l‡ quy trÏnh chÌnh x·c d? t?i code v? m·y (clone), ch?nh s?a v‡ d?y (push) lÍn l?i GitHub.
+Ch√†o b?n, d√¢y l√† quy tr√¨nh ch√≠nh x√°c d? t?i code v? m√°y (clone), ch?nh s?a v√† d?y (push) l√™n l?i GitHub.
 
-**YÍu c?u:** B?n c?n c‡i d?t [Git](https://www.google.com/search?q=https://git-scm.com/downloads) trÍn m·y tÌnh c?a mÏnh.
+**Y√™u c?u:** B?n c?n c√†i d?t [Git](https://www.google.com/search?q=https://git-scm.com/downloads) tr√™n m√°y t√≠nh c?a m√¨nh.
 
 -----
 
-### Quy trÏnh 5 Bu?c (L‡m l?n d?u)
+### Quy tr√¨nh 5 Bu?c (L√†m l?n d?u)
 
-N?u b?n **chua t?ng** t?i code n‡y v? m·y, h„y l‡m theo c·c bu?c sau. M? Terminal (macOS/Linux) ho?c Git Bash (Windows).
+N?u b?n **chua t?ng** t?i code n√†y v? m√°y, h√£y l√†m theo c√°c bu?c sau. M? Terminal (macOS/Linux) ho?c Git Bash (Windows).
 
-**Bu?c 1: Clone (T?i to‡n b? code v?)**
+**Bu?c 1: Clone (T?i to√†n b? code v?)**
 
 ```bash
 git clone https://github.com/hydrostructai/hydrostructai.github.io.git
 ```
 
-*L?nh n‡y t?o m?t thu m?c m?i tÍn l‡ `hydrostructai.github.io` ch?a code c?a b?n.*
+*L?nh n√†y t?o m?t thu m?c m?i t√™n l√† `hydrostructai.github.io` ch?a code c?a b?n.*
 
-**Bu?c 2: –i v‡o Thu m?c**
+**Bu?c 2: √êi v√†o Thu m?c**
 
 ```bash
 cd hydrostructai.github.io
 ```
 
 **Bu?c 3: Ch?nh s?a Code**
-M? thu m?c n‡y b?ng trÏnh so?n th?o code (nhu VS Code) v‡ th?c hi?n m?i ch?nh s?a b?n mu?n (s?a `index.html`, `taylorseries.html`, v.v.).
+M? thu m?c n√†y b?ng tr√¨nh so?n th?o code (nhu VS Code) v√† th?c hi?n m?i ch?nh s?a b?n mu?n (s?a `index.html`, `taylorseries.html`, v.v.).
 
 **Bu?c 4: Luu Thay d?i (Add & Commit)**
-Sau khi s?a xong, quay l?i c?a s? Terminal (ho?c Git Bash) v‡ gı hai l?nh sau:
+Sau khi s?a xong, quay l?i c?a s? Terminal (ho?c Git Bash) v√† g√µ hai l?nh sau:
 
 ```bash
-# ThÍm t?t c? c·c t?p d„ s?a
+# Th√™m t?t c? c√°c t?p d√£ s?a
 git add .
 
 # Ghi l?i thay d?i v?i m?t tin nh?n
 git commit -m "C?p nh?t n?i dung website"
 ```
 
-*(B?n cÛ th? thay "C?p nh?t n?i dung website" b?ng tin nh?n c?a riÍng b?n).*
+*(B?n c√≥ th? thay "C?p nh?t n?i dung website" b?ng tin nh?n c?a ri√™ng b?n).*
 
-**Bu?c 5: –?y (Push) lÍn GitHub**
+**Bu?c 5: √ê?y (Push) l√™n GitHub**
 
 ```bash
 git push origin main
 ```
 
-*(N?u `main` khÙng ho?t d?ng, h„y th? `master` - d‚y l‡ tÍn nh·nh chÌnh c?a b?n).*
+*(N?u `main` kh√¥ng ho?t d?ng, h√£y th? `master` - d√¢y l√† t√™n nh√°nh ch√≠nh c?a b?n).*
 
 -----
 
-### Quy trÏnh (L‡m t? l?n th? hai tr? di)
+### Quy tr√¨nh (L√†m t? l?n th? hai tr? di)
 
-N?u b?n **d„ cÛ** thu m?c code trÍn m·y t? tru?c, h„y b?t d?u t? d‚y:
+N?u b?n **d√£ c√≥** thu m?c code tr√™n m√°y t? tru?c, h√£y b?t d?u t? d√¢y:
 
-1.  **–i v‡o Thu m?c**
+1.  **√êi v√†o Thu m?c**
     ```bash
     cd hydrostructai.github.io
     ```
-2.  **Pull (–?ng b? code m?i nh?t)**
+2.  **Pull (√ê?ng b? code m?i nh?t)**
     ```bash
     git pull origin main
     ```
-3.  **Ch?nh s?a, Add, Commit, Push** (L‡m l?i Bu?c 3, 4, 5 t? ph?n trÍn).
+3.  **Ch?nh s?a, Add, Commit, Push** (L√†m l?i Bu?c 3, 4, 5 t? ph?n tr√™n).
 ============================================================
 
-B. C·c Web App (S?n ph?m):
+B. C√°c Web App (S?n ph?m):
 
-V? trÌ: To‡n b? app du?c d?t trong thu m?c /apps/ ? thu m?c g?c. Thu m?c n‡y du?c Jekyll "b? qua" v‡ sao chÈp nguyÍn tr?ng.
+V? tr√≠: To√†n b? app du?c d?t trong thu m?c /apps/ ? thu m?c g?c. Thu m?c n√†y du?c Jekyll "b? qua" v√† sao ch√©p nguy√™n tr?ng.
 
-C?u tr˙c bÍn trong /apps/:
+C?u tr√∫c b√™n trong /apps/:
 
 /apps/sheetpilefem/
 
-index.html (Giao di?n SheetPileFEM b?n d„ g?i)
+index.html (Giao di?n SheetPileFEM b?n d√£ g?i)
 
-app.js (Logic "Freemium" v‡ di?u khi?n UI)
+app.js (Logic "Freemium" v√† di?u khi?n UI)
 
 sheetpilefem.js (Code "keo" do Emscripten t?o ra)
 
-sheetpilefem.wasm (Lıi C++ FEM d„ du?c biÍn d?ch)
+sheetpilefem.wasm (L√µi C++ FEM d√£ du?c bi√™n d?ch)
 
 /apps/taylor-series/
 
@@ -118,17 +118,17 @@ index.html (N?i dung file hypocycloid.html cu c?a b?n)
 /apps/pep3/
 index.html (N?i dung file PEP3 THANG DANH GIA PHAT TRIEN.html cu)
 
-Lu?ng ho‡n ch?nh: Ngu?i d˘ng (k? su, sinh viÍn) ? Google ? TÏm th?y b‡i vi?t trÍn blog c?a b?n (vÌ d?: _posts/.../sheet-pile-fem-wasm-intro.md) ? –?c l˝ thuy?t, th?y h?p d?n ? Nh?n v‡o link "Ch?y ?ng d?ng" ? –u?c chuy?n hu?ng d?n https://hydrostructai.github.io/apps/sheetpilefem/ ? Tr?i nghi?m app SheetPileFEM (? ch? d? "Trial Mode" 2 l?p d?t).
+Lu?ng ho√†n ch?nh: Ngu?i d√πng (k? su, sinh vi√™n) ? Google ? T√¨m th?y b√†i vi?t tr√™n blog c?a b?n (v√≠ d?: _posts/.../sheet-pile-fem-wasm-intro.md) ? √ê?c l√Ω thuy?t, th?y h?p d?n ? Nh?n v√†o link "Ch?y ?ng d?ng" ? √êu?c chuy?n hu?ng d?n https://hydrostructai.github.io/apps/sheetpilefem/ ? Tr?i nghi?m app SheetPileFEM (? ch? d? "Trial Mode" 2 l?p d?t).
 
-3. ?? C?u tr˙c Luu tr? D? li?u (Cho SheetPileFEM)
-–‚y l‡ ph?n quan tr?ng d? hi?u rı. VÏ hydrostructai.github.io l‡ m?t trang Tinh (Static) trÍn GitHub Pages, nÛ khÙng cÛ co s? d? li?u (database) phÌa m·y ch?.
+3. ?? C?u tr√∫c Luu tr? D? li?u (Cho SheetPileFEM)
+√ê√¢y l√† ph?n quan tr?ng d? hi?u r√µ. V√¨ hydrostructai.github.io l√† m?t trang Tinh (Static) tr√™n GitHub Pages, n√≥ kh√¥ng c√≥ co s? d? li?u (database) ph√≠a m√°y ch?.
 
-V?y, "d? li?u" c?a SheetPileFEM du?c luu ? d‚u?
+V?y, "d? li?u" c?a SheetPileFEM du?c luu ? d√¢u?
 
 A. D? li?u M?u (2 L?p d?t)
-Luu ? d‚u: D? li?u n‡y du?c "hard-code" (m„ hÛa c?ng) tr?c ti?p bÍn trong file app.js.
+Luu ? d√¢u: D? li?u n√†y du?c "hard-code" (m√£ h√≥a c?ng) tr?c ti?p b√™n trong file app.js.
 
-Logic: Khi b?n s?a file app.js v‡ thay d?i bi?n defaultData d? ch? cÚn 2 l?p d?t (nhu tÙi d„ hu?ng d?n):
+Logic: Khi b?n s?a file app.js v√† thay d?i bi?n defaultData d? ch? c√≤n 2 l?p d?t (nhu t√¥i d√£ hu?ng d?n):
 
 JavaScript
 
@@ -140,43 +140,43 @@ const defaultData = {
     ],
     anchor: []
 };
-Khi trang .../apps/sheetpilefem/index.html t?i xong, app.js s? ch?y, g?i h‡m loadDataIntoUI(defaultData). H‡m n‡y d?c 2 l?p d?t t? defaultData v‡ t? d?ng di?n v‡o giao di?n.
+Khi trang .../apps/sheetpilefem/index.html t?i xong, app.js s? ch?y, g?i h√†m loadDataIntoUI(defaultData). H√†m n√†y d?c 2 l?p d?t t? defaultData v√† t? d?ng di?n v√†o giao di?n.
 
-B. D? li?u Ngu?i d˘ng (Khi dang nh?p li?u)
-Luu ? d‚u: T?m th?i trong b? nh? (RAM) c?a trÏnh duy?t.
+B. D? li?u Ngu?i d√πng (Khi dang nh?p li?u)
+Luu ? d√¢u: T?m th?i trong b? nh? (RAM) c?a tr√¨nh duy?t.
 
-Logic: Khi ngu?i d˘ng thay d?i con s? (vÌ d?: d?i cao d? L?p 1 t? 1.5 th‡nh 2.0), d? li?u n‡y ch? t?n t?i trÍn c·c Ù <input> c?a index.html.
+Logic: Khi ngu?i d√πng thay d?i con s? (v√≠ d?: d?i cao d? L?p 1 t? 1.5 th√†nh 2.0), d? li?u n√†y ch? t?n t?i tr√™n c√°c √¥ <input> c?a index.html.
 
 C. D? li?u Chuy?n giao (Khi nh?n "RUN ANALYSIS")
-Luu ? d‚u: –‚y l‡ m?t chu?i JSON du?c t?o ra t?c th?i.
+Luu ? d√¢u: √ê√¢y l√† m?t chu?i JSON du?c t?o ra t?c th?i.
 
 Logic:
 
-Ngu?i d˘ng nh?n "RUN ANALYSIS".
+Ngu?i d√πng nh?n "RUN ANALYSIS".
 
-H‡m collectInputs() trong app.js du?c g?i.
+H√†m collectInputs() trong app.js du?c g?i.
 
-NÛ quÈt to‡n b? form, d?c 2 l?p d?t v‡ c·c thÙng s? tu?ng, t?o ra m?t d?i tu?ng JavaScript.
+N√≥ qu√©t to√†n b? form, d?c 2 l?p d?t v√† c√°c th√¥ng s? tu?ng, t?o ra m?t d?i tu?ng JavaScript.
 
-JSON.stringify(inputs) bi?n d?i tu?ng n‡y th‡nh m?t chu?i JSON.
+JSON.stringify(inputs) bi?n d?i tu?ng n√†y th√†nh m?t chu?i JSON.
 
-Chu?i JSON n‡y du?c g?i v‡o h‡m C++ WASM_MODULE.runAnalysis(...).
+Chu?i JSON n√†y du?c g?i v√†o h√†m C++ WASM_MODULE.runAnalysis(...).
 
-Lıi C++ (sheetpilecore.cpp) d˘ng thu vi?n nlohmann/json d? "ph‚n r„" (parse) chu?i JSON n‡y, n?p v‡o c·c struct C++ (nhu AnalysisInput, SoilLayer d„ d?nh nghia trong datastructs.h).
+L√µi C++ (sheetpilecore.cpp) d√πng thu vi?n nlohmann/json d? "ph√¢n r√£" (parse) chu?i JSON n√†y, n?p v√†o c√°c struct C++ (nhu AnalysisInput, SoilLayer d√£ d?nh nghia trong datastructs.h).
 
-Lıi FEM (femsolver.cpp) tÌnh to·n d?a trÍn c·c struct n‡y.
+L√µi FEM (femsolver.cpp) t√≠nh to√°n d?a tr√™n c√°c struct n√†y.
 
-D. D? li?u "Luu tr?" (Khi ngu?i d˘ng mu?n luu l?i)
-Luu ? d‚u: Luu v? m·y tÌnh c?a ngu?i d˘ng du?i d?ng file .csv.
+D. D? li?u "Luu tr?" (Khi ngu?i d√πng mu?n luu l?i)
+Luu ? d√¢u: Luu v? m√°y t√≠nh c?a ngu?i d√πng du?i d?ng file .csv.
 
 Logic:
 
-Ngu?i d˘ng (n?u d„ cÛ license) nh?n n˙t "Save as CSV".
+Ngu?i d√πng (n?u d√£ c√≥ license) nh?n n√∫t "Save as CSV".
 
-H‡m handleSaveInputCSV() trong app.js du?c g?i.
+H√†m handleSaveInputCSV() trong app.js du?c g?i.
 
-NÛ l?p l?i bu?c collectInputs() d? l?y d? li?u hi?n t?i trÍn giao di?n.
+N√≥ l?p l?i bu?c collectInputs() d? l?y d? li?u hi?n t?i tr√™n giao di?n.
 
-NÛ d?nh d?ng d? li?u n‡y th‡nh m?t chu?i van b?n theo chu?n CSV (gi?ng h?t file SAMPLE.CSV c?a b?n).
+N√≥ d?nh d?ng d? li?u n√†y th√†nh m?t chu?i van b?n theo chu?n CSV (gi?ng h?t file SAMPLE.CSV c?a b?n).
 
-NÛ t?o m?t file "?o" trong trÏnh duy?t v‡ kÌch ho?t l?nh "Download" (sheetpile_input.csv).
+N√≥ t?o m?t file "?o" trong tr√¨nh duy?t v√† k√≠ch ho?t l?nh "Download" (sheetpile_input.csv).

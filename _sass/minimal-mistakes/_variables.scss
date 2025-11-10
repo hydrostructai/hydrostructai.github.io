@@ -1,0 +1,18 @@
+/* NỘI DUNG ĐÃ SỬA LỖI CHO FILE: 
+  _sass/minimal-mistakes/_variables.scss 
+*/
+
+:root {
+    --background-color: #0000A0; // <<< SỬA THÀNH MÀU XANH NÀY
+    --text-color: #ffff00;       // Gợi ý: Đổi chữ thành màu vàng cho giống Pascal
+    --axis-color: #ffffff;       // Gợi ý: Đổi trục tọa độ thành màu trắng
+    --primary-color: #00ffff;   // Taylor Series (Màu xanh cyan)
+    --secondary-color: #ff00ff; // sin(x) (Màu magenta)
+    --control-bg: #112240;
+    --border-color: #233554;
+}
+
+/* Bạn có thể thêm các biến tùy chỉnh khác của theme Minimal Mistakes ở đây 
+  nếu muốn, ví dụ:
+*/
+// $primary-color: #00ffff;
