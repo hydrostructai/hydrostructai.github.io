@@ -94,6 +94,7 @@
                                 <input type="text" class="form-control" id="inp-license-key" placeholder="XXXX-XXXX-XXXX-XXXX">
                             </div>
                         </div>
+                        <!-- SỬA LỖI: Gán ID cho nút kiểm tra license -->
                         <button class="btn btn-primary" id="btn-check-license">Kiểm tra Giấy phép</button>
                     </div>
 
@@ -250,7 +251,20 @@
 
     <script src="sheetpilefem.js"></script>
     
-    <script src="app.js"></script>
+    <!-- === LOGIC ĐÃ ĐƯỢC TÁI CẤU TRÚC === -->
+    <!-- Xóa file app.js cũ -->
+    <!-- <script src="app.js"></script> -->
+
+    <!-- Tạo một không gian tên (namespace) chung -->
+    <script>
+        var SheetPileApp = {};
+    </script>
+    
+    <!-- Tải các module mới theo thứ tự -->
+    <script src="app-check.js"></script>
+    <script src="app-cal.js"></script>
+    <script src="app-out.js"></script>
+    <!-- =================================== -->
 
 </body>
 </html>
