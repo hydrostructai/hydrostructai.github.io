@@ -59,6 +59,8 @@
         // Output Section
         outputSection: document.getElementById('output-section'),
         chartGeom: document.getElementById('chart-geom'),
+        // B? SUNG: Thêm ID bi?u d? áp l?c d?t
+        chartPressure: document.getElementById('chart-pressure'),
         chartDeflection: document.getElementById('chart-deflection'),
         chartMoment: document.getElementById('chart-moment'),
         chartShear: document.getElementById('chart-shear'),
@@ -83,13 +85,6 @@
             { param: 'I', value: 0.0076 },
             { param: 'pressure_theory', value: 'Rankine' },
         ],
-        //soil: [
-        //    ['Dat dap K95', 1.5, 18.5, 19.5, 28, 5],
-        //    ['Set deo mem', -3.0, 16.0, 17.5, 8, 12],
-        //    ['Set deo cung', -8.0, 18.0, 19.0, 16, 25],
-        //    ['Cat pha chat', -15.0, 19.0, 20.5, 32, 2],
-        //    ['Cat hat trung chat', -25.0, 19.5, 21.0, 35, 0]
-        //],
         // CH? HI?N TH? 2 L?P Ð?T M?C Ð?NH
         soil: [
             // Name, Top Elev, Gamma, Gamma_Sat, Phi, Cohesion
@@ -688,6 +683,9 @@
         plotGeometryChart(results, inputs);
         plotStandardCharts(results);
         
+        // B? SUNG: G?i hàm v? bi?u d? áp l?c d?t
+        plotPressureChart(results); 
+        
         // 2. Populate Tables
         populateSummaryTable(results);
         populateDetailedTable(results);
@@ -724,6 +722,59 @@
     }
 
     /**
+     * B? SUNG: V? bi?u d? Áp l?c Ð?t
+     * @param {Array} results M?ng d?i tu?ng ResultNode.
+     */
+    function plotPressureChart(results) {
+        const elev = results.map(r => r.elevation);
+        
+        // Gi? d?nh các thu?c tính này t?n t?i trong d?i tu?ng 'results' tr? v? t? WASM
+        // Tính t?ng áp l?c ch? d?ng (d?t + nu?c)
+        const active_total = results.map(r => (r.pressure_active_kPa || 0) + (r.pressure_water_behind_kPa || 0));
+        
+        // Tính t?ng áp l?c b? d?ng (d?t + nu?c) và nhân v?i -1 d? v? sang bên trái
+        const passive_total = results.map(r => -((r.pressure_passive_kPa || 0) + (r.pressure_water_front_kPa || 0)));
+
+        const traceActive = {
+            x: active_total,
+            y: elev,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Áp l?c Ch? d?ng (T? h?p)',
+            fill: 'tozerox', // Tô màu t? du?ng line v? tr?c X=0
+            fillcolor: 'rgba(214, 39, 40, 0.2)', // Màu d? nh?t (Plotly default red)
+            line: { color: 'rgba(214, 39, 40, 0.6)' }
+        };
+
+        const tracePassive = {
+            x: passive_total,
+            y: elev,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'Áp l?c B? d?ng (T? h?p)',
+            fill: 'tozerox', // Tô màu t? du?ng line v? tr?c X=0
+            fillcolor: 'rgba(31, 119, 180, 0.2)', // Màu xanh nh?t (Plotly default blue)
+            line: { color: 'rgba(31, 119, 180, 0.6)' }
+        };
+        
+        const layout = {
+            title: 'Bi?u d? Áp l?c d?t (T? h?p)',
+            xaxis: { 
+                title: 'Áp l?c (kPa)', 
+                zeroline: true, 
+                zerolinewidth: 2, 
+                zerolinecolor: '#000' 
+            },
+            yaxis: { title: 'Cao d? (m)' },
+            margin: { l: 60, r: 20, t: 40, b: 50 },
+            hovermode: 'y unified',
+            legend: { yanchor: "top", y: 0.99, xanchor: "left", x: 0.01 }
+        };
+        
+        Plotly.newPlot(dom.chartPressure, [traceActive, tracePassive], layout);
+    }
+
+    /**
      * Plots the complex geometry chart, as seen in the image.
      * @param {Array} results The array of ResultNode objects.
      * @param {object} inputs The input object.
@@ -748,7 +799,7 @@
                 type: 'rect',
                 xref: 'paper', x0: 0, x1: 1, // Full width
                 y0: bottom, y1: top,
-                fillcolor: `rgba(0, 100, ${Math.random() * 155 + 100}, 0.2)`,
+                fillcolor: `rgba(150, 150, 150, ${0.1 + (i*0.05)})`, // Thay d?i màu ng?u nhiên
                 line: { width: 0 }
             });
             // Add layer name
@@ -791,7 +842,7 @@
         inputs.anchors.forEach(anchor => {
              annotations.push({
                 x: 0, y: anchor.elevation,
-                text: `â–º Anchor ${anchor.id}`,
+                text: `? Anchor ${anchor.id}`, // Thay d?i ký t?
                 showarrow: true, ax: -30, ay: 0,
                 font: { color: 'red' }
             });
@@ -862,7 +913,17 @@
                 let val = row[h];
                 // Format numbers
                 if (typeof val === 'number') {
-                    td.textContent = val.toFixed(3);
+                    // B? SUNG: Làm tròn t?t hon, d?c bi?t cho các giá tr? r?t nh?
+                    if (Math.abs(val) > 100) {
+                         td.textContent = val.toFixed(1);
+                    } else if (Math.abs(val) > 0.1) {
+                         td.textContent = val.toFixed(3);
+                    } else if (val === 0) {
+                         td.textContent = 0;
+                    }
+                    else {
+                        td.textContent = val.toExponential(2);
+                    }
                 } else {
                     td.textContent = val;
                 }

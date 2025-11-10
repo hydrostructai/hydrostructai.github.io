@@ -1,66 +1,59 @@
 ---
 layout: page
-title: Danh m?c Web Apps K? thu?t
+title: Danh mục Web Apps Kỹ thuật
 permalink: /apps/
-description: "Danh m?c c�c ?ng d?ng web (WASM) v? k? thu?t x�y d?ng, d?a k? thu?t, v� to�n ?ng d?ng do HydroStructAI ph�t tri?n."
+description: "Danh mục các ứng dụng web (WASM) về kỹ thuật xây dựng, địa kỹ thuật, và toán ứng dụng do HydroStructAI phát triển."
 ---
 
-Ch�o m?ng b?n d?n v?i kho ?ng d?ng c?a HydroStructAI. Ch�ng t�i tin v�o vi?c d�n ch? h�a c�c c�ng c? t�nh to�n k? thu?t ph?c t?p th�ng qua s?c m?nh c?a Web v� WebAssembly (WASM). C�c c�ng c? du?i d�y du?c thi?t k? d? ch?y tr?c ti?p tr�n tr�nh duy?t c?a b?n m� kh�ng c?n c�i d?t.
+Chào mừng bạn đến với kho ứng dụng của HydroStructAI. Chúng tôi tin vào việc dân chủ hóa các công cụ tính toán kỹ thuật phức tạp thông qua sức mạnh của Web và WebAssembly (WASM). Các công cụ dưới đây được thiết kế để chạy trực tiếp trên trình duyệt của bạn mà không cần cài đặt.
 
 ---
 
 ### 1. SheetPileFEM-WASM
 
+**Phân tích Cừ Ván bằng Phương pháp Phần tử Hữu hạn (FEM)**
 
-**Ph�n t�ch C? V�n b?ng Phuong ph�p Ph?n t? H?u h?n (FEM)**
+Một công cụ mạnh mẽ mô phỏng tương tác đất-kết cấu của tường cừ ván. Ứng dụng này sử dụng một lõi tính toán FEM (biên dịch sang WASM) để cung cấp các biểu đồ nội lực (Moment, Shear) và biến dạng (Deflection) chi tiết, giúp kỹ sư và sinh viên nhanh chóng đánh giá thiết kế.
 
-M?t c�ng c? m?nh m? m� ph?ng tuong t�c d?t-k?t c?u c?a tu?ng c? v�n. ?ng d?ng n�y s? d?ng m?t l�i t�nh to�n FEM (bi�n d?ch sang WASM) d? cung c?p c�c bi?u d? n?i l?c (Moment, Shear) v� bi?n d?ng (Deflection) chi ti?t, gi�p k? su v� sinh vi�n nhanh ch�ng d�nh gi� thi?t k?.
-
-* **Tags:** `FEM`, `�?a k? thu?t`, `WASM`, `K?t c?u`, `Freemium`
-* **Li�n k?t:**
-    * **[Tr?i nghi?m (B?n Mi?n ph�)] ?** `/apps/sheetpilefem/`
-    * **[�?c b�i vi?t & L� thuy?t] ?** `/geotechnical/fem/webapp/2025/10/28/sheet-pile-fem-wasm-intro.html` (Luu �: du?ng d?n n�y s? t? d?ng du?c Jekyll t?o ra cho b�i post ? tr�n)
-    * **[N�ng c?p B?n Pro (SaaS)] ?** *(S?p ra m?t)*
+* **Tags:** `FEM`, `Địa kỹ thuật`, `WASM`, `Kết cấu`, `Freemium`
+* **Liên kết:**
+    * **[Trải nghiệm (Bản Miễn phí)] →** `/apps/sheetpilefem/`
+    * **[Đọc bài viết & Lý thuyết] →** `/geotechnical/fem/webapp/2025/10/28/sheet-pile-fem-wasm-intro.html`
+    * **[Nâng cấp Bản Pro (SaaS)] →** *(Sắp ra mắt)*
 
 ---
 
 ### 2. Taylor Series Visualizer
 
+**Trực quan hóa Chuỗi Taylor**
 
-**Tr?c quan h�a Chu?i Taylor**
+Một ứng dụng toán học mang tính giáo dục, cho phép người dùng nhập một hàm số và xem chuỗi Taylor của nó được xây dựng từng bước (bậc `n`). Công cụ này giúp sinh viên hiểu rõ hơn về bản chất của xấp xỉ hàm số, một khái niệm nền tảng trong kỹ thuật và khoa học máy tính.
 
-M?t ?ng d?ng to�n h?c mang t�nh gi�o d?c, cho ph�p ngu?i d�ng nh?p m?t h�m s? v� xem chu?i Taylor c?a n� du?c x�y d?ng t?ng bu?c (b?c `n`). C�ng c? n�y gi�p sinh vi�n hi?u r� hon v? b?n ch?t c?a x?p x? h�m s?, m?t kh�i ni?m n?n t?ng trong k? thu?t v� khoa h?c m�y t�nh.
-
-* **Tags:** `To�n h?c`, `Tr?c quan h�a`, `Gi�o d?c`, `JavaScript`
-* **Li�n k?t:**
-    * **[Tr?i nghi?m Ngay] ?** `/apps/taylor-series/` (�� gi? d?nh b?n di chuy?n file `taylorseries.html` v�o `apps/taylor-series/index.html`)
+* **Tags:** `Toán học`, `Trực quan hóa`, `Giáo dục`, `JavaScript`
+* **Liên kết:**
+    * **[Trải nghiệm Ngay] →** `/apps/taylor-series/`
 
 ---
 
 ### 3. Hypocycloid Curve Generator
 
+**Khám phá Đường cong Hypocycloid**
 
-**Kh�m ph� �u?ng cong Hypocycloid**
+Một công cụ đồ họa vui nhộn để khám phá vẻ đẹp của các đường cong toán học. Bằng cách điều chỉnh tỷ lệ bán kính của các vòng tròn, người dùng có thể tạo ra vô số các mẫu hình Hypocycloid phức tạp và đẹp mắt (giống như trong đồ chơi Spirograph).
 
-M?t c�ng c? d? h?a vui nh?n d? kh�m ph� v? d?p c?a c�c du?ng cong to�n h?c. B?ng c�ch di?u ch?nh t? l? b�n k�nh c?a c�c v�ng tr�n, ngu?i d�ng c� th? t?o ra v� s? c�c m?u h�nh Hypocycloid ph?c t?p v� d?p m?t (gi?ng nhu trong d? choi Spirograph).
-
-* **Tags:** `To�n h?c`, `H�nh h?c`, `Tr?c quan h�a`, `�? h?a`
-* **Li�n k?t:**
-    * **[Tr?i nghi?m Ngay] ?** `/apps/hypocycloid/` (�� gi? d?nh b?n di chuy?n file `hypocycloid.html` v�o `apps/hypocycloid/index.html`)
-
----
-
-### 4. PEP3 - ��nh gi� Ph�t tri?n
-
-
-**C�ng c? ��nh gi� Ph�t tri?n (PEP3)**
-
-M?t bi?u m?u k? thu?t s? d?a tr�n quy tr�nh PEP3, du?c thi?t k? d? c�c nh� qu?n l� v� nh�m d? �n ti�u chu?n h�a vi?c d�nh gi� v� ghi l?i c�c giai do?n ph�t tri?n s?n ph?m ho?c d? �n.
-
-* **Tags:** `Qu?n l� D? �n`, `Quy tr�nh`, `��nh gi�`
-* **Li�n k?t:**
-    * **[S? d?ng C�ng c?] ?** `/apps/pep3/` (�� gi? d?nh b?n di chuy?n file `PEP3 THANG DANH GIA...` v�o `apps/pep3/index.html`)
+* **Tags:** `Toán học`, `Hình học`, `Trực quan hóa`, `Đồ họa`
+* **Liên kết:**
+    * **[Trải nghiệm Ngay] →** `/apps/hypocycloid/`
 
 ---
 
-B?n c� mu?n t�i ti?p t?c b?ng c�ch t?o n?i dung cho trang `about.md` d? gi?i thi?u v? `hydrostructai` v� t?m nh�n c?a d? �n kh�ng?
+### 4. PEP3 - Đánh giá Phát triển
+
+**Công cụ Đánh giá Phát triển (PEP3)**
+
+Một biểu mẫu kỹ thuật số dựa trên quy trình PEP3, được thiết kế để các nhà quản lý và nhóm dự án tiêu chuẩn hóa việc đánh giá và ghi lại các giai đoạn phát triển sản phẩm hoặc dự án.
+
+* **Tags:** `Quản lý Dự án`, `Quy trình`, `Đánh giá`
+* **Liên kết:**
+    * **[Sử dụng Công cụ] →** `/apps/pep3/`
+---
