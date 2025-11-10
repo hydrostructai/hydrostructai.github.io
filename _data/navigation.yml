@@ -4,10 +4,10 @@ main:
     url: "/"
   - title: "Web Apps"
     url: "/apps/"
-  - title: "V? chúng tôi"
+  - title: "Vá» chÃºng tÃ´i"
     url: "/about/"
-  - title: "Theo Th? (Tags)"
+  - title: "Theo Tháº» (Tags)"
     url: "/tags/"
-  # B?n có th? thêm link bên ngoài
-  - title: "D? án GitHub"
+  # Báº¡n cÃ³ thá»ƒ thÃªm link bÃªn ngoÃ i
+  - title: "Dá»± Ã¡n GitHub"
     url: "https://github.com/hydrostructai"
