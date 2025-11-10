@@ -192,7 +192,7 @@
      */
     function loadDataIntoUI(data) {
         // 1. Clear existing data
-        dom.tableSoilBody.innerHTML = '';
+        // dom.tableSoilBody.innerHTML = ''; // <-- MODIFIED: This is now handled by index.html
         dom.tableAnchorBody.innerHTML = '';
 
         // 2. Load Wall parameters
@@ -204,7 +204,7 @@
         });
 
         // 3. Load Soil layers
-        data.soil.forEach(row => addSoilRow(row));
+        // data.soil.forEach(row => addSoilRow(row)); // <-- MODIFIED: This is now handled by index.html
 
         // 4. Load Anchors
         data.anchor.forEach(row => addAnchorRow(row));
@@ -740,7 +740,7 @@
             y: elev,
             type: 'scatter',
             mode: 'lines',
-            name: 'Áp l?c Ch? d?ng (T? h?p)',
+            name: 'Áp lực Chủ động (Tổ hợp)',
             fill: 'tozerox', // Tô màu t? du?ng line v? tr?c X=0
             fillcolor: 'rgba(214, 39, 40, 0.2)', // Màu d? nh?t (Plotly default red)
             line: { color: 'rgba(214, 39, 40, 0.6)' }
@@ -751,21 +751,21 @@
             y: elev,
             type: 'scatter',
             mode: 'lines',
-            name: 'Áp l?c B? d?ng (T? h?p)',
+            name: 'Áp lực Bị động (Tổ hợp)',
             fill: 'tozerox', // Tô màu t? du?ng line v? tr?c X=0
             fillcolor: 'rgba(31, 119, 180, 0.2)', // Màu xanh nh?t (Plotly default blue)
             line: { color: 'rgba(31, 119, 180, 0.6)' }
         };
         
         const layout = {
-            title: 'Bi?u d? Áp l?c d?t (T? h?p)',
+            title: 'Biểu đồ áp lực đấy (Tổ hợp)',
             xaxis: { 
-                title: 'Áp l?c (kPa)', 
+                title: 'Áp lực (kPa)', 
                 zeroline: true, 
                 zerolinewidth: 2, 
                 zerolinecolor: '#000' 
             },
-            yaxis: { title: 'Cao d? (m)' },
+            yaxis: { title: 'Cao độ (m)' },
             margin: { l: 60, r: 20, t: 40, b: 50 },
             hovermode: 'y unified',
             legend: { yanchor: "top", y: 0.99, xanchor: "left", x: 0.01 }

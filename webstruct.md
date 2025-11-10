@@ -1,182 +1,182 @@
-hydrostructai.github.io/
+
+## 🛠️ Cấu Trúc Dự Án `hydrostructai.github.io`
+
+````
 ¦
-+-- _config.yml               # [R?t quan tr?ng] C?u hình chính
-+-- Gemfile                   # [Quan tr?ng] Khai báo plugins
++-- _config.yml               # [Rất quan trọng] Cấu hình chính
++-- Gemfile                   # [Quan trọng] Khai báo plugins
 ¦
-+-- index.md                  # Trang ch? (layout d?c bi?t)
++-- index.md                  # Trang chủ (layout đặc biệt)
 +-- apps.md                   # Trang portfolio apps
-+-- about.md                  # Trang gi?i thi?u
++-- about.md                  # Trang giới thiệu
 ¦
-+-- _data/                    # Thu m?c ch?a d? li?u
-¦   +-- navigation.yml        # Ð?nh nghia thanh menu chính
++-- _data/                    # Thư mục chứa dữ liệu
+¦   +-- navigation.yml        # Định nghĩa thanh menu chính
 ¦
-+-- _posts/                   # Thu m?c blog
++-- _posts/                   # Thư mục blog
 ¦   +-- 2025-10-28-sheet-pile-fem-wasm-intro.md
 ¦
-+-- assets/                   # Thu m?c tài nguyên
-¦   +-- images/               # (Ch?a ?nh logo, avatar, ?nh bài post)
++-- assets/                   # Thư mục tài nguyên
+¦   +-- images/               # (Chứa ảnh logo, avatar, ảnh bài post)
 ¦   ¦   +-- logo.png
 ¦   ¦   +-- my-avatar.png
-¦   +-- css/                  # (N?u b?n mu?n tùy bi?n sâu hon)
+¦   +-- css/                  # (Nếu bạn muốn tùy biến sâu hơn)
 ¦       +-- main.scss
 ¦
-+-- apps/                     # Thu m?c ch?a các app (Jekyll b? qua)
++-- apps/                     # Thư mục chứa các app (Jekyll bỏ qua)
     +-- sheetpilefem/
     ¦   +-- index.html
     +-- (các app khác...)
     
 =====================================================
-Chào b?n, dây là quy trình chính xác d? t?i code v? máy (clone), ch?nh s?a và d?y (push) lên l?i GitHub.
+Chào bạn, đây là quy trình chính xác để tải code về máy (clone), chỉnh sửa và đẩy (push) lên lại GitHub.
 
-**Yêu c?u:** B?n c?n cài d?t [Git](https://www.google.com/search?q=https://git-scm.com/downloads) trên máy tính c?a mình.
+**Yêu cầu:** Bạn cần cài đặt [Git](https://www.google.com/search?q=https://git-scm.com/downloads) trên máy tính của mình.
 
 -----
 
-### Quy trình 5 Bu?c (Làm l?n d?u)
+### Quy trình 5 Bước (Làm lần đầu)
 
-N?u b?n **chua t?ng** t?i code này v? máy, hãy làm theo các bu?c sau. M? Terminal (macOS/Linux) ho?c Git Bash (Windows).
+Nếu bạn **chưa từng** tải code này về máy, hãy làm theo các bước sau. Mở Terminal (macOS/Linux) hoặc Git Bash (Windows).
 
-**Bu?c 1: Clone (T?i toàn b? code v?)**
+**Bước 1: Clone (Tải toàn bộ code về)**
 
 ```bash
-git clone https://github.com/hydrostructai/hydrostructai.github.io.git
-```
+git clone [https://github.com/hydrostructai/hydrostructai.github.io.git](https://github.com/hydrostructai/hydrostructai.github.io.git)
+````
 
-*L?nh này t?o m?t thu m?c m?i tên là `hydrostructai.github.io` ch?a code c?a b?n.*
+*Lệnh này tạo một thư mục mới tên là `hydrostructai.github.io` chứa code của bạn.*
 
-**Bu?c 2: Ði vào Thu m?c**
+**Bước 2: Đi vào Thư mục**
 
 ```bash
 cd hydrostructai.github.io
 ```
 
-**Bu?c 3: Ch?nh s?a Code**
-M? thu m?c này b?ng trình so?n th?o code (nhu VS Code) và th?c hi?n m?i ch?nh s?a b?n mu?n (s?a `index.html`, `taylorseries.html`, v.v.).
+**Bước 3: Chỉnh sửa Code**
+Mở thư mục này bằng trình soạn thảo code (như VS Code) và thực hiện mọi chỉnh sửa bạn muốn (sửa `index.html`, `taylorseries.html`, v.v.).
 
-**Bu?c 4: Luu Thay d?i (Add & Commit)**
-Sau khi s?a xong, quay l?i c?a s? Terminal (ho?c Git Bash) và gõ hai l?nh sau:
+**Bước 4: Lưu Thay đổi (Add & Commit)**
+Sau khi sửa xong, quay lại cửa sổ Terminal (hoặc Git Bash) và gõ hai lệnh sau:
 
 ```bash
-# Thêm t?t c? các t?p dã s?a
+# Thêm tất cả các tệp đã sửa
 git add .
 
-# Ghi l?i thay d?i v?i m?t tin nh?n
-git commit -m "C?p nh?t n?i dung website"
+# Ghi lại thay đổi với một tin nhắn
+git commit -m "Cập nhật nội dung website"
 ```
 
-*(B?n có th? thay "C?p nh?t n?i dung website" b?ng tin nh?n c?a riêng b?n).*
+*(Bạn có thể thay "Cập nhật nội dung website" bằng tin nhắn của riêng bạn).*
 
-**Bu?c 5: Ð?y (Push) lên GitHub**
+**Bước 5: Đẩy (Push) lên GitHub**
 
 ```bash
 git push origin main
 ```
 
-*(N?u `main` không ho?t d?ng, hãy th? `master` - dây là tên nhánh chính c?a b?n).*
+*(Nếu `main` không hoạt động, hãy thử `master` - đây là tên nhánh chính của bạn).*
 
 -----
 
-### Quy trình (Làm t? l?n th? hai tr? di)
+### Quy trình (Làm từ lần thứ hai trở đi)
 
-N?u b?n **dã có** thu m?c code trên máy t? tru?c, hãy b?t d?u t? dây:
+Nếu bạn **đã có** thư mục code trên máy từ trước, hãy bắt đầu từ đây:
 
-1.  **Ði vào Thu m?c**
+1.  **Đi vào Thư mục**
     ```bash
     cd hydrostructai.github.io
     ```
-2.  **Pull (Ð?ng b? code m?i nh?t)**
+2.  **Pull (Đồng bộ code mới nhất)**
     ```bash
     git pull origin main
     ```
-3.  **Ch?nh s?a, Add, Commit, Push** (Làm l?i Bu?c 3, 4, 5 t? ph?n trên).
-============================================================
+3.  **Chỉnh sửa, Add, Commit, Push** (Làm lại Bước 3, 4, 5 từ phần trên).
+    \============================================================
 
-B. Các Web App (S?n ph?m):
+B. Các Web App (Sản phẩm):
 
-V? trí: Toàn b? app du?c d?t trong thu m?c /apps/ ? thu m?c g?c. Thu m?c này du?c Jekyll "b? qua" và sao chép nguyên tr?ng.
+Vị trí: Toàn bộ app được đặt trong thư mục /apps/ ở thư mục gốc. Thư mục này được Jekyll **"bỏ qua"** và sao chép nguyên trạng.
 
-C?u trúc bên trong /apps/:
+Cấu trúc bên trong /apps/:
 
 /apps/sheetpilefem/
 
-index.html (Giao di?n SheetPileFEM b?n dã g?i)
+index.html (Giao diện SheetPileFEM bạn đã gửi)
 
-app.js (Logic "Freemium" và di?u khi?n UI)
+app.js (Logic "Freemium" và điều khiển UI)
 
-sheetpilefem.js (Code "keo" do Emscripten t?o ra)
+sheetpilefem.js (Code "keo" do Emscripten tạo ra)
 
-sheetpilefem.wasm (Lõi C++ FEM dã du?c biên d?ch)
+sheetpilefem.wasm (Lõi C++ FEM đã được biên dịch)
 
 /apps/taylor-series/
 
-index.html (N?i dung file taylorseries.html cu c?a b?n)
+index.html (Nội dung file taylorseries.html cũ của bạn)
 
 /apps/hypocycloid/
 
-index.html (N?i dung file hypocycloid.html cu c?a b?n)
+index.html (Nội dung file hypocycloid.html cũ của bạn)
 
 /apps/pep3/
-index.html (N?i dung file PEP3 THANG DANH GIA PHAT TRIEN.html cu)
+index.html (Nội dung file PEP3 THANG DANH GIA PHAT TRIEN.html cũ)
 
-Lu?ng hoàn ch?nh: Ngu?i dùng (k? su, sinh viên) ? Google ? Tìm th?y bài vi?t trên blog c?a b?n (ví d?: _posts/.../sheet-pile-fem-wasm-intro.md) ? Ð?c lý thuy?t, th?y h?p d?n ? Nh?n vào link "Ch?y ?ng d?ng" ? Ðu?c chuy?n hu?ng d?n https://hydrostructai.github.io/apps/sheetpilefem/ ? Tr?i nghi?m app SheetPileFEM (? ch? d? "Trial Mode" 2 l?p d?t).
+Luồng hoàn chỉnh: Người dùng (kỹ sư, sinh viên) $\to$ Google $\to$ Tìm thấy bài viết trên blog của bạn (ví dụ: `_posts/.../sheet-pile-fem-wasm-intro.md`) $\to$ Đọc lý thuyết, thấy hấp dẫn $\to$ Nhấn vào link **"Chạy Ứng dụng"** $\to$ Được chuyển hướng đến `https://hydrostructai.github.io/apps/sheetpilefem/` $\to$ Trải nghiệm app SheetPileFEM (ở chế độ **"Trial Mode"** 2 lớp đất).
 
-3. ?? C?u trúc Luu tr? D? li?u (Cho SheetPileFEM)
-Ðây là ph?n quan tr?ng d? hi?u rõ. Vì hydrostructai.github.io là m?t trang Tinh (Static) trên GitHub Pages, nó không có co s? d? li?u (database) phía máy ch?.
+3.  Về Cấu trúc Lưu trữ Dữ liệu (Cho SheetPileFEM)
+    Đây là phần quan trọng để hiểu rõ. Vì hydrostructai.github.io là một trang **Tĩnh (Static)** trên GitHub Pages, nó **không có cơ sở dữ liệu** (database) phía máy chủ.
 
-V?y, "d? li?u" c?a SheetPileFEM du?c luu ? dâu?
+Vậy, **"dữ liệu"** của SheetPileFEM được lưu ở đâu?
 
-A. D? li?u M?u (2 L?p d?t)
-Luu ? dâu: D? li?u này du?c "hard-code" (mã hóa c?ng) tr?c ti?p bên trong file app.js.
+A. Dữ liệu Mẫu (2 Lớp đất)
+**Lưu ở đâu:** Dữ liệu này được **"hard-code"** (mã hóa cứng) trực tiếp bên trong file **`app.js`**.
 
-Logic: Khi b?n s?a file app.js và thay d?i bi?n defaultData d? ch? còn 2 l?p d?t (nhu tôi dã hu?ng d?n):
+**Logic:** Khi bạn sửa file `app.js` và thay đổi biến `defaultData` để chỉ còn 2 lớp đất (như tôi đã hướng dẫn):
 
-JavaScript
-
+```javascript
 const defaultData = {
-    //...
-    soil: [
-        ['Lop 1 (Cat pha)', 1.5, 18.0, 19.0, 30, 2],
-        ['Lop 2 (Set deo)', -8.0, 16.5, 17.5, 10, 15]
-    ],
-    anchor: []
+    //...
+    soil: [
+        ['Lop 1 (Cat pha)', 1.5, 18.0, 19.0, 30, 2],
+        ['Lop 2 (Set deo)', -8.0, 16.5, 17.5, 10, 15]
+    ],
+    anchor: []
 };
-Khi trang .../apps/sheetpilefem/index.html t?i xong, app.js s? ch?y, g?i hàm loadDataIntoUI(defaultData). Hàm này d?c 2 l?p d?t t? defaultData và t? d?ng di?n vào giao di?n.
+```
 
-B. D? li?u Ngu?i dùng (Khi dang nh?p li?u)
-Luu ? dâu: T?m th?i trong b? nh? (RAM) c?a trình duy?t.
+Khi trang `.../apps/sheetpilefem/index.html` tải xong, `app.js` sẽ chạy, gọi hàm `loadDataIntoUI(defaultData)`. Hàm này đọc 2 lớp đất từ `defaultData` và tự động điền vào giao diện.
 
-Logic: Khi ngu?i dùng thay d?i con s? (ví d?: d?i cao d? L?p 1 t? 1.5 thành 2.0), d? li?u này ch? t?n t?i trên các ô <input> c?a index.html.
+B. Dữ liệu Người dùng (Khi đang nhập liệu)
+**Lưu ở đâu:** Tạm thời trong **bộ nhớ (RAM) của trình duyệt**.
 
-C. D? li?u Chuy?n giao (Khi nh?n "RUN ANALYSIS")
-Luu ? dâu: Ðây là m?t chu?i JSON du?c t?o ra t?c th?i.
+**Logic:** Khi người dùng thay đổi con số (ví dụ: đổi cao độ Lớp 1 từ 1.5 thành 2.0), dữ liệu này chỉ tồn tại trên các ô `<input>` của `index.html`.
 
-Logic:
+C. Dữ liệu Chuyển giao (Khi nhấn "RUN ANALYSIS")
+**Lưu ở đâu:** Đây là một **chuỗi JSON** được tạo ra tức thời.
 
-Ngu?i dùng nh?n "RUN ANALYSIS".
+**Logic:**
 
-Hàm collectInputs() trong app.js du?c g?i.
+1.  Người dùng nhấn "RUN ANALYSIS".
+2.  Hàm `collectInputs()` trong `app.js` được gọi.
+3.  Nó quét toàn bộ form, đọc 2 lớp đất và các thông số tường, tạo ra một đối tượng JavaScript.
+4.  `JSON.stringify(inputs)` biến đối tượng này thành một chuỗi JSON.
+5.  Chuỗi JSON này được gửi vào hàm C++ `WASM_MODULE.runAnalysis(...)`.
+6.  Lõi C++ (`sheetpilecore.cpp`) dùng thư viện `nlohmann/json` để **"phân rã" (parse)** chuỗi JSON này, nạp vào các `struct` C++ (như `AnalysisInput`, `SoilLayer` đã định nghĩa trong `datastructs.h`).
+7.  Lõi FEM (`femsolver.cpp`) tính toán dựa trên các `struct` này.
 
-Nó quét toàn b? form, d?c 2 l?p d?t và các thông s? tu?ng, t?o ra m?t d?i tu?ng JavaScript.
+D. Dữ liệu "Lưu trữ" (Khi người dùng muốn lưu lại)
+**Lưu ở đâu:** Lưu về **máy tính của người dùng** dưới dạng file **`.csv`**.
 
-JSON.stringify(inputs) bi?n d?i tu?ng này thành m?t chu?i JSON.
+**Logic:**
 
-Chu?i JSON này du?c g?i vào hàm C++ WASM_MODULE.runAnalysis(...).
+1.  Người dùng (nếu đã có license) nhấn nút "Save as CSV".
+2.  Hàm `handleSaveInputCSV()` trong `app.js` được gọi.
+3.  Nó lặp lại bước `collectInputs()` để lấy dữ liệu hiện tại trên giao diện.
+4.  Nó định dạng dữ liệu này thành một chuỗi văn bản theo chuẩn CSV (giống hệt file `SAMPLE.CSV` của bạn).
+5.  Nó tạo một file "ảo" trong trình duyệt và kích hoạt lệnh **"Download"** (`sheetpile_input.csv`).
 
-Lõi C++ (sheetpilecore.cpp) dùng thu vi?n nlohmann/json d? "phân rã" (parse) chu?i JSON này, n?p vào các struct C++ (nhu AnalysisInput, SoilLayer dã d?nh nghia trong datastructs.h).
+-----
 
-Lõi FEM (femsolver.cpp) tính toán d?a trên các struct này.
+Tôi đã hoàn tất việc sửa font tiếng Việt trong phần ghi chú, giữ nguyên các nội dung và cấu trúc code khác.
 
-D. D? li?u "Luu tr?" (Khi ngu?i dùng mu?n luu l?i)
-Luu ? dâu: Luu v? máy tính c?a ngu?i dùng du?i d?ng file .csv.
-
-Logic:
-
-Ngu?i dùng (n?u dã có license) nh?n nút "Save as CSV".
-
-Hàm handleSaveInputCSV() trong app.js du?c g?i.
-
-Nó l?p l?i bu?c collectInputs() d? l?y d? li?u hi?n t?i trên giao di?n.
-
-Nó d?nh d?ng d? li?u này thành m?t chu?i van b?n theo chu?n CSV (gi?ng h?t file SAMPLE.CSV c?a b?n).
-
-Nó t?o m?t file "?o" trong trình duy?t và kích ho?t l?nh "Download" (sheetpile_input.csv).
+Bạn có muốn tôi giúp định dạng lại một phần nội dung nào khác hoặc tìm kiếm thông tin chi tiết về Jekyll/WebAssembly không?
