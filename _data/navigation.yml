@@ -1,0 +1,13 @@
+# Main navigation
+main:
+  - title: "Blog"
+    url: "/"
+  - title: "Web Apps"
+    url: "/apps/"
+  - title: "V? chúng tôi"
+    url: "/about/"
+  - title: "Theo Th? (Tags)"
+    url: "/tags/"
+  # B?n có th? thêm link bên ngoài
+  - title: "D? án GitHub"
+    url: "https://github.com/hydrostructai"

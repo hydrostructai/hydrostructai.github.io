@@ -1,0 +1,83 @@
+# --- Thông tin Trang web (Site Info) ---
+title: "HydroStructAI"
+title_separator: "|" # Ký tự phân cách tiêu đề
+email: "your-email@example.com"
+description: "Blog kỹ thuật và Web App (WASM, FEM, AI) cho Kỹ thuật Xây dựng."
+url: "https://hydrostructai.github.io" # URL chính thức
+baseurl: "" # Để trống
+repository: "hydrostructai/hydrostructai.github.io"
+
+# --- Cấu hình Theme (Minimal Mistakes Setup) ---
+remote_theme: "mmistakes/minimal-mistakes"
+minimal_mistakes_skin: "air" # Giao diện màu. Thử: "default", "dark", "aqua", "neon"
+
+# --- Cấu hình Plugins ---
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-remote-theme
+  # - jekyll-paginate # (Nếu bạn cần phân trang)
+
+# --- Cấu hình Mặc định (Defaults) ---
+# Tự động gán layout và các tính năng cho bài viết/trang
+defaults:
+  # Áp dụng cho tất cả bài viết
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "single" # Layout chuẩn của MM
+      author_profile: true # Hiển thị sidebar tác giả
+      read_time: true # Hiển thị thời gian đọc
+      comments: true # Cho phép bình luận (cần cấu hình thêm)
+      share: true # Hiển thị nút chia sẻ
+      related: true # Hiển thị bài viết liên quan
+      toc: true # Tự động tạo mục lục
+      toc_sticky: true # Giữ mục lục khi cuộn
+  # Áp dụng cho tất cả các trang
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "single" # Dùng chung layout "single"
+      author_profile: true # Hiển thị sidebar tác giả
+
+# --- Cấu hình Tác giả (Author Sidebar) ---
+# Thông tin này sẽ hiển thị ở sidebar bên trái
+author:
+  name: "Tên Kỹ sư của bạn"
+  avatar: "/assets/images/my-avatar.png" # Cập nhật ảnh của bạn
+  bio: "Kỹ sư Địa kỹ thuật & Lập trình viên. Đam mê FEM, WASM và AI."
+  location: "Hanoi, Vietnam"
+  links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:your-email@example.com"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/hydrostructai"
+    - label: "LinkedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://linkedin.com/in/your-profile"
+    # Thêm các link khác nếu muốn
+
+# --- Cấu hình Tính năng Theme ---
+search: true # Bật tính năng tìm kiếm tích hợp
+analytics:
+  provider: "google-gtag" # Bật Google Analytics
+  google:
+    tracking_id: "G-XXXXXXXXXX" # Thay bằng ID của bạn
+    anonymize_ip: false
+
+# --- Cấu trúc Build ---
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# --- Loại trừ ---
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md

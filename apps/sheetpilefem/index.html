@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SheetPileFEM-WASM - (hydrostructai.github.io)</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #f8f9fa; /* Light gray background */
+        }
+        .chart-container {
+            height: 400px; /* Fixed height for charts */
+        }
+        .table-responsive {
+            max-height: 300px; /* Scrollable tables */
+        }
+        /* Make table headers sticky */
+        .table-responsive thead th {
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 1;
+        }
+        /* Hide output section by default */
+        #output-section {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-dark bg-dark shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                SheetPileFEM
+                <small class="text-muted" style="font-size: 0.6em;">(WASM Core by hydrostructai)</small>
+            </a>
+        </div>
+    </nav>
+
+    <main class="container my-4">
+
+        <section id="input-section" class="card shadow-lg mb-4">
+            <div class="card-header p-3">
+                <h4 class="mb-0">Input Parameters</h4>
+            </div>
+            <div class="card-body">
+                
+                <ul class="nav nav-tabs" id="inputTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="tab-license" data-bs-toggle="tab" data-bs-target="#content-license" type="button">1. Project & License</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-wall" data-bs-toggle="tab" data-bs-target="#content-wall" type="button">2. Wall & Geometry</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-soil" data-bs-toggle="tab" data-bs-target="#content-soil" type="button">3. Soil Layers</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-anchors" data-bs-toggle="tab" data-bs-target="#content-anchors" type="button">4. Anchors & Surcharge</button>
+                    </li>
+                </ul>
+
+                <div class="tab-content p-3 border border-top-0" id="inputTabContent">
+                    
+                    <div class="tab-pane fade show active" id="content-license" role="tabpanel">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="inp-project-name" class="form-label">Project Name</label>
+                                <input type="text" class="form-control" id="inp-project-name" value="Sample Project">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="inp-engineer-name" class="form-label">Engineer</label>
+                                <input type="text" class="form-control" id="inp-engineer-name" value="Engineer Name">
+                            </div>
+                        </div>
+                        <hr>
+                        <h5 class="text-danger">License Verification</h5>
+                        <p class="text-muted small">A valid license is required to run analysis. Time check is required to prevent clock tampering.</p>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="inp-license-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="inp-license-email" placeholder="your-email@example.com">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="inp-license-key" class="form-label">License Key</label>
+                                <input type="text" class="form-control" id="inp-license-key" placeholder="XXXX-XXXX-XXXX-XXXX">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="content-wall" role="tabpanel">
+                        <div class="row g-3">
+                            <div class="col-md-4"><label class="form-label">Wall Top (m)</label><input type="number" class="form-control" id="inp-wall_top" value="2.0"></div>
+                            <div class="col-md-4"><label class="form-label">Wall Bottom (m)</label><input type="number" class="form-control" id="inp-wall_bottom" value="-22.0"></div>
+                            <div class="col-md-4"><label class="form-label">Ground (Behind) (m)</label><input type="number" class="form-control" id="inp-ground_behind" value="1.5"></div>
+                            <div class="col-md-4"><label class="form-label">Ground (Front) (m)</label><input type="number" class="form-control" id="inp-ground_front" value="-5.0"></div>
+                            <div class="col-md-4"><label class="form-label">Water (Behind) (m)</label><input type="number" class="form-control" id="inp-water_behind" value="0.5"></div>
+                            <div class="col-md-4"><label class="form-label">Water (Front) (m)</label><input type="number" class="form-control" id="inp-water_front" value="-2.0"></div>
+                            <hr class="my-2">
+                            <div class="col-md-4"><label class="form-label">E (kN/m²)</label><input type="number" class="form-control" id="inp-E" value="3.5e7"></div>
+                            <div class="col-md-4"><label class="form-label">I (m4/m)</label><input type="number" class="form-control" id="inp-I" value="0.0076"></div>
+                            <div class="col-md-4">
+                                <label class="form-label">Pressure Theory</label>
+                                <select class="form-select" id="inp-pressure_theory">
+                                    <option>Rankine</option>
+                                    <option>Coulomb</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="content-soil" role="tabpanel">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Top Elev (m)</th>
+                                        <th>Gamma (kN/m³)</th>
+                                        <th>Sat. Gamma (kN/m³)</th>
+                                        <th>Phi (deg)</th>
+                                        <th>Cohesion (kPa)</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-soil-body">
+                                    </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-add-soil-row">Add Soil Layer</button>
+                    </div>
+
+                    <div class="tab-pane fade" id="content-anchors" role="tabpanel">
+                        <h6>Anchor System</h6>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Elevation (m)</th>
+                                        <th>Slope (deg)</th>
+                                        <th>Stiffness (kN/m/m)</th>
+                                        <th>Section</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-anchor-body">
+                                    </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-add-anchor-row">Add Anchor</button>
+                        </div>
+                </div>
+            </div>
+
+            <div class="card-footer p-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <input type="file" id="file-importer" accept=".csv,.xlsx,.txt" style="display: none;">
+                    <button class="btn btn-sm btn-outline-secondary" id="btn-import">Import from CSV/Excel</button>
+                    <button class="btn btn-sm btn-outline-secondary" id="btn-save-csv">Save as CSV</button>
+                </div>
+                <div>
+                    <span id="status-message" class="text-muted me-3">Ready.</span>
+                    <button class="btn btn-lg btn-success" id="btn-run-analysis">
+                        RUN ANALYSIS
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="output-section" class="card shadow-lg mb-4">
+            <div class="card-header p-3">
+                <h4 class="mb-0">Analysis Results</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-6 mb-3">
+                        <div id="chart-geom" class="chart-container border rounded"></div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div id="chart-deflection" class="chart-container border rounded"></div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div id="chart-moment" class="chart-container border rounded"></div>
+                    </div>
+                    <div class="col-lg-6 mb-3">
+                        <div id="chart-shear" class="chart-container border rounded"></div>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+                
+                <h5>Result Summary</h5>
+                <div id="table-summary-container">
+                    </div>
+
+                <h5 class="mt-4">Detailed Results</h5>
+                <button class="btn btn-sm btn-outline-secondary" id="btn-save-results-csv">Save Table to CSV</button>
+                <div class="table-responsive mt-2">
+                    <table class="table table-sm table-striped table-hover">
+                        <thead class="table-dark" id="table-results-header">
+                            </thead>
+                        <tbody id="table-results-body">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="text-center text-muted p-4">
+        <small>&copy; 2025 hydrostructai.github.io. All rights reserved.</small>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script src="sheetpilefem.js"></script>
+    
+    <script src="app.js"></script>
+
+</body>
+</html>
