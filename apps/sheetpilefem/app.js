@@ -59,7 +59,7 @@
         // Output Section
         outputSection: document.getElementById('output-section'),
         chartGeom: document.getElementById('chart-geom'),
-        // B? SUNG: Thêm ID bi?u d? áp l?c d?t
+        // B? SUNG: ThÃªm ID bi?u d? Ã¡p l?c d?t
         chartPressure: document.getElementById('chart-pressure'),
         chartDeflection: document.getElementById('chart-deflection'),
         chartMoment: document.getElementById('chart-moment'),
@@ -85,7 +85,7 @@
             { param: 'I', value: 0.0076 },
             { param: 'pressure_theory', value: 'Rankine' },
         ],
-        // CH? HI?N TH? 2 L?P Ð?T M?C Ð?NH
+        // CH? HI?N TH? 2 L?P Ã?T M?C Ã?NH
         soil: [
             // Name, Top Elev, Gamma, Gamma_Sat, Phi, Cohesion
             ['Lop 1 (Cat pha)', 1.5, 18.0, 19.0, 30, 2],
@@ -683,7 +683,7 @@
         plotGeometryChart(results, inputs);
         plotStandardCharts(results);
         
-        // B? SUNG: G?i hàm v? bi?u d? áp l?c d?t
+        // B? SUNG: G?i hÃ m v? bi?u d? Ã¡p l?c d?t
         plotPressureChart(results); 
         
         // 2. Populate Tables
@@ -722,17 +722,17 @@
     }
 
     /**
-     * B? SUNG: V? bi?u d? Áp l?c Ð?t
+     * B? SUNG: V? bi?u d? Ãp l?c Ã?t
      * @param {Array} results M?ng d?i tu?ng ResultNode.
      */
     function plotPressureChart(results) {
         const elev = results.map(r => r.elevation);
         
-        // Gi? d?nh các thu?c tính này t?n t?i trong d?i tu?ng 'results' tr? v? t? WASM
-        // Tính t?ng áp l?c ch? d?ng (d?t + nu?c)
+        // Gi? d?nh cÃ¡c thu?c tÃ­nh nÃ y t?n t?i trong d?i tu?ng 'results' tr? v? t? WASM
+        // TÃ­nh t?ng Ã¡p l?c ch? d?ng (d?t + nu?c)
         const active_total = results.map(r => (r.pressure_active_kPa || 0) + (r.pressure_water_behind_kPa || 0));
         
-        // Tính t?ng áp l?c b? d?ng (d?t + nu?c) và nhân v?i -1 d? v? sang bên trái
+        // TÃ­nh t?ng Ã¡p l?c b? d?ng (d?t + nu?c) vÃ  nhÃ¢n v?i -1 d? v? sang bÃªn trÃ¡i
         const passive_total = results.map(r => -((r.pressure_passive_kPa || 0) + (r.pressure_water_front_kPa || 0)));
 
         const traceActive = {
@@ -740,9 +740,9 @@
             y: elev,
             type: 'scatter',
             mode: 'lines',
-            name: 'Áp l?c Ch? d?ng (T? h?p)',
-            fill: 'tozerox', // Tô màu t? du?ng line v? tr?c X=0
-            fillcolor: 'rgba(214, 39, 40, 0.2)', // Màu d? nh?t (Plotly default red)
+            name: 'Ãp l?c Ch? d?ng (T? h?p)',
+            fill: 'tozerox', // TÃ´ mÃ u t? du?ng line v? tr?c X=0
+            fillcolor: 'rgba(214, 39, 40, 0.2)', // MÃ u d? nh?t (Plotly default red)
             line: { color: 'rgba(214, 39, 40, 0.6)' }
         };
 
@@ -751,16 +751,16 @@
             y: elev,
             type: 'scatter',
             mode: 'lines',
-            name: 'Áp l?c B? d?ng (T? h?p)',
-            fill: 'tozerox', // Tô màu t? du?ng line v? tr?c X=0
-            fillcolor: 'rgba(31, 119, 180, 0.2)', // Màu xanh nh?t (Plotly default blue)
+            name: 'Ãp l?c B? d?ng (T? h?p)',
+            fill: 'tozerox', // TÃ´ mÃ u t? du?ng line v? tr?c X=0
+            fillcolor: 'rgba(31, 119, 180, 0.2)', // MÃ u xanh nh?t (Plotly default blue)
             line: { color: 'rgba(31, 119, 180, 0.6)' }
         };
         
         const layout = {
-            title: 'Bi?u d? Áp l?c d?t (T? h?p)',
+            title: 'Bi?u d? Ãp l?c d?t (T? h?p)',
             xaxis: { 
-                title: 'Áp l?c (kPa)', 
+                title: 'Ãp l?c (kPa)', 
                 zeroline: true, 
                 zerolinewidth: 2, 
                 zerolinecolor: '#000' 
@@ -799,7 +799,7 @@
                 type: 'rect',
                 xref: 'paper', x0: 0, x1: 1, // Full width
                 y0: bottom, y1: top,
-                fillcolor: `rgba(150, 150, 150, ${0.1 + (i*0.05)})`, // Thay d?i màu ng?u nhiên
+                fillcolor: `rgba(150, 150, 150, ${0.1 + (i*0.05)})`, // Thay d?i mÃ u ng?u nhiÃªn
                 line: { width: 0 }
             });
             // Add layer name
@@ -842,7 +842,7 @@
         inputs.anchors.forEach(anchor => {
              annotations.push({
                 x: 0, y: anchor.elevation,
-                text: `? Anchor ${anchor.id}`, // Thay d?i ký t?
+                text: `? Anchor ${anchor.id}`, // Thay d?i kÃ½ t?
                 showarrow: true, ax: -30, ay: 0,
                 font: { color: 'red' }
             });
@@ -913,7 +913,7 @@
                 let val = row[h];
                 // Format numbers
                 if (typeof val === 'number') {
-                    // B? SUNG: Làm tròn t?t hon, d?c bi?t cho các giá tr? r?t nh?
+                    // B? SUNG: LÃ m trÃ²n t?t hon, d?c bi?t cho cÃ¡c giÃ¡ tr? r?t nh?
                     if (Math.abs(val) > 100) {
                          td.textContent = val.toFixed(1);
                     } else if (Math.abs(val) > 0.1) {
