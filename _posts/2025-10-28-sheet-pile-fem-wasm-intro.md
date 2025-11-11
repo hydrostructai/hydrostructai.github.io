@@ -32,16 +32,13 @@ Phương pháp Phần tử Hữu hạn (FEM) cung cấp một mô hình phân t�
 
 Vấn đề là, các phần mềm FEM chuyên dụng (như Plaxis, GeoStudio, Midas) thường rất đắt đỏ, nặng nề và đòi hỏi cấu hình máy tính mạnh mẽ.
 
-### 3. SheetPileFEM-WASM: Mang FEM lên Trình duyệt
+### 3. SheetPileFEM: Mang FEM lên Trình duyệt
 
 Với mong muốn dân chủ hóa các công cụ phân tích kỹ thuật, chúng tôi đã phát triển **SheetPileFEM** — một ứng dụng web gọn nhẹ nhưng mạnh mẽ để phân tích tường cừ ván.
 
 
-
-"WASM" là viết tắt của **WebAssembly**. Đây là một công nghệ đột phá cho phép chạy các đoạn mã được biên dịch từ C++, Rust, hay Fortran (ngôn ngữ của các lõi FEM truyền thống) với tốc độ gần-như-native ngay trên trình duyệt web của bạn.
-
 **Điều này có nghĩa là gì?**
-Chúng tôi đã gói gọn một lõi tính toán FEM địa kỹ thuật vào WASM và bạn có thể chạy nó trên mọi thiết bị, từ PC đến điện thoại, mà **không cần cài đặt bất cứ thứ gì**.
+Chúng tôi đã gói gọn một lõi tính toán FEM địa kỹ thuật lên trang Web và bạn có thể chạy nó trên mọi thiết bị, từ PC đến điện thoại, mà **không cần cài đặt bất cứ thứ gì**.
 
 ### 4. Các tính năng chính (Phiên bản Miễn phí)
 
