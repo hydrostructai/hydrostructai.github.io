@@ -99,13 +99,23 @@
         setStatus('Loading C++/WASM Core...', 'text-muted');
         
         // Tải module WASM
-        SheetPileFEM({
+        //SheetPileFEM({
+        //    locateFile: (path, prefix) => {
+        //        if (path.endsWith('.wasm')) {
+        //            return prefix + path.replace(".js", ".wasm");
+        //        }
+        //        return prefix + path;
+        //    }
+        
+        // Tải module WASM
+        SheetPileFEM_Module({ // <-- THÊM "_Module" VÀO ĐÂY
             locateFile: (path, prefix) => {
                 if (path.endsWith('.wasm')) {
                     return prefix + path.replace(".js", ".wasm");
                 }
                 return prefix + path;
             }
+
         }).then(module => {
             App.WASM_MODULE = module;
             
