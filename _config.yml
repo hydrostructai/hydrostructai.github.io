@@ -14,14 +14,15 @@ remote_theme: "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "air" # Giao diện màu. Thử: "default", "dark", "aqua", "neon"
 
 # --- Cấu hình Plugins (ĐÃ SỬA LỖI BUILD) ---
+# --- Cấu hình Plugins (ĐÃ SỬA LỖI BUILD) ---
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-  # - jekyll-remote-theme   # <-- XÓA DÒNG NÀY
-  - jekyll-paginate        # <-- Bật plugin này để trang chủ 'home' hoạt động
-  - jekyll-include-cache   # <-- THÊM DÒNG NÀY ĐỂ FIX LỖI 'include_cached'
-# ... (Giữ nguyên các cấu hình khác bên dưới)
+  - jekyll-remote-theme   # <-- BẬT LẠI DÒNG NÀY (BẮT BUỘC)
+  - jekyll-paginate
+  - jekyll-include-cache
+
 
 
 # --- Cấu hình Phân trang (Bắt buộc cho layout 'home') ---
