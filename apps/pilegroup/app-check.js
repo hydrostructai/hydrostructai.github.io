@@ -159,11 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
         [-1.60, 2.70, 0.165, 3.141593], [-1.60, 1.65, 0.165, 3.141593], [-1.60, 0.60, 0.165, 3.141593],
         [-1.60, -0.60, 0.165, 3.141593], [-1.60, -1.65, 0.165, 3.141593], [-1.60, -2.70, 0.165, 3.141593],
         [-0.60, -2.70, 0.0, 0.0], [-0.60, -1.65, 0.0, 0.0], [-0.60, -0.60, 0.0, 0.0],
-        [-0.60, 0.60, 0.0, 0.0], [-0.60, 1.65, 0.0, 0.0], [-0.60, 2.70, 0.0, 0.0],
-        [0.60, 2.70, 0.0, 0.0], [0.60, 1.65, 0.0, 0.0], [0.60, 0.60, 0.0, 0.0],
-        [0.60, -0.60, 0.0, 0.0], [0.60, -1.65, 0.0, 0.0], [0.60, -2.70, 0.0, 0.0],
-        [1.60, -2.70, 0.165, 0.0], [1.60, -1.65, 0.165, 0.0], [1.60, -0.60, 0.165, 0.0],
-        [1.60, 0.60, 0.165, 0.0], [1.60, 1.65, 0.165, 0.0], [1.60, 2.70, 0.165, 0.0],
+        [-0.60, 0.60, 0.0, 0.0]
     ];
 
     // Gắn sự kiện cho nút "Tải dữ liệu mẫu"
@@ -172,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Hàm tải dữ liệu mẫu
     function loadSampleData() {
         // Tải dữ liệu tab "Vật liệu"
-        document.getElementById('input-E').value = 2800000;
+        document.getElementById('input-E').value = 28000000;
         document.getElementById('input-F').value = 0.1225;
         document.getElementById('input-Icoc').value = 0.00125;
         document.getElementById('input-D').value = 0.35;
@@ -182,19 +178,19 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('input-By').value = 9;
         
         // Tải dữ liệu tab "Đất nền"
-        document.getElementById('input-m').value = 600;
-        document.getElementById('input-mchan').value = 800;
-        document.getElementById('input-Rdat').value = 680;
+        document.getElementById('input-m').value = 6000;
+        document.getElementById('input-mchan').value = 8000;
+        document.getElementById('input-Rdat').value = 6800;
         document.getElementById('select-dieu-kien-mui').value = 'K';
         soilTableBody.innerHTML = ''; // Xóa bảng đất cũ
         sampleSoilData.forEach(addSoilRow); // Thêm dữ liệu đất mẫu
         
         // Tải dữ liệu tab "Tải trọng"
-        document.getElementById('input-Hx').value = 20.2;
-        document.getElementById('input-Hy').value = 72.0;
-        document.getElementById('input-Pz').value = 1250.06;
-        document.getElementById('input-Mx').value = 934.4;
-        document.getElementById('input-My').value = 361.9;
+        document.getElementById('input-Hx').value = 200.2;
+        document.getElementById('input-Hy').value = 720.0;
+        document.getElementById('input-Pz').value = 12500.06;
+        document.getElementById('input-Mx').value = 9340.4;
+        document.getElementById('input-My').value = 3610.9;
         document.getElementById('input-Mz').value = 0.0;
 
         // Tải dữ liệu tab "Bố trí cọc"

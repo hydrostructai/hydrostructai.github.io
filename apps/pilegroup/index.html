@@ -108,8 +108,8 @@
                                 <h5>Thông số Cọc</h5>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="form-label">E (T/m2)</label>
-                                        <input type="number" class="form-control" id="input-E" value="2800000">
+                                        <label class="form-label">E (kN/m2)</label>
+                                        <input type="number" class="form-control" id="input-E" value="28000000">
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label">F (m2)</label>
@@ -149,16 +149,16 @@
                                 <h5>Điều kiện nền</h5>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="form-label">m (T/m4)</label>
-                                        <input type="number" class="form-control" id="input-m" value="600">
+                                        <label class="form-label">m (kN/m4)</label>
+                                        <input type="number" class="form-control" id="input-m" value="6000">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">m_chan (T/m4)</label>
-                                        <input type="number" class="form-control" id="input-mchan" value="800">
+                                        <label class="form-label">m_chan (kN/m4)</label>
+                                        <input type="number" class="form-control" id="input-mchan" value="8000">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Rdat (T/m2)</label>
-                                        <input type="number" class="form-control" id="input-Rdat" value="680">
+                                        <label class="form-label">Rdat (kN/m2)</label>
+                                        <input type="number" class="form-control" id="input-Rdat" value="6800">
                                     </div>
                                 </div>
                                 <div class="row g-3 mt-2">
@@ -193,27 +193,27 @@
                                 <h5>Tải trọng tại đáy bệ (T, T.m)</h5>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="form-label">Hx (T)</label>
-                                        <input type="number" class="form-control" id="input-Hx" value="20.2">
+                                        <label class="form-label">Hx (kN)</label>
+                                        <input type="number" class="form-control" id="input-Hx" value="200.2">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Hy (T)</label>
-                                        <input type="number" class="form-control" id="input-Hy" value="72.0">
+                                        <label class="form-label">Hy (kN)</label>
+                                        <input type="number" class="form-control" id="input-Hy" value="720.0">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Pz (T)</label>
-                                        <input type="number" class="form-control" id="input-Pz" value="1250.06">
+                                        <label class="form-label">Pz (kN)</label>
+                                        <input type="number" class="form-control" id="input-Pz" value="12500.06">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Mx (T.m)</label>
-                                        <input type="number" class="form-control" id="input-Mx" value="934.4">
+                                        <label class="form-label">Mx (kN.m)</label>
+                                        <input type="number" class="form-control" id="input-Mx" value="9340.4">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">My (T.m)</label>
-                                        <input type="number" class="form-control" id="input-My" value="361.9">
+                                        <label class="form-label">My (kN.m)</label>
+                                        <input type="number" class="form-control" id="input-My" value="3610.9">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Mz (T.m)</label>
+                                        <label class="form-label">Mz (kN.m)</label>
                                         <input type="number" class="form-control" id="input-Mz" value="0.0">
                                     </div>
                                 </div>
@@ -247,7 +247,7 @@
                                     </table>
                                 </div>
                                 <button class="btn btn-sm btn-info mt-2" id="load-sample-data">
-                                    <i class="bi bi-clipboard-data"></i> Tải dữ liệu mẫu (24 cọc)
+                                    <i class="bi bi-clipboard-data"></i> Tải dữ liệu mẫu (10 cọc)
                                 </button>
                             </div>
                         </div>
@@ -298,12 +298,12 @@
                                         <thead>
                                             <tr>
                                                 <th>Cọc số</th>
-                                                <th>N (T)</th>
-                                                <th>QII (T)</th>
-                                                <th>QIII (T)</th>
-                                                <th>MI (T.m)</th>
-                                                <th>MII (T.m)</th>
-                                                <th>MIII (T.m)</th>
+                                                <th>N (kN)</th>
+                                                <th>QII (kN)</th>
+                                                <th>QIII (kN)</th>
+                                                <th>MI (kN.m)</th>
+                                                <th>MII (kN.m)</th>
+                                                <th>MIII (kN.m)</th>
                                             </tr>
                                         </thead>
                                         <tbody id="forces-results-body">
