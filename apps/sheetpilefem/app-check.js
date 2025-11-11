@@ -99,23 +99,16 @@
         setStatus('Loading C++/WASM Core...', 'text-muted');
         
         // Tải module WASM
-        //SheetPileFEM({
-        //    locateFile: (path, prefix) => {
-        //        if (path.endsWith('.wasm')) {
-        //            return prefix + path.replace(".js", ".wasm");
-        //        }
-        //        return prefix + path;
-        //    }
-        
-        // Tải module WASM
-        SheetPileFEM_Module({ // <-- THÊM "_Module" VÀO ĐÂY
+        // SỬA LỖI 2: Thay "SheetPileFEM" bằng "SheetPileFEM_Module"
+        SheetPileFEM_Module({
             locateFile: (path, prefix) => {
                 if (path.endsWith('.wasm')) {
-                    return prefix + path.replace(".js", ".wasm");
+                    // Giả sử .wasm nằm cùng cấp với .js
+                    // Sửa đường dẫn nếu .wasm nằm trong thư mục con
+                    return prefix + path.replace(".js", ".wasm"); 
                 }
                 return prefix + path;
             }
-
         }).then(module => {
             App.WASM_MODULE = module;
             
@@ -133,7 +126,12 @@
 
         }).catch(err => {
             console.error("WASM Load Error:", err);
-            setStatus('FATAL: WASM Core failed to load.', 'text-danger');
+            // Sửa lỗi tham chiếu sheetpilefem.js
+            if (err.message.includes("SheetPileFEM_Module is not defined")) {
+                 setStatus('FATAL: sheetpilefem.js failed to load.', 'text-danger');
+            } else {
+                 setStatus('FATAL: WASM Core failed to load.', 'text-danger');
+            }
         });
 
         // Gán tất cả các trình nghe sự kiện
@@ -185,19 +183,29 @@
         const key = App.dom.inpKey.value;
         
         let serverTime;
+        // SỬA LỖI 3: Lấy clientTime trước phòng trường hợp fetch lỗi
+        const clientTime = new Date().getTime(); 
+
         try {
             const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
             if (!response.ok) throw new Error('Network response was not ok.');
             const data = await response.json();
             serverTime = new Date(data.utc_datetime).getTime();
         } catch (e) {
-            console.error("Time API fetch error:", e);
-            handleError("ERROR_TIME_API_FAILED");
-            App.dom.btnCheckLicense.disabled = false;
-            return;
+            // --- SỬA LỖI 3: BẮT ĐẦU ---
+            // Nếu fetch lỗi (ERR_CONNECTION_RESET), thay vì dừng,
+            // chúng ta cảnh báo và sử dụng clientTime làm serverTime.
+            console.warn("Time API fetch error:", e);
+            console.warn("Could not connect to worldtimeapi.org. Bypassing server time check (INSECURE).");
+            
+            // CẢNH BÁO: Đây là giải pháp KHÔNG an toàn, nó cho phép người dùng
+            // thay đổi đồng hồ hệ thống để qua mặt việc kiểm tra hết hạn.
+            serverTime = clientTime; 
+            
+            // Không gọi handleError hay return, để mã tiếp tục chạy
+            // --- SỬA LỖI 3: KẾT THÚC ---
         }
-
-        const clientTime = new Date().getTime();
+        
         const licenseResult = App.WASM_MODULE.validateLicense(email, key, serverTime, clientTime);
 
         // Xử lý 4 kịch bản
@@ -381,7 +389,7 @@
                 message = "Critical Error: The call to the WASM module failed.";
                 break;
             
-            // --- BỔ SUNG MÃ LỖI MỚI ---
+            // --- BỔ SUNG MÃ LỖI MỚI (Từ lần sửa trước) ---
             case "ERROR_PRO_ANALYSIS_DENIED":
                 message = `Trial Mode Limit: Analysis with more than 2 soil layers or 0 anchors requires a valid license.`;
                 break;

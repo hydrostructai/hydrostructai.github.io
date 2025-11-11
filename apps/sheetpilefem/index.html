@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SheetPileFEM-WASM - (hydrostructai.github.io)</title>
+    <title>Sheet Pile FEM</title>
+    
+    <link rel="icon" href="data:,">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
@@ -74,11 +76,11 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="inp-project-name" class="form-label">Tên Dự án</label>
-                                <input type="text" class="form-control" id="inp-project-name" value="Dự án">
+                                <input type="text" class="form-control" id="inp-project-name" value="Dự án Mẫu">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="inp-engineer-name" class="form-label">Kỹ sư</label>
-                                <input type="text" class="form-control" id="inp-engineer-name" value="Kỹ sư">
+                                <input type="text" class="form-control" id="inp-engineer-name" value="Tên Kỹ sư">
                             </div>
                         </div>
                         <hr>
@@ -86,16 +88,15 @@
                         <p class="text-muted small">Cần có giấy phép hợp lệ để mở khóa các tính năng nâng cao (thêm lớp đất, neo, tải trọng). Nút "Chạy Phân tích" luôn hoạt động ở chế độ Dùng thử (2 lớp đất, không neo).</p>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="inp-license-email" class="form-label">Email</label>
+                                <label for="inp-license-email" class="form-label">Email Đăng ký</label>
                                 <input type="email" class="form-control" id="inp-license-email" placeholder="email-dang-ky@example.com">
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label for="inp-license-key" class="form-label">License Key</label>
+                                <label for="inp-license-key" class="form-label">Khóa Giấy phép (License Key)</label>
                                 <input type="text" class="form-control" id="inp-license-key" placeholder="XXXX-XXXX-XXXX-XXXX">
                             </div>
                         </div>
-                        <!-- SỬA LỖI: Gán ID cho nút kiểm tra license -->
-                        <button class="btn btn-primary" id="btn-check-license">Check License</button>
+                        <button class="btn btn-primary" id="btn-check-license">Kiểm tra Giấy phép</button>
                     </div>
 
                     <div class="tab-pane fade" id="content-wall" role="tabpanel">
@@ -245,26 +246,20 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script src="https://cdn.plot.ly/plotly-2.33.0.min.js"></script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/paparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script src="sheetpilefem.js"></script>
     
-    <!-- === LOGIC ĐÃ ĐƯỢC TÁI CẤU TRÚC === -->
-    <!-- Xóa file app.js cũ -->
-    <!-- <script src="app.js"></script> -->
-
-    <!-- Tạo một không gian tên (namespace) chung -->
     <script>
         var SheetPileApp = {};
     </script>
     
-    <!-- Tải các module mới theo thứ tự -->
     <script src="app-check.js"></script>
     <script src="app-cal.js"></script>
     <script src="app-out.js"></script>
-    <!-- =================================== -->
-
-</body>
+    </body>
 </html>
