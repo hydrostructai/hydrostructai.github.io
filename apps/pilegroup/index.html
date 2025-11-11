@@ -3,352 +3,478 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bệ cọc đài cao (Pile Group 3D)</title>
+    <title>Pile Group Analysis (Bệ cọc)</title>
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     
     <style>
-        body { background-color: #f0f2f5; }
-        .card { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .nav-tabs .nav-link { color: #495057; }
-        .nav-tabs .nav-link.active {
-            background-color: #0d6efd;
-            color: white;
-            border-bottom-color: #0d6efd;
+        body { background-color: #f8f9fa; }
+        .wrapper { display: flex; width: 100%; align-items: stretch; }
+
+        /* --- Cấu hình Sidebar --- */
+        #sidebar {
+            min-width: 280px;
+            max-width: 280px;
+            background: #343a40; color: #fff;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
         }
-        /* Tùy chỉnh input trong bảng */
-        #pile-table-body input, #soil-layer-body input {
+        #sidebar .sidebar-header {
+            padding: 20px; background: #212529; text-align: center;
+            flex-shrink: 0;
+        }
+        #sidebar ul.components {
+            padding: 20px 0;
+            border-bottom: 1px solid #474747;
+            overflow-y: auto; 
+        }
+        #sidebar ul li a {
+            padding: 10px 20px; font-size: 1.1em; display: block;
+            color: #adb5bd; text-decoration: none; transition: all 0.3s;
+        }
+        #sidebar ul li a:hover { color: #ffffff; background: #495057; }
+        #sidebar ul li.active > a, a[aria-expanded="true"] { color: #fff; background: #007bff; }
+        #sidebar .sidebar-controls {
+            padding: 15px 20px 0 20px; flex-shrink: 0;
+        }
+        #sidebar .sidebar-footer {
+            padding: 20px; flex-shrink: 0; margin-top: auto; 
+        }
+
+        /* --- Cấu hình Content --- */
+        #content {
+            width: 100%; padding: 20px; min-height: 100vh;
+            transition: all 0.3s; margin-left: 280px; 
+        }
+        #content > .content-section { display: none; }
+        #content > .content-section.active { display: block; }
+        .table-responsive { display: block; width: 100%; overflow-x: auto; }
+        
+        /* Style cho kết quả */
+        #noi_luc_coc_table table { font-size: 0.85rem; }
+        #noi_luc_coc_table th, #noi_luc_coc_table td { padding: 0.25rem 0.5rem; }
+        
+        #pile-cap-canvas {
             width: 100%;
-            border: 1px solid #ddd;
-            padding: 4px;
-            border-radius: 4px;
+            height: 400px;
+            border: 1px solid #ccc;
+            background-color: #fff;
         }
-        #pile-table-body input:focus, #soil-layer-body input:focus {
-            outline: none;
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 2px rgba(13,110,253,.25);
-        }
-        /* Container kết quả (ẩn ban đầu) */
-        #results-container { display: none; }
-        /* Kiểu chữ cho kết quả kiểm toán */
-        .status-success { color: #198754; font-weight: bold; }
-        .status-fail { color: #dc3545; font-weight: bold; }
-        /* Ẩn spinner */
-        .spinner-border { display: none; }
-        /* Ẩn input file gốc */
-        #csv-file-input { display: none; }
-        /* Bảng cuộn */
-        .table-scroll-container {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .table-scroll-container thead th {
-            position: sticky;
-            top: 0;
-            background-color: #f8f9fa;
-        }
+        .status-success { color: green; font-weight: bold; }
+        .status-fail { color: red; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div class="container my-4">
-        <div class="row">
-            <div class="col-lg-3 mb-4">
-                <div class="card p-3 sticky-top" style="top: 1rem;">
-                    <h4><i class="bi bi-rocket-takeoff-fill text-primary"></i> Điều khiển</h4>
-                    <hr>
-                    <div class="mb-3">
-                        <label for="license-key" class="form-label">License Key</label>
-                        <input type="text" class="form-control form-control-sm" id="license-key" placeholder="Bỏ trống nếu dùng thử">
-                        <div class="form-text" id="license-status-text">Bản dùng thử giới hạn 10 cọc.</div>
-                    </div>
-                    <button class="btn btn-primary w-100" id="check-license-button">
-                        <i class="bi bi-patch-check"></i> Kiểm tra Key
-                    </button>
-                    <hr>
-                    <button class="btn btn-lg btn-success w-100" id="calculate-button" disabled>
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="calc-spinner"></span>
-                        <i class="bi bi-calculator"></i> Run Analysis
-                    </button>
-                    
-                    <div class="alert alert-info mt-3" id="wasm-status">
-                        <div class="d-flex align-items-center">
-                            <div class="spinner-border text-primary me-2" role="status" id="wasm-spinner"></div>
-                            <span>Đang tải lõi tính toán (Wasm)...</span>
-                        </div>
-                    </div>
-                    <div class="alert alert-danger mt-3" id="error-message" style="display: none;"></div>
-                </div>
+
+<div class="wrapper">
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Pile Group (Bệ cọc)</h3>
+            <strong>PG</strong>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li class="active">
+                <a href="#" class="sidebar-link" data-target="div_vat_lieu">
+                    <i class="fas fa-ruler-combined"></i> Vật liệu & Cọc
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_dat_nen">
+                    <i class="fas fa-layer-group"></i> Thông số Đất nền
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_be_coc">
+                    <i class="fas fa-cube"></i> Kích thước Bệ
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_coc">
+                    <i class="fas fa-th"></i> Vị trí Cọc
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_tai_trong">
+                    <i class="fas fa-truck-loading"></i> Tải trọng tại Đài
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_license">
+                    <i class="fas fa-id-card"></i> Bản quyền
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-controls">
+            <button class="btn btn-primary btn-block" id="btn-check-license-sidebar">
+                <i class="fas fa-check-circle"></i> Check License
+            </button>
+            <button class="btn btn-info btn-block mt-2" id="btn-export-report" disabled>
+                <i class="fas fa-file-export"></i> Export CSV
+            </button>
+        </div>
+        
+        <div class="sidebar-footer">
+             <button class="btn btn-success btn-block" id="btn-run-analysis">
+                <i class="fas fa-play"></i> Run Analysis
+            </button>
+            <div class="text-center mt-2">
+                <small>&copy; 2025 KSTN</small>
             </div>
+        </div>
+    </nav>
+    <div id="content">
 
-            <div class="col-lg-9">
-                <div class="card">
-                    <div class="card-header">
-                        <h3 class="mb-0">Bệ cọc đài cao 3D (Zavriev-Spiro)</h3>
+        <div id="div_vat_lieu" class="content-section">
+            <h2><i class="fas fa-ruler-combined"></i> Vật liệu & Thông số Cọc</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Modul đàn hồi (E, kN/m²):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-E" value="30000000"></div>
                     </div>
-                    <div class="card-body">
-                        <ul class="nav nav-tabs" id="inputTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="tab-material" data-bs-toggle="tab" data-bs-target="#content-material" type="button">1. Vật liệu</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-soil" data-bs-toggle="tab" data-bs-target="#content-soil" type="button">2. Đất nền</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-loads" data-bs-toggle="tab" data-bs-target="#content-loads" type="button">3. Tải trọng</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-piles" data-bs-toggle="tab" data-bs-target="#content-piles" type="button">4. Bố trí cọc</button>
-                            </li>
-                        </ul>
-                        
-                        <div class="tab-content p-3 border border-top-0" id="inputTabsContent">
-                            
-                            <div class="tab-pane fade show active" id="content-material" role="tabpanel">
-                                <h5>Thông số Cọc</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">E (kN/m2)</label>
-                                        <input type="number" class="form-control" id="input-E" value="28000000">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">F (m2)</label>
-                                        <input type="number" class="form-control" id="input-F" value="0.1225">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Icoc (m4)</label>
-                                        <input type="number" class="form-control" id="input-Icoc" value="0.00125">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">D (m)</label>
-                                        <input type="number" class="form-control" id="input-D" value="0.35">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Lcoc (m)</label>
-                                        <input type="number" class="form-control" id="input-Lcoc" value="12.0">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">L0 (m)</label>
-                                        <input type="number" class="form-control" id="input-L0" value="2.0">
-                                    </div>
-                                </div>
-                                <h5 class="mt-4">Kích thước móng quy ước (Kiểm toán)</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Bx (m)</label>
-                                        <input type="number" class="form-control" id="input-Bx" value="7">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">By (m)</label>
-                                        <input type="number" class="form-control" id="input-By" value="9">
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="tab-pane fade" id="content-soil" role="tabpanel">
-                                <h5>Điều kiện nền</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">m (kN/m4)</label>
-                                        <input type="number" class="form-control" id="input-m" value="6000">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">m_chan (kN/m4)</label>
-                                        <input type="number" class="form-control" id="input-mchan" value="8000">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Rdat (kN/m2)</label>
-                                        <input type="number" class="form-control" id="input-Rdat" value="6800">
-                                    </div>
-                                </div>
-                                <div class="row g-3 mt-2">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Điều kiện mũi cọc</label>
-                                        <select class="form-select" id="select-dieu-kien-mui">
-                                            <option value="K" selected>Tựa lên đất (K)</option>
-                                            <option value="T">Tựa lên đá (T)</option>
-                                            <option value="N">Ngàm trong đá (N)</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <h5 class="mt-4">Các lớp đất (ảnh hưởng đến Lnen)</h5>
-                                <div class="table-scroll-container">
-                                    <table class="table table-sm table-bordered" id="soil-layer-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Lớp</th>
-                                                <th>Ldat (m)</th>
-                                                <th>Tdat (T/m2)</th>
-                                                <th>Phi (rad)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="soil-layer-body">
-                                            </tbody>
-                                    </table>
-                                </div>
-                                <button class="btn btn-sm btn-outline-primary mt-2" id="add-soil-row"><i class="bi bi-plus-circle"></i> Thêm lớp đất</button>
-                            </div>
-
-                            <div class="tab-pane fade" id="content-loads" role="tabpanel">
-                                <h5>Tải trọng tại đáy bệ (T, T.m)</h5>
-                                <div class="row g-3">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Hx (kN)</label>
-                                        <input type="number" class="form-control" id="input-Hx" value="200.2">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Hy (kN)</label>
-                                        <input type="number" class="form-control" id="input-Hy" value="720.0">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Pz (kN)</label>
-                                        <input type="number" class="form-control" id="input-Pz" value="12500.06">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Mx (kN.m)</label>
-                                        <input type="number" class="form-control" id="input-Mx" value="9340.4">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">My (kN.m)</label>
-                                        <input type="number" class="form-control" id="input-My" value="3610.9">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label class="form-label">Mz (kN.m)</label>
-                                        <input type="number" class="form-control" id="input-Mz" value="0.0">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-pane fade" id="content-piles" role="tabpanel">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h5 class="mb-0">Bảng bố trí cọc (<span id="pile-count">0</span> cọc)</h5>
-                                    <div>
-                                        <label for="csv-file-input" class="btn btn-sm btn-success">
-                                            <i class="bi bi-file-earmark-spreadsheet"></i> Nhập CSV
-                                        </label>
-                                        <input type="file" id="csv-file-input" accept=".csv, text/csv">
-                                        <button class="btn btn-sm btn-outline-primary" id="add-pile-row"><i class="bi bi-plus-circle"></i> Thêm</button>
-                                        <button class="btn btn-sm btn-outline-danger" id="remove-pile-row"><i class="bi bi-trash"></i> Xóa</button>
-                                    </div>
-                                </div>
-                                <div class="table-scroll-container">
-                                    <table class="table table-sm table-bordered table-striped" id="pile-table">
-                                        <thead>
-                                            <tr>
-                                                <th>STT</th>
-                                                <th>X (m)</th>
-                                                <th>Y (m)</th>
-                                                <th>Góc Fi (rad)</th>
-                                                <th>Góc Psi (rad)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="pile-table-body">
-                                            </tbody>
-                                    </table>
-                                </div>
-                                <button class="btn btn-sm btn-info mt-2" id="load-sample-data">
-                                    <i class="bi bi-clipboard-data"></i> Tải dữ liệu mẫu (10 cọc)
-                                </button>
-                            </div>
-                        </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Momen quán tính (Icoc, m⁴):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-Icoc" value="0.005"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Cạnh/Đường kính (D, m):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-D" value="0.4"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Diện tích (F, m²):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-F" value="0.16"></div>
                     </div>
                 </div>
-
-                <div class="card mt-4" id="results-container">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h3 class="mb-0">Kết quả Phân tích</h3>
-                        <div>
-                            <button class="btn btn-sm btn-outline-success" id="save-csv-button"><i class="bi bi-file-earmark-ruled"></i> Xuất CSV</button>
-                            <button class="btn btn-sm btn-outline-danger" id="save-png-button"><i class="bi bi-image"></i> Xuất PNG</button>
-                        </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Diện tích hữu hiệu (Fh, m²):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-Fh" value="0.16"></div>
                     </div>
-                    <div class="card-body">
-                        <ul class="nav nav-tabs" id="resultTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="tab-result-displacement" data-bs-toggle="tab" data-bs-target="#content-result-displacement" type="button">Chuyển vị bệ</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-result-forces" data-bs-toggle="tab" data-bs-target="#content-result-forces" type="button">Nội lực cọc</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-result-check" data-bs-toggle="tab" data-bs-target="#content-result-check" type="button">Kiểm toán</button>
-                            </li>
-                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tab-result-chart" data-bs-toggle="tab" data-bs-target="#content-result-chart" type="button">Biểu đồ</button>
-                            </li>
-                        </ul>
-                        
-                        <div class="tab-content p-3 border border-top-0" id="resultTabsContent">
-                            <div class="tab-pane fade show active" id="content-result-displacement" role="tabpanel">
-                                <table class="table table-sm table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>Hạng mục</th>
-                                            <th>Giá trị</th>
-                                            <th>Đơn vị</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="displacement-results-body">
-                                        </tbody>
-                                </table>
-                            </div>
-                            <div class="tab-pane fade" id="content-result-forces" role="tabpanel">
-                                <div class="table-scroll-container">
-                                    <table class="table table-sm table-bordered table-striped" id="forces-results-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Cọc số</th>
-                                                <th>N (kN)</th>
-                                                <th>QII (kN)</th>
-                                                <th>QIII (kN)</th>
-                                                <th>MI (kN.m)</th>
-                                                <th>MII (kN.m)</th>
-                                                <th>MIII (kN.m)</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="forces-results-body">
-                                            </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                            <div class="tab-pane fade" id="content-result-check" role="tabpanel">
-                                <h5>Kiểm toán móng khối quy ước (Spiro)</h5>
-                                <table class="table table-sm table-bordered">
-                                    <tbody id="check-results-body">
-                                        </tbody>
-                                </table>
-                                <h5 class="mt-4">Kiểm tra cân bằng lực</h5>
-                                <table class="table table-sm table-bordered" id="balance-results-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Lực</th>
-                                            <th>Tải trọng (Nhập)</th>
-                                            <th>Phản lực (Tính)</th>
-                                            <th>Chênh lệch (%)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="balance-results-body">
-                                        </tbody>
-                                </table>
-                            </div>
-                            <div class="tab-pane fade" id="content-result-chart" role="tabpanel">
-                                <canvas id="pileForceChart"></canvas>
-                            </div>
-                        </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Chiều dài cọc (Lcoc, m):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-Lcoc" value="15"></div>
+                    </div>
+                     <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Chiều dài cọc tự do (L0, m):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-L0" value="2.0"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Hệ số m (kN/m⁴):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="vl-m" value="1000"></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+        <div id="div_dat_nen" class="content-section">
+            <h2><i class="fas fa-layer-group"></i> Thông số Đất nền</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Điều kiện mũi cọc (dieu_kien_mui):</label>
+                        <select class="form-control" id="dn-dieu-kien-mui">
+                            <option value="K" selected>K (Khớp)</option>
+                            <option value="N">N (Ngàm)</option>
+                            <option value="T">T (Tự do)</option>
+                        </select>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Cường độ đất nền (Rdat, kN/m²):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="dn-Rdat" value="300"></div>
+                    </div>
+                     <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Hệ số m chân (mchan, kN/m⁴):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="dn-mchan" value="1000"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Số lớp đất (nLopDat):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="dn-nLopDat" value="1"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <h5>Các lớp đất (từ trên xuống, dưới L0)</h5>
+                    <div class="table-responsive" style="max-height: 250px;">
+                        <table class="table table-bordered table-hover" id="lop-dat-table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Lớp</th>
+                                    <th>Chiều dày (Ldat, m)</th>
+                                    <th>Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td><input type="number" class="form-control" value="13.0"></td>
+                                    <td><button class="btn btn-danger btn-sm" onclick="removeRow(this, 'lop-dat-table')"><i class="fas fa-trash"></i></button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn btn-primary" id="btn-add-lop-dat">
+                        <i class="fas fa-plus"></i> Thêm lớp đất
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="div_be_coc" class="content-section">
+            <h2><i class="fas fa-cube"></i> Kích thước Bệ (dùng cho Kiểm toán & Vẽ)</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Kích thước bệ theo X (Bx, m):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="bc-Bx" value="4.0"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Kích thước bệ theo Y (By, m):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="bc-By" value="4.0"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="div_coc" class="content-section">
+            <h2><i class="fas fa-th"></i> Vị trí Cọc (Hệ tọa độ O tại tâm bệ)</h2>
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="coc-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Cọc số</th>
+                            <th>Tọa độ x (m)</th>
+                            <th>Tọa độ y (m)</th>
+                            <th>Góc Fi (rad)</th>
+                            <th>Góc Psi (rad)</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="number" class="form-control" value="-1.5"></td>
+                            <td><input type="number" class="form-control" value="-1.5"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this, 'coc-table')"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><input type="number" class="form-control" value="1.5"></td>
+                            <td><input type="number" class="form-control" value="-1.5"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this, 'coc-table')"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td><input type="number" class="form-control" value="-1.5"></td>
+                            <td><input type="number" class="form-control" value="1.5"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this, 'coc-table')"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td><input type="number" class="form-control" value="1.5"></td>
+                            <td><input type="number" class="form-control" value="1.5"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this, 'coc-table')"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" id="btn-add-coc">
+                <i class="fas fa-plus"></i> Thêm Cọc
+            </button>
+        </div>
+
+        <div id="div_tai_trong" class="content-section">
+            <h2><i class="fas fa-truck-loading"></i> Tải trọng tại Tâm bệ</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Lực ngang (Hx, kN):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="tt-Hx" value="100"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Lực ngang (Hy, kN):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="tt-Hy" value="150"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Lực dọc (Pz, kN):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="tt-Pz" value="5000"></div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Momen xoắn (Mx, kNm):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="tt-Mx" value="0"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Momen uốn (My, kNm):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="tt-My" value="200"></div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Momen uốn (Mz, kNm):</label>
+                        <div class="col-sm-6"><input type="number" class="form-control" id="tt-Mz" value="300"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="div_license" class="content-section">
+            <h2><i class="fas fa-id-card"></i> Quản lý bản quyền</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="user-email">Email đăng ký:</label>
+                        <input type="email" class="form-control" id="user-email" placeholder="Nhập email của bạn">
+                    </div>
+                    <div class="form-group">
+                        <label for="license-key">License Key:</label>
+                        <input type="text" class="form-control" id="license-key" placeholder="Nhập license key">
+                    </div>
+                    <button class="btn btn-primary" id="btn-check-license">
+                        <i class="fas fa-check-circle"></i> Kiểm tra
+                    </button>
+                    <div id="license-status" class="mt-3 alert alert-secondary">
+                        Trạng thái: Chưa kích hoạt
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="output-section" class="mt-4" style="display: none;">
+            <h2>Kết quả phân tích</h2>
+            <hr>
+            <div class="alert alert-danger" id="error-message" style="display: none;"></div>
+            <div id="loading-spinner" style="display: none;">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <span>Đang tính toán...</span>
+            </div>
+            
+            <div id="results-content" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Chuyển vị đài cọc</h4>
+                        <table class="table table-bordered table-sm" id="chuyen_vi_table">
+                            </table>
+                        
+                        <h4 class="mt-3">Kiểm tra Cân bằng lực</h4>
+                        <table class="table table-bordered table-sm" id="kiem_tra_luc_table">
+                            </table>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h4>Mặt bằng móng cọc (Plan View)</h4>
+                        <canvas id="pile-cap-canvas" width="400" height="400"></canvas>
+                        
+                        <h4 class="mt-3">Kiểm toán móng khối</h4>
+                        <table class="table table-bordered table-sm" id="kiem_toan_table">
+                             </table>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4">Nội lực tại đầu cọc</h4>
+                <div class="table-responsive" id="noi_luc_coc_table">
+                    </div>
+            </div>
+        </div>
+
+    </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+<script src="pilegroup.js"></script>
+
+<script src="app-check.js"></script>
+<script src="app-cal.js"></script>
+<script src="app-out.js"></script>
+
+<script>
+$(document).ready(function () {
+    // Hàm xử lý khi click vào link trên sidebar
+    $('#sidebar .sidebar-link').on('click', function (e) {
+        e.preventDefault(); 
+        var targetId = $(this).data('target');
+        
+        $('#content > .content-section').hide();
+        $('#' + targetId).show();
+        
+        $('#sidebar ul li').removeClass('active');
+        $(this).parent('li').addClass('active');
+    });
+
+    // Tự động click vào mục đầu tiên khi tải trang
+    $('#sidebar .sidebar-link[data-target=\'div_vat_lieu\']').first().click();
     
-    <script src="pilegroup.js"></script>
-    
-    <script src="app-check.js"></script>
-    <script src="app-cal.js"></script>
-    <script src="app-out.js"></script>
+    // Xử lý nút "Check License" trên sidebar
+    $('#btn-check-license-sidebar').on('click', function() {
+        $('#sidebar a[data-target="div_license"]').click();
+    });
+
+    // --- Logic thêm/xóa hàng (Cập nhật) ---
+
+    // Thêm Lớp đất
+    $("#btn-add-lop-dat").click(function () {
+        var tableId = 'lop-dat-table';
+        var rowCount = $('#' + tableId + ' tbody tr').length + 1;
+        var newRow = '<tr>' +
+            '<td>' + rowCount + '</td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><button class="btn btn-danger btn-sm" onclick="removeRow(this, \'' + tableId + '\')"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+        $('#' + tableId + ' tbody').append(newRow);
+    });
+
+    // Thêm Cọc
+    $("#btn-add-coc").click(function () {
+        var tableId = 'coc-table';
+        var rowCount = $('#' + tableId + ' tbody tr').length + 1;
+        var newRow = '<tr>' +
+            '<td>' + rowCount + '</td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><button class="btn btn-danger btn-sm" onclick="removeRow(this, \'' + tableId + '\')"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+        $('#' + tableId + ' tbody').append(newRow);
+    });
+});
+
+// Hàm xóa hàng (global) - Cập nhật để đánh STT
+function removeRow(button, tableId) {
+    $(button).closest('tr').remove();
+    // Cập nhật lại số thứ tự (STT)
+    $('#' + tableId + ' tbody tr').each(function(index) {
+        $(this).find('td:first').text(index + 1);
+    });
+}
+</script>
+
 </body>
 </html>

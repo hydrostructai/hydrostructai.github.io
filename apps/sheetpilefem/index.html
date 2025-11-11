@@ -3,290 +3,523 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SheetPileFEM-WASM - (hydrostructai.github.io)</title>
+    <title>Sheet Pile FEM Analysis</title>
     
-    <link rel="icon" href="data:,">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     
     <style>
         body {
-            background-color: #f8f9fa; /* Light gray background */
+            background-color: #f8f9fa;
         }
-        .chart-container {
-            height: 400px; /* Fixed height for charts */
+
+        .wrapper {
+            display: flex;
+            width: 100%;
+            align-items: stretch;
         }
-        .table-responsive {
-            max-height: 300px; /* Scrollable tables */
+
+        /* --- Cấu hình Sidebar (Đã cập nhật) --- */
+        #sidebar {
+            min-width: 280px;
+            max-width: 280px;
+            background: #343a40; /* Màu nền tối */
+            color: #fff;
+            transition: all 0.3s;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            
+            /* CẬP NHẬT: Sử dụng Flexbox để đẩy footer xuống */
+            display: flex;
+            flex-direction: column;
         }
-        /* Make table headers sticky */
-        .table-responsive thead th {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 1;
+
+        #sidebar .sidebar-header {
+            padding: 20px;
+            background: #212529;
+            text-align: center;
+            flex-shrink: 0; /* Không co header */
         }
-        /* Hide output section by default */
-        #output-section {
+
+        #sidebar ul.components {
+            padding: 20px 0;
+            border-bottom: 1px solid #474747;
+            overflow-y: auto; /* Cho phép cuộn NẾU menu quá dài */
+            /* Không dùng flex-grow, để nó chiếm không gian tự nhiên */
+        }
+
+        #sidebar ul p {
+            color: #fff;
+            padding: 10px;
+        }
+
+        #sidebar ul li a {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            display: block;
+            color: #adb5bd; /* Màu chữ xám nhạt */
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        #sidebar ul li a:hover {
+            color: #ffffff;
+            background: #495057; /* Sáng lên khi hover */
+        }
+
+        #sidebar ul li.active > a, a[aria-expanded="true"] {
+            color: #fff;
+            background: #007bff; /* Màu active */
+        }
+        
+        #sidebar .sidebar-controls {
+            padding: 15px 20px 0 20px; /* Giảm padding trên */
+            flex-shrink: 0; /* Không co div controls */
+        }
+
+        #sidebar .sidebar-footer {
+            padding: 20px;
+            flex-shrink: 0; /* Không co footer */
+            margin-top: auto; /* Đây là mấu chốt: đẩy block này xuống đáy */
+        }
+
+
+        /* --- Cấu hình Content --- */
+        #content {
+            width: 100%;
+            padding: 20px;
+            min-height: 100vh;
+            transition: all 0.3s;
+            margin-left: 280px; 
+        }
+        
+        #content > .content-section {
             display: none;
         }
-        /* Nút kiểm tra license */
-        #btn-check-license {
-            width: 100%;
+        
+        #content > .content-section.active {
+            display: block;
         }
+        
+        .table-responsive {
+            display: block;
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                SheetPileFEM
-                <small class="text-muted" style="font-size: 0.6em;">(Lõi WASM bởi hydrostructai)</small>
-            </a>
+<div class="wrapper">
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Sheet Pile FEM</h3>
+            <strong>SPF</strong>
+        </div>
+
+        <ul class="list-unstyled components">
+            <li class="active">
+                <a href="#" class="sidebar-link" data-target="div_general">
+                    <i class="fas fa-cog"></i> Thông số chung
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_layers">
+                    <i class="fas fa-layer-group"></i> Các lớp đất
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_anchors">
+                    <i class="fas fa-anchor"></i> Neo / Chống
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_loads">
+                    <i class="fas fa-truck-loading"></i> Tải trọng
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_water">
+                    <i class="fas fa-water"></i> Mực nước
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_surcharge">
+                    <i class="fas fa-weight-hanging"></i> Tải phân bố
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-target="div_license">
+                    <i class="fas fa-id-card"></i> Bản quyền
+                </a>
+            </li>
+        </ul>
+
+        <div class="sidebar-controls">
+            <button class="btn btn-primary btn-block" id="btn-check-license-sidebar">
+                <i class="fas fa-check-circle"></i> Check License
+            </button>
+            <button class="btn btn-info btn-block mt-2" id="btn-export-report" disabled>
+                <i class="fas fa-file-export"></i> Export Report
+            </button>
+        </div>
+        
+        <div class="sidebar-footer">
+             <button class="btn btn-success btn-block" id="btn-run-analysis">
+                <i class="fas fa-play"></i> Run Analysis
+            </button>
+            <div class="text-center mt-2">
+                <small>&copy; 2025 KSTN</small>
+            </div>
         </div>
     </nav>
+    <div id="content">
 
-    <main class="container my-4">
-
-        <section id="input-section" class="card shadow-lg mb-4">
-            <div class="card-header p-3">
-                <h4 class="mb-0">Thông số Đầu vào</h4>
-            </div>
-            <div class="card-body">
-                
-                <ul class="nav nav-tabs" id="inputTab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="tab-license" data-bs-toggle="tab" data-bs-target="#content-license" type="button">1. Dự án & Giấy phép</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-wall" data-bs-toggle="tab" data-bs-target="#content-wall" type="button">2. Tường & Hình học</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-soil" data-bs-toggle="tab" data-bs-target="#content-soil" type="button">3. Các Lớp đất</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-loads" data-bs-toggle="tab" data-bs-target="#content-loads" type="button">4. Tải trọng</button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-anchors" data-bs-toggle="tab" data-bs-target="#content-anchors" type="button">5. Neo</button>
-                    </li>
-                </ul>
-                <div class="tab-content p-3 border border-top-0" id="inputTabContent">
-                    
-                    <div class="tab-pane fade show active" id="content-license" role="tabpanel">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="inp-project-name" class="form-label">Tên Dự án</label>
-                                <input type="text" class="form-control" id="inp-project-name" value="Dự án Mẫu">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="inp-engineer-name" class="form-label">Kỹ sư</label>
-                                <input type="text" class="form-control" id="inp-engineer-name" value="Tên Kỹ sư">
-                            </div>
-                        </div>
-                        <hr>
-                        <h5 class="text-danger">Xác thực Giấy phép (License)</h5>
-                        <p class="text-muted small">Cần có giấy phép hợp lệ để mở khóa các tính năng nâng cao (thêm lớp đất, neo, tải trọng). Nút "Chạy Phân tích" luôn hoạt động ở chế độ Dùng thử (2 lớp đất, không neo).</p>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="inp-license-email" class="form-label">Email Đăng ký</label>
-                                <input type="email" class="form-control" id="inp-license-email" placeholder="email-dang-ky@example.com">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="inp-license-key" class="form-label">Khóa Giấy phép (License Key)</label>
-                                <input type="text" class="form-control" id="inp-license-key" placeholder="XXXX-XXXX-XXXX-XXXX">
-                            </div>
-                        </div>
-                        <button class="btn btn-primary" id="btn-check-license">Kiểm tra Giấy phép</button>
-                    </div>
-
-                    <div class="tab-pane fade" id="content-wall" role="tabpanel">
-                        <div class="row g-3">
-                            <div class="col-md-4"><label class="form-label">Cao độ Đỉnh tường (m)</label><input type="number" class="form-control" id="inp-wall_top" value="2.0"></div>
-                            <div class="col-md-4"><label class="form-label">Cao độ Mũi cừ (m)</label><input type="number" class="form-control" id="inp-wall_bottom" value="-22.0"></div>
-                            <div class="col-md-4"><label class="form-label">Mặt đất (Sau) (m)</label><input type="number" class="form-control" id="inp-ground_behind" value="1.5"></div>
-                            <div class="col-md-4"><label class="form-label">Mặt đất (Trước) (m)</label><input type="number" class="form-control" id="inp-ground_front" value="-5.0"></div>
-                            <div class="col-md-4"><label class="form-label">Mực nước (Sau) (m)</label><input type="number" class="form-control" id="inp-water_behind" value="0.5"></div>
-                            <div class="col-md-4"><label class="form-label">Mực nước (Trước) (m)</label><input type="number" class="form-control" id="inp-water_front" value="-2.0"></div>
-                            <hr class="my-2">
-                            <div class="col-md-4"><label class="form-label">E (kN/m²)</label><input type="number" class="form-control" id="inp-E" value="3.5e7"></div>
-                            <div class="col-md-4"><label class="form-label">I (m4/m)</label><input type="number" class="form-control" id="inp-I" value="0.0076"></div>
-                            <div class="col-md-4">
-                                <label class="form-label">Lý thuyết Áp lực</label>
-                                <select class="form-select" id="inp-pressure_theory">
-                                    <option>Rankine</option>
-                                    <option>Coulomb</option>
-                                </select>
-                            </div>
+        <div id="div_general" class="content-section">
+            <h2><i class="fas fa-cog"></i> Thông số chung</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Thông số tường (Sheet Pile Properties)</h4>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Modul đàn hồi (E, kN/m²):</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="general-E" value="210000000">
                         </div>
                     </div>
-
-                    <div class="tab-pane fade" id="content-soil" role="tabpanel">
-                        <div class="table-responsive">
-                            <table class="table table-sm table-striped">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Tên Lớp đất</th>
-                                        <th>Cao độ Đỉnh (m)</th>
-                                        <th>Gamma (kN/m³)</th>
-                                        <th>Gamma bão hòa (kN/m³)</th>
-                                        <th>Phi (độ)</th>
-                                        <th>Lực dính (kPa)</th>
-                                        <th>Xóa</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-soil-body">
-                                    </tbody>
-                            </table>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Momen quán tính (I, m⁴/m):</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="general-I" value="0.00032">
                         </div>
-                        <button class="btn btn-sm btn-outline-primary" id="btn-add-soil-row">Thêm Lớp đất</button>
                     </div>
-
-                    <div class="tab-pane fade" id="content-loads" role="tabpanel">
-                        
-                        <h6 class="text-primary">Tải trọng Phân bố đều (Tính năng Trial)</h6>
-                        <p class="text-muted small">Tải trọng này (q, đơn vị kPa) tác dụng lên mặt đất phía sau tường (ground_behind).</p>
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label for="inp-surcharge-uniform" class="form-label">Giá trị Tải trọng (kPa)</label>
-                                <input type="number" class="form-control" id="inp-surcharge-uniform" value="0">
-                            </div>
-                        </div>
-                        
-                        <hr class="my-3">
-
-                        <h6 class="text-danger">Tải trọng Phức tạp (Tính năng Pro)</h6>
-                        <p class="text-muted small">Bao gồm tải trọng tập trung, tải trọng hình thang, v.v.</p>
-                        
-                        <div class="table-responsive">
-                            <table class="table table-sm table-striped">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Loại Tải</th>
-                                        <th>Cao độ (m)</th>
-                                        <th>Giá trị 1 (kN/m hoặc kPa)</th>
-                                        <th>Giá trị 2 (kPa)</th>
-                                        <th>Khoảng cách (m)</th>
-                                        <th>Xóa</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-load-pro-body">
-                                    <tr>
-                                        <td><input type="text" class="form-control form-control-sm" value="Tập trung" disabled></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="1.0" disabled></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="100" disabled></td>
-                                        <td><input type="number" class="form-control form-control-sm" disabled></td>
-                                        <td><input type="number" class="form-control form-control-sm" disabled></td>
-                                        <td><button class="btn btn-sm btn-danger btn-remove-row" disabled>X</button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <button class="btn btn-sm btn-outline-primary" id="btn-add-load-pro">Thêm Tải trọng (Pro)</button>
-
-                    </div>
-                    <div class="tab-pane fade" id="content-anchors" role="tabpanel">
-                        <h6 class="text-danger">Hệ thống Neo (Tính năng Pro)</h6>
-                        <div class="table-responsive">
-                            <table class="table table-sm table-striped">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Cao độ (m)</th>
-                                        <th>Góc nghiêng (độ)</th>
-                                        <th>Độ cứng (kN/m/m)</th>
-                                        <th>Tiết diện</th>
-                                        <th>Xóa</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-anchor-body">
-                                    </tbody>
-                            </table>
-                        </div>
-                        <button class="btn btn-sm btn-outline-primary" id="btn-add-anchor-row">Thêm Neo</button>
-                    </div>
-                    </div>
-            </div>
-
-            <div class="card-footer p-3 d-flex justify-content-between align-items-center">
-                <div>
-                    <input type="file" id="file-importer" accept=".csv,.xlsx,.txt" style="display: none;">
-                    <button class="btn btn-sm btn-outline-secondary" id="btn-import">Nhập (CSV/Excel)</button>
-                    <button class="btn btn-sm btn-outline-secondary" id="btn-save-csv">Lưu (CSV)</button>
                 </div>
-                <div>
-                    <span id="status-message" class="text-muted me-3">Sẵn sàng.</span>
-                    <button class="btn btn-lg btn-success" id="btn-run-analysis">
-                        CHẠY PHÂN TÍCH
+                <div class="col-md-6">
+                    <h4>Thông số phân tích (Analysis Parameters)</h4>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Chiều dài tường (L, m):</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="general-L" value="15">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Cao độ đào đất (H, m):</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="general-H" value="5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="div_layers" class="content-section">
+            <h2><i class="fas fa-layer-group"></i> Các lớp đất (Soil Layers)</h2>
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="soil-layer-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Lớp</th>
+                            <th>Độ sâu (Depth, m)</th>
+                            <th>γ (kN/m³)</th>
+                            <th>γ' (kN/m³)</th>
+                            <th>φ (deg)</th>
+                            <th>c' (kN/m²)</th>
+                            <th>Modul (k, kN/m³)</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="number" class="form-control" value="5"></td>
+                            <td><input type="number" class="form-control" value="18"></td>
+                            <td><input type="number" class="form-control" value="8"></td>
+                            <td><input type="number" class="form-control" value="30"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="10000"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td><input type="number" class="form-control" value="15"></td>
+                            <td><input type="number" class="form-control" value="19"></td>
+                            <td><input type="number" class="form-control" value="9"></td>
+                            <td><input type="number" class="form-control" value="32"></td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="15000"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" id="btn-add-layer">
+                <i class="fas fa-plus"></i> Thêm lớp đất
+            </button>
+        </div>
+
+        <div id="div_anchors" class="content-section">
+            <h2><i class="fas fa-anchor"></i> Neo / Chống (Anchors)</h2>
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="anchor-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Neo</th>
+                            <th>Độ sâu (Depth, m)</th>
+                            <th>Độ cứng (K, kN/m/m)</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td><input type="number" class="form-control" value="2"></td>
+                            <td><input type="number" class="form-control" value="50000"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" id="btn-add-anchor">
+                <i class="fas fa-plus"></i> Thêm Neo
+            </button>
+        </div>
+
+        <div id="div_loads" class="content-section">
+            <h2><i class="fas fa-truck-loading"></i> Tải trọng tập trung (Point Loads)</h2>
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="load-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Tải</th>
+                            <th>Độ sâu (Depth, m)</th>
+                            <th>Tải trọng (Load, kN/m)</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" id="btn-add-load">
+                <i class="fas fa-plus"></i> Thêm tải
+            </button>
+        </div>
+
+        <div id="div_water" class="content-section">
+            <h2><i class="fas fa-water"></i> Mực nước (Water Levels)</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Mực nước bên trái (Hw1, m):</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="water-hw1" value="5">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-6 col-form-label">Mực nước bên phải (Hw2, m):</label>
+                        <div class="col-sm-6">
+                            <input type="number" class="form-control" id="water-hw2" value="1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="div_surcharge" class="content-section">
+            <h2><i class="fas fa-weight-hanging"></i> Tải trọng phân bố (Surcharge)</h2>
+            <hr>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="surcharge-table">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Tải</th>
+                            <th>Bắt đầu (z_start, m)</th>
+                            <th>Kết thúc (z_end, m)</th>
+                            <th>Giá trị (q, kN/m²)</th>
+                            <th>Xóa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                         <tr>
+                            <td>1</td>
+                            <td><input type="number" class="form-control" value="0"></td>
+                            <td><input type="number" class="form-control" value="5" ></td>
+                            <td><input type="number" class="form-control" value="10"></td>
+                            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn btn-primary" id="btn-add-surcharge">
+                <i class="fas fa-plus"></i> Thêm tải phân bố
+            </button>
+        </div>
+        
+        <div id="div_license" class="content-section">
+            <h2><i class="fas fa-id-card"></i> Quản lý bản quyền</h2>
+            <hr>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="user-email">Email đăng ký:</label>
+                        <input type="email" class="form-control" id="user-email" placeholder="Nhập email của bạn">
+                    </div>
+                    <div class="form-group">
+                        <label for="license-key">License Key:</label>
+                        <input type="text" class="form-control" id="license-key" placeholder="Nhập license key">
+                    </div>
+                    <button class="btn btn-primary" id="btn-check-license">
+                        <i class="fas fa-check-circle"></i> Kiểm tra
                     </button>
+                    <div id="license-status" class="mt-3 alert alert-secondary">
+                        Trạng thái: Chưa kích hoạt
+                    </div>
                 </div>
             </div>
-        </section>
-
-        <section id="output-section" class="card shadow-lg mb-4">
-            <div class="card-header p-3">
-                <h4 class="mb-0">Kết quả Phân tích</h4>
+        </div>
+        
+        <div id="output-section" class="mt-4" style="display: none;">
+            <h2>Kết quả phân tích</h2>
+            <hr>
+            <div class="alert alert-danger" id="error-message" style="display: none;"></div>
+            <div id="loading-spinner" style="display: none;">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <span>Đang tính toán...</span>
             </div>
-            <div class="card-body">
+            
+            <div id="results-content" style="display: none;">
                 <div class="row">
-                    <div class="col-lg-12 mb-3">
-                        <div id="chart-geom" class="chart-container border rounded"></div>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <div id="chart-pressure" class="chart-container border rounded"></div>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <div id="chart-deflection" class="chart-container border rounded"></div>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <div id="chart-moment" class="chart-container border rounded"></div>
-                    </div>
-                    <div class="col-lg-6 mb-3">
-                        <div id="chart-shear" class="chart-container border rounded"></div>
-                    </div>
+                    <div class="col-md-6"><canvas id="chart-displacement"></canvas></div>
+                    <div class="col-md-6"><canvas id="chart-moment"></canvas></div>
                 </div>
-
-                <hr class="my-4">
+                <div class="row mt-3">
+                    <div class="col-md-6"><canvas id="chart-shear"></canvas></div>
+                    <div class="col-md-6"><canvas id="chart-pressure"></canvas></div>
+                </div>
                 
-                <h5>Tóm tắt Kết quả</h5>
-                <div id="table-summary-container">
-                    </div>
-
-                <h5 class="mt-4">Kết quả Chi tiết (tại các nút)</h5>
-                <button class="btn btn-sm btn-outline-secondary" id="btn-save-results-csv">Lưu Bảng (CSV)</button>
-                <div class="table-responsive mt-2">
-                    <table class="table table-sm table-striped table-hover">
-                        <thead class="table-dark" id="table-results-header">
-                            </thead>
-                        <tbody id="table-results-body">
-                            </tbody>
-                    </table>
-                </div>
+                <h4 class="mt-4">Kết quả chi tiết</h4>
+                <pre id="json-output" style="background: #eee; padding: 10px; border-radius: 5px;"></pre>
             </div>
-        </section>
+        </div>
 
-    </main>
+    </div>
+    </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdeli.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    <footer class="text-center text-muted p-4">
-        <small>&copy; 2025 hydrostructai.github.io. Mọi quyền được bảo lưu.</small>
-    </footer>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="sheetpilefem.js"></script>
+
+<script src="app-check.js"></script>
+<script src="app-cal.js"></script>
+<script src="app-out.js"></script>
+
+<script>
+$(document).ready(function () {
+    // Hàm xử lý khi click vào link trên sidebar
+    $('#sidebar .sidebar-link').on('click', function (e) {
+        e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+        
+        var targetId = $(this).data('target'); // Lấy ID của div_content từ data-target
+        
+        // 1. Ẩn tất cả các .content-section
+        $('#content > .content-section').hide();
+        
+        // 2. Hiển thị chỉ div_content mục tiêu
+        $('#' + targetId).show();
+        
+        // 3. Cập nhật trạng thái 'active' trên sidebar
+        $('#sidebar ul li').removeClass('active'); // Xóa active của tất cả
+        $(this).parent('li').addClass('active'); // Thêm active cho mục vừa click
+    });
+
+    // Tự động click vào mục đầu tiên khi tải trang
+    // để hiển thị nội dung mặc định (Thông số chung)
+    $('#sidebar .sidebar-link[data-target=\'div_general\']').first().click();
     
-    <script src="https://cdn.plot.ly/plotly-2.33.0.min.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/paparse.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    // --- MỚI: Xử lý nút "Check License" trên sidebar ---
+    $('#btn-check-license-sidebar').on('click', function() {
+        // Tự động click vào link menu "Bản quyền"
+        $('#sidebar a[data-target="div_license"]').click();
+    });
 
-    <script src="sheetpilefem.js"></script>
-    <script>
-        var SheetPileApp = {};
-    </script>
+    // Logic cho các nút Add/Remove (giữ nguyên)
     
-    <script src="app-check.js"></script>
-    <script src="app-cal.js"></script>
-    <script src="app-out.js"></script>
+    // Thêm lớp đất
+    $("#btn-add-layer").click(function () {
+        var rowCount = $('#soil-layer-table tbody tr').length + 1;
+        var newRow = '<tr>' +
+            '<td>' + rowCount + '</td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="18"></td>' +
+            '<td><input type="number" class="form-control" value="8"></td>' +
+            '<td><input type="number" class="form-control" value="30"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="10000"></td>' +
+            '<td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+        $('#soil-layer-table tbody').append(newRow);
+    });
+
+    // Thêm Neo
+    $("#btn-add-anchor").click(function () {
+        var rowCount = $('#anchor-table tbody tr').length + 1;
+        var newRow = '<tr>' +
+            '<td>' + rowCount + '</td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="50000"></td>' +
+            '<td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+        $('#anchor-table tbody').append(newRow);
+    });
+
+    // Thêm Tải trọng
+    $("#btn-add-load").click(function () {
+        var rowCount = $('#load-table tbody tr').length + 1;
+        var newRow = '<tr>' +
+            '<td>' + rowCount + '</td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+        $('#load-table tbody').append(newRow);
+    });
+    
+    // Thêm Tải phân bố
+    $("#btn-add-surcharge").click(function () {
+        var rowCount = $('#surcharge-table tbody tr').length + 1;
+        var newRow = '<tr>' +
+            '<td>' + rowCount + '</td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><input type="number" class="form-control" value="0"></td>' +
+            '<td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="fas fa-trash"></i></button></td>' +
+            '</tr>';
+        $('#surcharge-table tbody').append(newRow);
+    });
+
+});
+
+// Hàm xóa hàng (global)
+function removeRow(button) {
+    $(button).closest('tr').remove();
+    // Cần một hàm cập nhật lại STT của các hàng
+}
+</script>
 
 </body>
 </html>

@@ -1,298 +1,213 @@
-/**
- * SheetPileFEM-WASM - Module Tính toán & Nhập liệu
- * app-cal.js
+/*
+ * app-cal.js (cho Sheet Pile FEM)
  *
  * Chịu trách nhiệm:
- * 1. Logic cho nút "RUN ANALYSIS".
- * 2. Thu thập dữ liệu từ UI (`collectInputs`).
- * 3. Gọi hàm `runAnalysis` của WASM.
- * 4. Xử lý logic nhập file (Import) và lưu file (Save Input).
+ * 1. Tải và khởi tạo module WebAssembly (WASM).
+ * 2. Gán sự kiện cho nút "Run Analysis".
+ * 3. Thực hiện kiểm tra license phía client.
+ * 4. Thu thập toàn bộ dữ liệu input từ HTML.
+ * 5. Gọi hàm WASM và xử lý kết quả trả về.
+ * 6. Gọi các hàm trong app-out.js để hiển thị kết quả hoặc lỗi.
  */
-(function(App) {
-    "use-strict";
 
-    /**
-     * Thu thập tất cả dữ liệu từ UI và xây dựng đối tượng JSON cho WASM.
-     * (ĐÃ CẬP NHẬT)
-     * @returns {object} The complete AnalysisInput object.
-     */
-    function collectInputs() {
-        const inputs = {};
+// Biến toàn cục để giữ module WASM sau khi khởi tạo
+let wasmModule;
 
-        // 1. Thông số tường & Hình học
-        inputs.wall_top = parseFloat(App.dom.inpWallTop.value);
-        inputs.wall_bottom = parseFloat(App.dom.inpWallBottom.value);
-        inputs.ground_behind = parseFloat(App.dom.inpGroundBehind.value);
-        inputs.ground_front = parseFloat(App.dom.inpGroundFront.value);
-        inputs.water_behind = parseFloat(App.dom.inpWaterBehind.value);
-        inputs.water_front = parseFloat(App.dom.inpWaterFront.value);
-        inputs.E = parseFloat(App.dom.inpE.value);
-        inputs.I = parseFloat(App.dom.inpI.value);
-        inputs.pressure_theory = App.dom.inpPressureTheory.value;
-
-        // --- SỬA LỖI 1: Fix lỗi "key 'pile_type' not found" ---
-        // Thêm khóa 'pile_type' mà C++ yêu cầu (từ datastructs.h).
-        inputs.pile_type = "Default Pile Type"; // Gán giá trị mặc định
-
-        // --- SỬA LỖI 2: Thêm logic Tải trọng Phân bố đều ---
-        // Đọc giá trị từ trường input mới (trong Tab 4)
-        inputs.uniform_surcharge_kPa = parseFloat(App.dom.inpSurchargeUniform.value) || 0;
-        // --- KẾT THÚC SỬA LỖI ---
-
-        // 2. Tùy chọn Phân tích
-        inputs.max_iterations = 30;
-        inputs.tolerance = 1e-6;
-
-        // 3. Các Lớp đất
-        inputs.soil_layers = [];
-        App.dom.tableSoilBody.querySelectorAll('tr').forEach(tr => {
-            const cells = tr.querySelectorAll('input');
-            if (cells.length === 6 && cells[0].value) { // Đảm bảo hàng không rỗng
-                inputs.soil_layers.push({
-                    name: cells[0].value,
-                    top_elevation: parseFloat(cells[1].value),
-                    gamma_natural: parseFloat(cells[2].value),
-                    gamma_saturated: parseFloat(cells[3].value),
-                    phi_degrees: parseFloat(cells[4].value),
-                    cohesion_kPa: parseFloat(cells[5].value)
-                });
-            }
-        });
-
-        // 4. Các Neo
-        inputs.anchors = [];
-        App.dom.tableAnchorBody.querySelectorAll('tr').forEach(tr => {
-            const cells = tr.querySelectorAll('input');
-            if (cells.length === 5 && cells[0].value) { // Đảm bảo hàng không rỗng
-                inputs.anchors.push({
-                    id: parseInt(cells[0].value),
-                    elevation: parseFloat(cells[1].value),
-                    slope: parseFloat(cells[2].value),
-                    stiffness: parseFloat(cells[3].value),
-                    section: cells[4].value
-                });
-            }
-        });
-        
-        // 5. Tải trọng (Tính năng Pro)
-        // (Logic đọc bảng "table-load-pro-body" sẽ được thêm vào đây)
-        inputs.surcharge_loads = [];
-
-        return inputs;
+/**
+ * Hàm trợ giúp để lấy giá trị số (float) từ một input
+ * @param {string} elementId - ID của thẻ input
+ * @param {string} fieldName - Tên mô tả của trường (để báo lỗi)
+ * @returns {number} Giá trị số
+ */
+function getFloatValue(elementId, fieldName) {
+    const value = parseFloat(document.getElementById(elementId).value);
+    if (isNaN(value)) {
+        throw new Error(`Dữ liệu không hợp lệ cho "${fieldName}". Vui lòng kiểm tra lại.`);
     }
-    App.collectInputs = collectInputs; // Expose
+    return value;
+}
 
-    /**
-     * LOGIC ĐÃ SỬA: Xử lý khi nhấn "RUN ANALYSIS"
-     * (Đã *thêm lại* phần kiểm tra license phía JS)
-     */
-    App.onRunAnalysisClick = function() {
-        if (!App.WASM_MODULE) {
-            App.handleError("WASM module not loaded. Please refresh.");
-            return;
+/**
+ * Thu thập toàn bộ dữ liệu đầu vào từ các form và bảng.
+ * @returns {object} Một đối tượng JSON chứa toàn bộ dữ liệu đầu vào.
+ */
+function gatherInputData() {
+    const inputData = {};
+
+    // 1. General (Thông số chung)
+    inputData.general = {
+        E: getFloatValue('general-E', 'Modul đàn hồi (E)'),
+        I: getFloatValue('general-I', 'Momen quán tính (I)'),
+        L: getFloatValue('general-L', 'Chiều dài tường (L)'),
+        H: getFloatValue('general-H', 'Cao độ đào đất (H)')
+    };
+
+    // 2. Water (Mực nước)
+    inputData.water = {
+        Hw1: getFloatValue('water-hw1', 'Mực nước bên trái (Hw1)'),
+        Hw2: getFloatValue('water-hw2', 'Mực nước bên phải (Hw2)')
+    };
+
+    // 3. Soil Layers (Các lớp đất)
+    inputData.soil_layers = [];
+    const soilRows = document.querySelectorAll('#soil-layer-table tbody tr');
+    soilRows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const layer = {
+            depth: parseFloat(inputs[0].value),
+            gamma: parseFloat(inputs[1].value),
+            gamma_sat: parseFloat(inputs[2].value), // (gamma')
+            phi: parseFloat(inputs[3].value),
+            c_prime: parseFloat(inputs[4].value),   // (c')
+            k_modul: parseFloat(inputs[5].value)
+        };
+        // Kiểm tra NaN trong bảng
+        Object.entries(layer).forEach(([key, val]) => {
+            if (isNaN(val)) throw new Error(`Dữ liệu không hợp lệ tại Lớp đất ${index + 1}, trường ${key}.`);
+        });
+        inputData.soil_layers.push(layer);
+    });
+
+    // 4. Anchors (Neo/Chống)
+    inputData.anchors = [];
+    const anchorRows = document.querySelectorAll('#anchor-table tbody tr');
+    anchorRows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const anchor = {
+            depth: parseFloat(inputs[0].value),
+            stiffness: parseFloat(inputs[1].value)
+        };
+        if (isNaN(anchor.depth) || isNaN(anchor.stiffness)) {
+            throw new Error(`Dữ liệu không hợp lệ tại Neo ${index + 1}.`);
         }
+        inputData.anchors.push(anchor);
+    });
 
-        App.setStatus('Running...', 'text-primary');
-        App.dom.btnRun.disabled = true;
-
-        // --- 1. Thu thập Inputs ---
-        let inputs;
-        try {
-            inputs = collectInputs(); // Chỉ thu thập
-        } catch (e) {
-            console.error("Input collection error:", e);
-            App.handleError("ERROR_INPUT_COLLECTION");
-            App.dom.btnRun.disabled = false; // Mở lại nút
-            return;
+    // 5. Point Loads (Tải trọng tập trung)
+    inputData.point_loads = [];
+    const loadRows = document.querySelectorAll('#load-table tbody tr');
+    loadRows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const load = {
+            depth: parseFloat(inputs[0].value),
+            load: parseFloat(inputs[1].value)
+        };
+        if (isNaN(load.depth) || isNaN(load.load)) {
+            throw new Error(`Dữ liệu không hợp lệ tại Tải trọng ${index + 1}.`);
         }
+        inputData.point_loads.push(load);
+    });
 
-        // --- 1.5. BỔ SUNG KIỂM TRA LICENSE (SỬA LỖI LOGIC) ---
-        // Phải kiểm tra lại logic ở đây, vì lõi WASM không tự kiểm tra.
-        // Biến App.isLicensed được quản lý trong app-check.js
-        if (!App.isLicensed) {
-            const trialSoilLimit = 2;
-            const trialAnchorLimit = 0; // Chế độ thử không cho phép neo
-            
-            // (Chúng ta có thể thêm kiểm tra tải trọng Pro ở đây nếu cần)
-            // const trialProLoadLimit = 0; 
-            
-            if (inputs.soil_layers.length > trialSoilLimit || inputs.anchors.length > trialAnchorLimit) {
-                
-                App.handleError("ERROR_PRO_ANALYSIS_DENIED"); 
-                
-                App.dom.btnRun.disabled = false;
-                return; // Dừng thực thi
-            }
+    // 6. Surcharges (Tải trọng phân bố)
+    inputData.surcharges = [];
+    const surchargeRows = document.querySelectorAll('#surcharge-table tbody tr');
+    surchargeRows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const surcharge = {
+            z_start: parseFloat(inputs[0].value),
+            z_end: parseFloat(inputs[1].value),
+            q_value: parseFloat(inputs[2].value)
+        };
+        if (isNaN(surcharge.z_start) || isNaN(surcharge.z_end) || isNaN(surcharge.q_value)) {
+            throw new Error(`Dữ liệu không hợp lệ tại Tải phân bố ${index + 1}.`);
         }
-        // --- KẾT THÚC BỔ SUNG ---
+        inputData.surcharges.push(surcharge);
+    });
+    
+    return inputData;
+}
 
-
-        // --- 2. Chạy Phân tích WASM ---
-        let results;
-        try {
-            const inputJsonString = JSON.stringify(inputs);
-            
-            // Gọi hàm C++
-            const resultJsonString = App.WASM_MODULE.runAnalysis(inputJsonString);
-            
-            results = JSON.parse(resultJsonString);
-
-            if (results.error) {
-                // Lỗi từ C++ (ví dụ: "Matrix unstable" hoặc "key not found")
-                console.error("C++ Core Error:", results.details);
-                App.handleError("ERROR_CPP_ANALYSIS_FAILED", results.details);
-                App.dom.btnRun.disabled = false; // Mở lại nút
-                return;
-            }
-        } catch (e) {
-            // Lỗi JS hoặc binding
-            console.error("WASM Call Error:", e);
-            App.handleError("ERROR_WASM_CALL_FAILED");
-            App.dom.btnRun.disabled = false; // Mở lại nút
-            return;
-        }
-
-        // --- 3. Thành công: Hiển thị Kết quả ---
-        App.setStatus('Analysis Completed.', 'text-success');
-        App.dom.btnRun.disabled = false;
-        
-        try {
-            App.displayResults(results, inputs); // Gọi hàm từ app-out.js
-            App.dom.outputSection.style.display = 'block';
-            App.dom.outputSection.scrollIntoView({ behavior: 'smooth' });
-        } catch (e) {
-            console.error("Plotting Error:", e);
-            App.handleError("ERROR_PLOTTING_FAILED");
-        }
+/**
+ * Hàm chính thực thi phân tích
+ */
+async function runAnalysis() {
+    // 1. Kiểm tra module đã sẵn sàng
+    if (!wasmModule) {
+        alert("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
+        return;
     }
 
-    // --- 7. Logic Xử lý File I/O ---
+    // 2. Kích hoạt trạng thái "Đang tải" (gọi hàm từ app-out.js)
+    showLoading(true);
+    hideError();
+    hideResults();
 
-    /**
-     * Xử lý sự kiện 'change' của input file.
-     * (ĐÃ GỠ BỎ KIỂM TRA LICENSE)
-     * @param {Event} e The change event.
-     */
-    function handleFileImport(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
+    try {
+        // 3. KIỂM TRA LICENSE (Theo yêu cầu)
+        const isLicensed = localStorage.getItem('sheetpileLicensed') === 'true';
         
-        if (file.name.endsWith('.csv') || file.name.endsWith('.txt')) {
-            reader.onload = (event) => {
-                parseCSV(event.target.result);
-            };
-            reader.readAsText(file);
-        } else if (file.name.endsWith('.xlsx')) {
-            reader.onload = (event) => {
-                parseExcel(event.target.result);
-            };
-            reader.readAsArrayBuffer(file);
+        // Đếm số lớp đất và neo TRƯỚC khi thu thập dữ liệu
+        const soilLayerCount = document.querySelectorAll('#soil-layer-table tbody tr').length;
+        const anchorCount = document.querySelectorAll('#anchor-table tbody tr').length;
+
+        if (!isLicensed && (soilLayerCount > 2 || anchorCount > 0)) {
+            // VI PHẠM ĐIỀU KIỆN
+            throw new Error(
+                "Lỗi Bản Quyền: Tài khoản miễn phí chỉ cho phép tính toán với tối đa 2 lớp đất và không có neo/chống. Vui lòng đăng ký để mở khóa toàn bộ tính năng."
+            );
+        }
+
+        // 4. Thu thập dữ liệu (Nếu license hợp lệ)
+        const inputData = gatherInputData();
+        const inputJsonString = JSON.stringify(inputData);
+
+        // 5. Gọi hàm WASM
+        // (Giả định hàm C++ được export tên là 'calculateSheetPile')
+        const resultJsonString = wasmModule.calculateSheetPile(inputJsonString);
+        
+        // 6. Xử lý kết quả
+        const result = JSON.parse(resultJsonString);
+
+        if (result.status === 'error') {
+            // Lỗi tính toán từ C++
+            throw new Error(result.message);
         } else {
-            App.setStatus('Error: Invalid file type.', 'text-danger');
+            // Thành công! Gửi kết quả cho app-out.js
+            displayResults(result); 
         }
-        
-        e.target.value = null; // Reset input file
+
+    } catch (error) {
+        // Bắt mọi lỗi (License, Thu thập dữ liệu, Tính toán)
+        console.error("Analysis Error:", error);
+        // Gửi lỗi cho app-out.js
+        displayError(error.message || "Đã xảy ra lỗi không xác định.");
+    } finally {
+        // 7. Tắt trạng thái "Đang tải"
+        showLoading(false);
     }
-    App.handleFileImport = handleFileImport; // Expose
+}
 
-    /**
-     * Phân tích chuỗi CSV.
-     * @param {string} csvString The raw CSV text.
-     */
-    function parseCSV(csvString) {
-        const data = Papa.parse(csvString, {
-            comments: "#",
-            skipEmptyLines: true
-        }).data;
+/**
+ * KHỞI TẠO: Chờ DOM tải xong
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    // Lấy nút Run Analysis
+    const runButton = document.getElementById('btn-run-analysis');
+    
+    // Vô hiệu hóa nút cho đến khi WASM tải xong
+    runButton.disabled = true;
+    runButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải lõi...';
 
-        const newData = { wall: [], soil: [], anchor: [] };
+    // Khởi tạo module WASM
+    // (Giả định tên factory function là 'createSheetPileModule' 
+    // được tạo bởi file sheetpilefem.js)
+    createSheetPileModule().then(Module => {
+        wasmModule = Module;
+        console.log("Sheet Pile FEM WASM Module Loaded.");
         
-        data.forEach(row => {
-            const type = row[0].toUpperCase();
-            const values = row.slice(1);
-            
-            if (type === 'WALL' && values[0] !== 'Value') {
-                newData.wall.push({ param: values[0], value: values[1] });
-            } else if (type === 'SOIL' && values[0] !== 'col1') {
-                newData.soil.push(values);
-            } else if (type === 'ANCHOR' && values[0] !== 'col1') {
-                newData.anchor.push(values);
-            }
-            // (Chúng ta có thể thêm logic đọc Tải trọng 'LOAD' ở đây)
-        });
+        // Kích hoạt nút Run
+        runButton.disabled = false;
+        runButton.innerHTML = '<i class="fas fa-play"></i> Run Analysis';
         
-        App.loadDataIntoUI(newData); // Gọi hàm từ app-check.js
-        App.setStatus('CSV data imported.', 'text-success');
-    }
-    App.parseCSV = parseCSV; // Expose
-
-    /**
-     * Phân tích file Excel.
-     * @param {ArrayBuffer} data The raw file buffer.
-     */
-    function parseExcel(data) {
-        const workbook = XLSX.read(data, { type: 'array' });
-        const sheetName = workbook.SheetNames[0];
-        const csvString = XLSX.utils.sheet_to_csv(workbook.Sheets[sheetName], {
-            header: 1,
-            blankrows: false
-        });
+        // Gán sự kiện click
+        runButton.addEventListener('click', runAnalysis);
         
-        parseCSV(csvString); // Tái sử dụng trình phân tích CSV
-        App.setStatus('Excel data imported.', 'text-success');
-    }
-    App.parseExcel = parseExcel; // Expose
-
-    /**
-     * Thu thập input hiện tại và lưu dưới dạng CSV.
-     * (ĐÃ CẬP NHẬT)
-     */
-    function handleSaveInputCSV() {
-        const inputs = collectInputs();
-        let csvContent = [
-            "# SheetPileFEM Combined Input File",
-            "# File format: TYPE, col1, col2, col3...",
-            "#"
-        ];
-
-        // 1. Dữ liệu Tường
-        csvContent.push("# SECTION: WALL (Parameter, Value, Unit)");
-        csvContent.push("TYPE,Parameter,Value,Unit");
-        csvContent.push(`WALL,wall_top,${inputs.wall_top},m`);
-        csvContent.push(`WALL,wall_bottom,${inputs.wall_bottom},m`);
-        csvContent.push(`WALL,ground_behind,${inputs.ground_behind},m`);
-        csvContent.push(`WALL,ground_front,${inputs.ground_front},m`);
-        csvContent.push(`WALL,water_behind,${inputs.water_behind},m`);
-        csvContent.push(`WALL,water_front,${inputs.water_front},m`);
-        csvContent.push(`WALL,E,${inputs.E},kN/m2`);
-        csvContent.push(`WALL,I,${inputs.I},m4/m`);
-        csvContent.push(`WALL,pressure_theory,${inputs.pressure_theory},`);
-        
-        // Thêm trường tải trọng mới
-        csvContent.push(`WALL,uniform_surcharge_kPa,${inputs.uniform_surcharge_kPa},kPa`);
-        csvContent.push("#");
-        
-        // 2. Dữ liệu Đất
-        csvContent.push("# SECTION: SOIL (name, top_elevation, gamma_natural, gamma_saturated, phi_degrees, cohesion_kPa)");
-        csvContent.push("TYPE,col1,col2,col3,col4,col5,col6");
-        inputs.soil_layers.forEach(s => {
-            csvContent.push(`SOIL,${s.name},${s.top_elevation},${s.gamma_natural},${s.gamma_saturated},${s.phi_degrees},${s.cohesion_kPa}`);
-        });
-        csvContent.push("#");
-
-        // 3. Dữ liệu Neo
-        csvContent.push("# SECTION: ANCHOR (id, elevation, slope, stiffness, section)");
-        csvContent.push("TYPE,col1,col2,col3,col4,col5");
-        inputs.anchors.forEach(a => {
-            csvContent.push(`ANCHOR,${a.id},${a.elevation},${a.slope},${a.stiffness},${a.section}`);
-        });
-        
-        // (Chúng ta có thể thêm logic lưu Tải trọng Pro 'LOAD' ở đây)
-
-        App.downloadFile(csvContent.join('\n'), 'sheetpile_input.csv', 'text/csv'); // Gọi hàm trợ giúp
-    }
-    App.handleSaveInputCSV = handleSaveInputCSV; // Expose
-
-})(SheetPileApp); // Truyền vào không gian tên chung
+    }).catch(e => {
+        // Lỗi nghiêm trọng: Không thể tải WASM
+        console.error("Error loading WASM module:", e);
+        runButton.textContent = "Lỗi tải WASM";
+        runButton.classList.remove('btn-success');
+        runButton.classList.add('btn-danger');
+        displayError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+    });
+});

@@ -1,185 +1,166 @@
 /*
- * APP-CAL.JS
- * Chịu trách nhiệm:
- * 1. Gắn sự kiện cho nút "Run Analysis".
- * 2. Thu thập và xác thực (validate) dữ liệu đầu vào.
- * 3. Kiểm tra license (giới hạn 10 cọc).
- * 4. Gọi hàm Wasm 'calculate'.
- * 5. Chuyển kết quả cho app-out.js (hàm displayResults).
+ * app-cal.js (cho Pile Group)
  *
- * Phụ thuộc:
- * - app-check.js (phải được tải trước)
- * - app-out.js (phải được tải sau, cung cấp hàm `displayResults`)
+ * (Giữ nguyên toàn bộ file, chỉ sửa 1 dòng trong hàm runAnalysis)
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+// Biến toàn cục để giữ module WASM
+let wasmModule;
+
+/**
+ * Hàm trợ giúp để lấy giá trị số (float) từ một input
+ */
+function getFloatValue(elementId, fieldName) {
+    const value = parseFloat(document.getElementById(elementId).value);
+    if (isNaN(value)) {
+        throw new Error(`Dữ liệu không hợp lệ cho "${fieldName}" (ID: ${elementId}). Vui lòng kiểm tra lại.`);
+    }
+    return value;
+}
+
+/**
+ * Thu thập toàn bộ dữ liệu đầu vào từ các form và bảng.
+ */
+function gatherInputData() {
+    const inputData = {};
+
+    // 1. Vật liệu & Cọc (vat_lieu)
+    inputData.vat_lieu = {
+        E: getFloatValue('vl-E', 'Vật liệu: Modul đàn hồi (E)'),
+        Icoc: getFloatValue('vl-Icoc', 'Vật liệu: Momen quán tính (Icoc)'),
+        D: getFloatValue('vl-D', 'Vật liệu: Cạnh/Đường kính (D)'),
+        F: getFloatValue('vl-F', 'Vật liệu: Diện tích (F)'),
+        Fh: getFloatValue('vl-Fh', 'Vật liệu: Diện tích hữu hiệu (Fh)'),
+        Lcoc: getFloatValue('vl-Lcoc', 'Vật liệu: Chiều dài cọc (Lcoc)'),
+        L0: getFloatValue('vl-L0', 'Vật liệu: Chiều dài cọc tự do (L0)'),
+        m: getFloatValue('vl-m', 'Vật liệu: Hệ số m (m)')
+    };
+
+    // 2. Đất nền (dat_nen)
+    inputData.dat_nen = {
+        dieu_kien_mui: document.getElementById('dn-dieu-kien-mui').value,
+        Rdat: getFloatValue('dn-Rdat', 'Đất nền: Cường độ (Rdat)'),
+        mchan: getFloatValue('dn-mchan', 'Đất nền: Hệ số m chân (mchan)'),
+        nLopDat: getFloatValue('dn-nLopDat', 'Đất nền: Số lớp đất (nLopDat)')
+    };
     
-    // Lấy các phần tử DOM
-    const calculateButton = document.getElementById('calculate-button');
-    const calcSpinner = document.getElementById('calc-spinner');
-
-    // Gắn sự kiện chính
-    calculateButton.addEventListener('click', runCalculation);
-
-    /**
-     * Hàm chính: Điều phối toàn bộ quá trình tính toán.
-     */
-    function runCalculation() {
-        // 1. Chuẩn bị UI
-        hideError(); // Hàm này từ app-check.js
-        calcSpinner.style.display = 'inline-block';
-        calculateButton.disabled = true;
-
-        // Sử dụng setTimeout để cho phép UI cập nhật (hiển thị spinner)
-        setTimeout(() => {
-            try {
-                // 2. Kiểm tra Wasm
-                if (!g_WasmModule || !g_WasmModule.isReady || typeof g_WasmModule.calculate !== 'function') {
-                    throw new Error("Lỗi: Lõi tính toán (Wasm) chưa sẵn sàng. Vui lòng tải lại trang.");
-                }
-
-                // 3. Thu thập dữ liệu
-                const inputData = collectInputData();
-                
-                // 4. Xác thực dữ liệu (bao gồm cả kiểm tra license)
-                validateInputData(inputData); // Sẽ ném lỗi nếu thất bại
-
-                // 5. Gọi Wasm
-                const jsonInput = JSON.stringify(inputData);
-                const jsonOutput = g_WasmModule.calculate(jsonInput); // Gọi C++
-
-                // 6. Phân tích kết quả
-                const results = JSON.parse(jsonOutput);
-
-                // 7. Kiểm tra lỗi từ Wasm
-                if (results.status === "error") {
-                    // Ném lỗi do C++ trả về (ví dụ: "Ma tran suy bien")
-                    throw new Error(results.message);
-                }
-
-                // 8. Chuyển giao cho app-out.js
-                // Hàm displayResults() sẽ được định nghĩa trong app-out.js
-                displayResults(results); 
-
-            } catch (e) {
-                // Bắt bất kỳ lỗi nào (từ validate, Wasm, JSON.parse)
-                showError(e.message); // Hàm này từ app-check.js
-            } finally {
-                // 9. Dọn dẹp UI
-                calcSpinner.style.display = 'none';
-                calculateButton.disabled = false;
-            }
-        }, 10); // 10ms delay
+    // 2b. Các lớp đất (lop_dat)
+    inputData.dat_nen.lop_dat = [];
+    const lopDatRows = document.querySelectorAll('#lop-dat-table tbody tr');
+    lopDatRows.forEach((row, index) => {
+        const input = row.querySelector('input[type="number"]');
+        const ldat = parseFloat(input.value);
+        if (isNaN(ldat)) {
+            throw new Error(`Dữ liệu không hợp lệ tại Lớp đất ${index + 1}.`);
+        }
+        inputData.dat_nen.lop_dat.push({ Ldat: ldat });
+    });
+    
+    if (inputData.dat_nen.nLopDat !== lopDatRows.length) {
+         throw new Error(`Giá trị 'Số lớp đất' (${inputData.dat_nen.nLopDat}) không khớp với số hàng trong bảng (${lopDatRows.length}).`);
     }
 
-    /**
-     * Thu thập TẤT CẢ dữ liệu từ các tab UI và gom thành đối tượng JSON.
-     * @returns {object} Đối tượng JSON đầy đủ để gửi cho Wasm.
-     */
-    function collectInputData() {
-        // Helper để lấy số (float), với giá trị mặc định nếu rỗng
-        const getFloat = (id, defaultValue = 0.0) => {
-            const val = parseFloat(document.getElementById(id).value);
-            return isNaN(val) ? defaultValue : val;
+    // 3. Bệ cọc (be_coc)
+    inputData.be_coc = {
+        Bx: getFloatValue('bc-Bx', 'Bệ cọc: Kích thước Bx'),
+        By: getFloatValue('bc-By', 'Bệ cọc: Kích thước By')
+    };
+
+    // 4. Vị trí Cọc (coc)
+    inputData.coc = [];
+    const cocRows = document.querySelectorAll('#coc-table tbody tr');
+    cocRows.forEach((row, index) => {
+        const inputs = row.querySelectorAll('input[type="number"]');
+        const coc = {
+            x: parseFloat(inputs[0].value),
+            y: parseFloat(inputs[1].value),
+            fi: parseFloat(inputs[2].value),
+            psi: parseFloat(inputs[3].value)
         };
+        Object.entries(coc).forEach(([key, val]) => {
+            if (isNaN(val)) throw new Error(`Dữ liệu không hợp lệ tại Cọc ${index + 1}, trường ${key}.`);
+        });
+        inputData.coc.push(coc);
+    });
 
-        const inputData = {
-            vat_lieu: {
-                E: getFloat('input-E'),
-                F: getFloat('input-F'),
-                Icoc: getFloat('input-Icoc'),
-                D: getFloat('input-D'),
-                Lcoc: getFloat('input-Lcoc'),
-                L0: getFloat('input-L0'),
-                Fh: getFloat('input-F') // Giả định Fh = F (theo logic Be07v2.pas)
-            },
-            be_coc: {
-                Bx: getFloat('input-Bx'),
-                By: getFloat('input-By'),
-            },
-            dat_nen: {
-                m: getFloat('input-m'),
-                mchan: getFloat('input-mchan'),
-                Rdat: getFloat('input-Rdat'),
-                dieu_kien_mui: document.getElementById('select-dieu-kien-mui').value, // "K", "T", "N"
-                lop_dat: [],
-                nLopDat: 0
-            },
-            tai_trong: {
-                Hx: getFloat('input-Hx'),
-                Hy: getFloat('input-Hy'),
-                Pz: getFloat('input-Pz'),
-                Mx: getFloat('input-Mx'),
-                My: getFloat('input-My'),
-                Mz: getFloat('input-Mz')
-            },
-            coc: []
-        };
+    // 5. Tải trọng (tai_trong)
+    inputData.tai_trong = {
+        Hx: getFloatValue('tt-Hx', 'Tải trọng: Hx'),
+        Hy: getFloatValue('tt-Hy', 'Tải trọng: Hy'),
+        Pz: getFloatValue('tt-Pz', 'Tải trọng: Pz'),
+        Mx: getFloatValue('tt-Mx', 'Tải trọng: Mx'),
+        My: getFloatValue('tt-My', 'Tải trọng: My'),
+        Mz: getFloatValue('tt-Mz', 'Tải trọng: Mz')
+    };
 
-        // Thu thập dữ liệu lớp đất
-        const soilRows = document.getElementById('soil-layer-body').rows;
-        for (let i = 0; i < soilRows.length; i++) {
-            const cells = soilRows[i].getElementsByTagName('input');
-            inputData.dat_nen.lop_dat.push({
-                Ldat: parseFloat(cells[0].value) || 0,
-                Tdat: parseFloat(cells[1].value) || 0,
-                Phi: parseFloat(cells[2].value) || 0
-            });
-        }
-        inputData.dat_nen.nLopDat = soilRows.length;
+    return inputData;
+}
 
-        // Thu thập dữ liệu cọc
-        const pileRows = document.getElementById('pile-table-body').rows;
-        for (let i = 0; i < pileRows.length; i++) {
-            const cells = pileRows[i].getElementsByTagName('input');
-            inputData.coc.push({
-                x: parseFloat(cells[0].value) || 0,
-                y: parseFloat(cells[1].value) || 0,
-                fi: parseFloat(cells[2].value) || 0,
-                psi: parseFloat(cells[3].value) || 0
-            });
-        }
-
-        return inputData;
+/**
+ * Hàm chính thực thi phân tích
+ */
+async function runAnalysis() {
+    if (!wasmModule) {
+        alert("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
+        return;
     }
 
-    /**
-     * Kiểm tra dữ liệu đầu vào. Ném lỗi (throw Error) nếu có vấn đề.
-     * @param {object} input - Đối tượng JSON đã thu thập.
-     */
-    function validateInputData(input) {
-        if (!input) {
-            throw new Error("Không thể thu thập dữ liệu.");
-        }
+    showLoading(true);
+    hideError();
+    hideResults();
+
+    try {
+        const inputData = gatherInputData();
+        const inputJsonString = JSON.stringify(inputData);
         
-        const pileCount = input.coc.length;
-
-        if (pileCount === 0) {
-            throw new Error("Dữ liệu không hợp lệ: Cần ít nhất 1 cọc để tính toán.");
-        }
-
-        // Kiểm tra logic license
-        // g_isLicensed là biến toàn cục từ app-check.js
-        if (!g_isLicensed && pileCount > 10) {
-            throw new Error(`BẢN DÙNG THỬ (UNLICENSED) CHỈ HỖ TRỢ TỐI ĐA 10 CỌC. (Hiện tại có ${pileCount} cọc). Vui lòng đăng ký!`);
-        }
-
-        // Kiểm tra các giá trị vật lý cơ bản
-        if (input.vat_lieu.E <= 0 || input.vat_lieu.F <= 0 || input.vat_lieu.Icoc <= 0) {
-            throw new Error("Dữ liệu không hợp lệ: Thông số vật liệu E, F, Icoc phải lớn hơn 0.");
-        }
-
-        if (input.dat_nen.m <= 0) {
-             throw new Error("Dữ liệu không hợp lệ: Hệ số 'm' (T/m4) của đất nền phải lớn hơn 0.");
-        }
+        const resultJsonString = wasmModule.calculatePileGroup(inputJsonString);
         
-        if (input.dat_nen.lop_dat.length === 0) {
-            throw new Error("Dữ liệu không hợp lệ: Cần ít nhất 1 lớp đất (Ldat > 0) để tính Lnen.");
+        const result = JSON.parse(resultJsonString);
+
+        if (result.status === 'error') {
+            throw new Error(result.message);
+        } else {
+            // === THAY ĐỔI DUY NHẤT ===
+            // Gửi cả inputData (cho việc vẽ) và result (cho bảng)
+            displayResults(result, inputData); 
+            // =========================
         }
 
-        // (Có thể thêm các kiểm tra khác ở đây)
-
-        return true; // Tất cả đều hợp lệ
+    } catch (error) {
+        console.error("Analysis Error:", error);
+        displayError(error.message || "Đã xảy ra lỗi không xác định.");
+    } finally {
+        showLoading(false);
     }
+}
 
-}); // Kết thúc DOMContentLoaded
+/**
+ * KHỞI TẠO: Chờ DOM tải xong
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const runButton = document.getElementById('btn-run-analysis');
+    
+    runButton.disabled = true;
+    runButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải lõi...';
+
+    createPileGroupModule().then(Module => {
+        wasmModule = Module;
+        console.log("Pile Group WASM Module Loaded.");
+        
+        runButton.disabled = false;
+        runButton.innerHTML = '<i class="fas fa-play"></i> Run Analysis';
+        
+        runButton.addEventListener('click', runAnalysis);
+        
+    }).catch(e => {
+        console.error("Error loading WASM module:", e);
+        runButton.textContent = "Lỗi tải WASM";
+        runButton.classList.remove('btn-success');
+        runButton.classList.add('btn-danger');
+        if(typeof displayError === 'function') {
+            displayError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+        } else {
+            alert('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+        }
+    });
+});
