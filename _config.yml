@@ -7,8 +7,9 @@ url: "https://hydrostructai.com" # URL chính thức MỚI
 baseurl: "" # Để trống
 repository: "hydrostructai/hydrostructai.github.io"
 
+
 # --- Cấu hình Theme (Minimal Mistakes Setup) ---
-remote_theme: "mmistakes/minimal-mistakes"
+theme: "minimal-mistakes-jekyll" # THAY remote_theme bằng theme
 minimal_mistakes_skin: "air" # Giao diện màu. Thử: "default", "dark", "aqua", "neon"
 
 # --- Cấu hình Plugins (ĐÃ SỬA LỖI BUILD) ---
@@ -16,9 +17,11 @@ plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-  - jekyll-remote-theme
+  # - jekyll-remote-theme   # <-- XÓA DÒNG NÀY
   - jekyll-paginate        # <-- Bật plugin này để trang chủ 'home' hoạt động
   - jekyll-include-cache   # <-- THÊM DÒNG NÀY ĐỂ FIX LỖI 'include_cached'
+# ... (Giữ nguyên các cấu hình khác bên dưới)
+
 
 # --- Cấu hình Phân trang (Bắt buộc cho layout 'home') ---
 paginate: 5 # Số bài viết trên mỗi trang
