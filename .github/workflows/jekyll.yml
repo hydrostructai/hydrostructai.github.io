@@ -1,0 +1,50 @@
+# .github/workflows/jekyll.yml
+name: Build and Deploy Jekyll Site
+
+on:
+  push:
+    branches: ["main"] # THAY TH? b?ng branch chính (ví d?: "master" n?u b?n dùng master)
+
+# Cho phép m?t l?n deploy ch?y t?i m?t th?i di?m
+concurrency:
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        # S? d?ng phiên b?n Ruby hi?n d?i
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1'
+          bundler-cache: true
+
+      - name: Build Jekyll Site
+        # Ch?y build b?ng Bundler
+        run: bundle exec jekyll build
+
+      - name: Upload artifact
+        # Luu thu m?c _site làm artifact d? deploy
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './_site'
+
+  deploy:
+    # Yêu c?u quy?n truy c?p d? tri?n khai
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

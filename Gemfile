@@ -1,14 +1,17 @@
-# Ngu?n t?i c�c "gems"
+# Nguồn tải các "gems"
 source "https://rubygems.org"
 
-# S? d?ng Jekyll
-gem "jekyll", "~> 4.3.0" # Phi�n b?n Jekyll
+# Sử dụng Jekyll
+gem "jekyll", "~> 4.3.0" # Phiên bản Jekyll 4.x
 
-# C�c plugin c?n thi?t cho GitHub Pages v� theme
+# Các plugin cần thiết cho theme Minimal Mistakes
 gem "jekyll-remote-theme"
 gem "jekyll-feed", "~> 0.17.0"
 gem "jekyll-seo-tag", "~> 2.8.0"
 gem "jekyll-sitemap", "~> 1.4.0"
 
-# Plugin m?c d?nh c?a GitHub Pages
-gem "github-pages", group: :jekyll_plugins
+# Plugins BẮT BUỘC cho Minimal Mistakes và chức năng tuỳ chỉnh
+gem "jekyll-paginate" # Cần cho chức năng phân trang trang chủ
+gem "jekyll-include-cache" # Cần để fix lỗi 'include_cached'
+
+# Bỏ dòng: # gem "github-pages", group: :jekyll_plugins
