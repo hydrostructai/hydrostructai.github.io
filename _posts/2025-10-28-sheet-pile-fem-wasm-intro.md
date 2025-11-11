@@ -1,20 +1,20 @@
 ---
-layout: post
 title: "SheetPileFEM: PHÂN TÍCH TƯỜNG CỪ VÁN THEO PHƯƠNG PHÁP PHẦN TỬ HỮU HẠN"
-description: "Giới thiệu ứng dụng web SheetPileFEM, sử dụng lõi WebAssembly (WASM) để phân tích tường cừ ván theo phương pháp phần tử hữu hạn (FEM) ngay trên trình duyệt."
 date: 2025-10-28 10:00:00 +0700
-categories: [Geotechnical, FEM, WebApp]
+categories: 
+    - Sheet Pile Wall
+    - Geotechnical
 tags:
   - Nền móng
   - Tường cừ ván
-  - C++
-  - WebAssembly
   - FEM
+author_profile: true
+author: "TS. Nguyễn Hải Hà"
+read_time: true
 toc: true
 toc_label: "Mục lục"
 toc_icon: "fas fa-clipboard-list"
-author_profile: true
-author: "TS. Nguyễn Hải Hà"
+
 ---
 
 ### 1. Bài toán Địa kỹ thuật Cổ điển

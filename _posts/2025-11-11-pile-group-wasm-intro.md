@@ -1,8 +1,9 @@
 ---
 title: "PILE GROUP 3D: TÍNH TOÁN MÓNG CỌC ĐÀI CAO THEO ZAVRIEV - SPIRO"
+date: 2025-11-10 8:00:00 +0700
 categories:
-  - Engineering
-  - WASM
+  - Pile Foundation
+  - Geotechnical
 tags:
   - Nền móng
   - Móng Cọc
