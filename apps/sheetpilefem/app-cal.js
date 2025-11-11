@@ -13,6 +13,7 @@
 
     /**
      * Thu thập tất cả dữ liệu từ UI và xây dựng đối tượng JSON cho WASM.
+     * (ĐÃ CẬP NHẬT)
      * @returns {object} The complete AnalysisInput object.
      */
     function collectInputs() {
@@ -28,6 +29,15 @@
         inputs.E = parseFloat(App.dom.inpE.value);
         inputs.I = parseFloat(App.dom.inpI.value);
         inputs.pressure_theory = App.dom.inpPressureTheory.value;
+
+        // --- SỬA LỖI 1: Fix lỗi "key 'pile_type' not found" ---
+        // Thêm khóa 'pile_type' mà C++ yêu cầu (từ datastructs.h).
+        inputs.pile_type = "Default Pile Type"; // Gán giá trị mặc định
+
+        // --- SỬA LỖI 2: Thêm logic Tải trọng Phân bố đều ---
+        // Đọc giá trị từ trường input mới (trong Tab 4)
+        inputs.uniform_surcharge_kPa = parseFloat(App.dom.inpSurchargeUniform.value) || 0;
+        // --- KẾT THÚC SỬA LỖI ---
 
         // 2. Tùy chọn Phân tích
         inputs.max_iterations = 30;
@@ -64,7 +74,8 @@
             }
         });
         
-        // 5. Tải trọng (Rỗng)
+        // 5. Tải trọng (Tính năng Pro)
+        // (Logic đọc bảng "table-load-pro-body" sẽ được thêm vào đây)
         inputs.surcharge_loads = [];
 
         return inputs;
@@ -91,6 +102,7 @@
         } catch (e) {
             console.error("Input collection error:", e);
             App.handleError("ERROR_INPUT_COLLECTION");
+            App.dom.btnRun.disabled = false; // Mở lại nút
             return;
         }
 
@@ -99,14 +111,15 @@
         // Biến App.isLicensed được quản lý trong app-check.js
         if (!App.isLicensed) {
             const trialSoilLimit = 2;
-            const trialAnchorLimit = 0; // Giả sử chế độ thử không cho phép neo
+            const trialAnchorLimit = 0; // Chế độ thử không cho phép neo
+            
+            // (Chúng ta có thể thêm kiểm tra tải trọng Pro ở đây nếu cần)
+            // const trialProLoadLimit = 0; 
             
             if (inputs.soil_layers.length > trialSoilLimit || inputs.anchors.length > trialAnchorLimit) {
                 
-                // Sử dụng mã lỗi mới (sẽ được thêm vào app-check.js)
                 App.handleError("ERROR_PRO_ANALYSIS_DENIED"); 
                 
-                // Mở lại nút Run
                 App.dom.btnRun.disabled = false;
                 return; // Dừng thực thi
             }
@@ -120,22 +133,22 @@
             const inputJsonString = JSON.stringify(inputs);
             
             // Gọi hàm C++
-            // LƯU Ý: Lõi WASM (runAnalysis) không nhận trạng thái license.
-            // Đó là lý do chúng ta phải kiểm tra ở bước 1.5.
             const resultJsonString = App.WASM_MODULE.runAnalysis(inputJsonString);
             
             results = JSON.parse(resultJsonString);
 
             if (results.error) {
-                // Lỗi từ C++ (ví dụ: "Matrix unstable")
+                // Lỗi từ C++ (ví dụ: "Matrix unstable" hoặc "key not found")
                 console.error("C++ Core Error:", results.details);
                 App.handleError("ERROR_CPP_ANALYSIS_FAILED", results.details);
+                App.dom.btnRun.disabled = false; // Mở lại nút
                 return;
             }
         } catch (e) {
             // Lỗi JS hoặc binding
             console.error("WASM Call Error:", e);
             App.handleError("ERROR_WASM_CALL_FAILED");
+            App.dom.btnRun.disabled = false; // Mở lại nút
             return;
         }
 
@@ -161,8 +174,6 @@
      * @param {Event} e The change event.
      */
     function handleFileImport(e) {
-        // KHÔNG CÒN: if (!App.isLicensed) ...
-        
         const file = e.target.files[0];
         if (!file) return;
 
@@ -209,6 +220,7 @@
             } else if (type === 'ANCHOR' && values[0] !== 'col1') {
                 newData.anchor.push(values);
             }
+            // (Chúng ta có thể thêm logic đọc Tải trọng 'LOAD' ở đây)
         });
         
         App.loadDataIntoUI(newData); // Gọi hàm từ app-check.js
@@ -235,6 +247,7 @@
 
     /**
      * Thu thập input hiện tại và lưu dưới dạng CSV.
+     * (ĐÃ CẬP NHẬT)
      */
     function handleSaveInputCSV() {
         const inputs = collectInputs();
@@ -249,12 +262,16 @@
         csvContent.push("TYPE,Parameter,Value,Unit");
         csvContent.push(`WALL,wall_top,${inputs.wall_top},m`);
         csvContent.push(`WALL,wall_bottom,${inputs.wall_bottom},m`);
-        // ... (thêm các dòng còn lại)
-         inputs.wall.forEach(item => {
-             if (item.param !== 'wall_top' && item.param !== 'wall_bottom') {
-                 csvContent.push(`WALL,${item.param},${item.value},`); // Đơn giản hóa
-             }
-         });
+        csvContent.push(`WALL,ground_behind,${inputs.ground_behind},m`);
+        csvContent.push(`WALL,ground_front,${inputs.ground_front},m`);
+        csvContent.push(`WALL,water_behind,${inputs.water_behind},m`);
+        csvContent.push(`WALL,water_front,${inputs.water_front},m`);
+        csvContent.push(`WALL,E,${inputs.E},kN/m2`);
+        csvContent.push(`WALL,I,${inputs.I},m4/m`);
+        csvContent.push(`WALL,pressure_theory,${inputs.pressure_theory},`);
+        
+        // Thêm trường tải trọng mới
+        csvContent.push(`WALL,uniform_surcharge_kPa,${inputs.uniform_surcharge_kPa},kPa`);
         csvContent.push("#");
         
         // 2. Dữ liệu Đất
@@ -271,6 +288,8 @@
         inputs.anchors.forEach(a => {
             csvContent.push(`ANCHOR,${a.id},${a.elevation},${a.slope},${a.stiffness},${a.section}`);
         });
+        
+        // (Chúng ta có thể thêm logic lưu Tải trọng Pro 'LOAD' ở đây)
 
         App.downloadFile(csvContent.join('\n'), 'sheetpile_input.csv', 'text/csv'); // Gọi hàm trợ giúp
     }

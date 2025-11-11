@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sheet Pile FEM</title>
+    <title>SheetPileFEM-WASM - (hydrostructai.github.io)</title>
     
     <link rel="icon" href="data:,">
 
@@ -66,10 +66,12 @@
                         <button class="nav-link" id="tab-soil" data-bs-toggle="tab" data-bs-target="#content-soil" type="button">3. Các Lớp đất</button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="tab-anchors" data-bs-toggle="tab" data-bs-target="#content-anchors" type="button">4. Neo & Tải trọng</button>
+                        <button class="nav-link" id="tab-loads" data-bs-toggle="tab" data-bs-target="#content-loads" type="button">4. Tải trọng</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tab-anchors" data-bs-toggle="tab" data-bs-target="#content-anchors" type="button">5. Neo</button>
                     </li>
                 </ul>
-
                 <div class="tab-content p-3 border border-top-0" id="inputTabContent">
                     
                     <div class="tab-pane fade show active" id="content-license" role="tabpanel">
@@ -135,32 +137,57 @@
                                     </tr>
                                 </thead>
                                 <tbody id="table-soil-body">
-                                    <tr>
-                                        <td><input type="text" class="form-control form-control-sm" value="Lop 1 (Cat pha)"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="1.5"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="18.0"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="19.0"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="30"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="2"></td>
-                                        <td><button class="btn btn-sm btn-danger btn-remove-row">X</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td><input type="text" class="form-control form-control-sm" value="Lop 2 (Set deo)"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="-8.0"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="16.5"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="17.5"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="10"></td>
-                                        <td><input type="number" class="form-control form-control-sm" value="15"></td>
-                                        <td><button class="btn btn-sm btn-danger btn-remove-row">X</button></td>
-                                    </tr>
                                     </tbody>
                             </table>
                         </div>
                         <button class="btn btn-sm btn-outline-primary" id="btn-add-soil-row">Thêm Lớp đất</button>
                     </div>
 
+                    <div class="tab-pane fade" id="content-loads" role="tabpanel">
+                        
+                        <h6 class="text-primary">Tải trọng Phân bố đều (Tính năng Trial)</h6>
+                        <p class="text-muted small">Tải trọng này (q, đơn vị kPa) tác dụng lên mặt đất phía sau tường (ground_behind).</p>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="inp-surcharge-uniform" class="form-label">Giá trị Tải trọng (kPa)</label>
+                                <input type="number" class="form-control" id="inp-surcharge-uniform" value="0">
+                            </div>
+                        </div>
+                        
+                        <hr class="my-3">
+
+                        <h6 class="text-danger">Tải trọng Phức tạp (Tính năng Pro)</h6>
+                        <p class="text-muted small">Bao gồm tải trọng tập trung, tải trọng hình thang, v.v.</p>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Loại Tải</th>
+                                        <th>Cao độ (m)</th>
+                                        <th>Giá trị 1 (kN/m hoặc kPa)</th>
+                                        <th>Giá trị 2 (kPa)</th>
+                                        <th>Khoảng cách (m)</th>
+                                        <th>Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-load-pro-body">
+                                    <tr>
+                                        <td><input type="text" class="form-control form-control-sm" value="Tập trung" disabled></td>
+                                        <td><input type="number" class="form-control form-control-sm" value="1.0" disabled></td>
+                                        <td><input type="number" class="form-control form-control-sm" value="100" disabled></td>
+                                        <td><input type="number" class="form-control form-control-sm" disabled></td>
+                                        <td><input type="number" class="form-control form-control-sm" disabled></td>
+                                        <td><button class="btn btn-sm btn-danger btn-remove-row" disabled>X</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" id="btn-add-load-pro">Thêm Tải trọng (Pro)</button>
+
+                    </div>
                     <div class="tab-pane fade" id="content-anchors" role="tabpanel">
-                        <h6>Hệ thống Neo (Tính năng Pro)</h6>
+                        <h6 class="text-danger">Hệ thống Neo (Tính năng Pro)</h6>
                         <div class="table-responsive">
                             <table class="table table-sm table-striped">
                                 <thead class="table-dark">
@@ -178,8 +205,8 @@
                             </table>
                         </div>
                         <button class="btn btn-sm btn-outline-primary" id="btn-add-anchor-row">Thêm Neo</button>
-                        </div>
-                </div>
+                    </div>
+                    </div>
             </div>
 
             <div class="card-footer p-3 d-flex justify-content-between align-items-center">
@@ -253,7 +280,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script src="sheetpilefem.js"></script>
-    
     <script>
         var SheetPileApp = {};
     </script>
@@ -261,5 +287,6 @@
     <script src="app-check.js"></script>
     <script src="app-cal.js"></script>
     <script src="app-out.js"></script>
-    </body>
+
+</body>
 </html>

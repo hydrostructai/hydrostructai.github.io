@@ -3,291 +3,336 @@
  * app-out.js
  *
  * Chịu trách nhiệm:
- * 1. Hàm `displayResults` chính.
- * 2. Tất cả các hàm vẽ biểu đồ Plotly (Geometry, Pressure, Deflection, v.v.).
- * 3. Các hàm điền dữ liệu vào bảng kết quả (Summary, Detailed).
- * 4. Logic cho nút "Save Results CSV".
+ * 1. Logic cho việc vẽ biểu đồ Plotly.
+ * 2. Logic cho việc hiển thị bảng tóm tắt và bảng chi tiết.
+ * 3. Logic cho việc xuất kết quả ra CSV.
  */
 (function(App) {
     "use-strict";
 
+    const PLOTLY_CONFIG = {
+        responsive: true,
+        displaylogo: false,
+        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud', 'select2d', 'lasso2d', 'toggleSpikelines']
+    };
+
     /**
-     * Hàm chính để hiển thị tất cả kết quả.
-     * @param {Array} results Mảng các đối tượng ResultNode từ WASM.
-     * @param {object} inputs Đối tượng input (cần cho biểu đồ hình học).
+     * Hàm trợ giúp tạo layout chung cho Plotly
+     * @param {string} title Tiêu đề biểu đồ
+     * @param {string} xtitle Tên trục X
+     * @param {string} ytitle Tên trục Y
+     * @param {boolean} x_reversed True nếu đảo ngược trục X
+     * @returns {object} Đối tượng layout của Plotly
+     */
+    function plotlyLayout(title, xtitle, ytitle, x_reversed = false) {
+        return {
+            title: {
+                text: title,
+                font: { size: 16 }
+            },
+            xaxis: {
+                title: xtitle,
+                autorange: x_reversed ? 'reversed' : true,
+                zeroline: true,
+                zerolinecolor: '#999',
+                zerolinewidth: 1,
+            },
+            yaxis: {
+                title: ytitle
+            },
+            legend: {
+                orientation: 'h',
+                yanchor: 'bottom',
+                y: 1.02,
+                xanchor: 'right',
+                x: 1
+            },
+            margin: { l: 70, r: 40, b: 60, t: 60, pad: 4 }
+        };
+    }
+
+    /**
+     * Hàm chính: Nhận kết quả và gọi các hàm vẽ
+     * @param {Array<object>} results Mảng các đối tượng ResultNode từ C++
+     * @param {object} inputs Đối tượng AnalysisInput đã gửi cho C++
      */
     App.displayResults = function(results, inputs) {
-        // 1. Vẽ Biểu đồ
-        plotGeometryChart(results, inputs);
-        plotStandardCharts(results);
-        plotPressureChart(results); 
-        
-        // 2. Điền Bảng
-        populateSummaryTable(results);
-        populateDetailedTable(results);
-    }
-    
-    /**
-     * Vẽ 3 biểu đồ phân tích chuẩn (Chuyển vị, Moment, Lực cắt).
-     * @param {Array} results Mảng các đối tượng ResultNode.
-     */
-    function plotStandardCharts(results) {
-        const elev = results.map(r => r.elevation);
-        const deflect = results.map(r => r.displacement_mm);
-        const moment = results.map(r => r.moment_kNm);
-        const shear = results.map(r => r.shear_kN);
+        // 1. Vẽ các biểu đồ
+        plotGeom(results, inputs);
+        plotPressure(results);
+        plotDeflection(results);
+        plotMoment(results);
+        plotShear(results);
 
-        const commonLayout = {
-            yaxis: { title: 'Elevation (m)' },
-            margin: { l: 60, r: 20, t: 40, b: 50 },
-            hovermode: 'y unified'
-        };
-
-        Plotly.newPlot(App.dom.chartDeflection,
-            [{ x: deflect, y: elev, type: 'scatter', mode: 'lines', name: 'Deflection' }],
-            { ...commonLayout, title: 'Wall Deflection', xaxis: { title: 'Deflection (mm)' } }
-        );
-        Plotly.newPlot(App.dom.chartMoment,
-            [{ x: moment, y: elev, type: 'scatter', mode: 'lines', name: 'Moment' }],
-            { ...commonLayout, title: 'Bending Moment', xaxis: { title: 'Moment (kNm/m)' } }
-        );
-        Plotly.newPlot(App.dom.chartShear,
-            [{ x: shear, y: elev, type: 'scatter', mode: 'lines', name: 'Shear' }],
-            { ...commonLayout, title: 'Shear Force', xaxis: { title: 'Shear (kN/m)' } }
-        );
+        // 2. Hiển thị các bảng
+        displaySummaryTable(results);
+        displayResultsTable(results);
     }
 
     /**
-     * Vẽ biểu đồ Áp lực Đất
-     * @param {Array} results Mảng đối tượng ResultNode.
+     * 1. Vẽ Biểu đồ Hình học (Geometry)
      */
-    function plotPressureChart(results) {
-        const elev = results.map(r => r.elevation);
+    function plotGeom(results, inputs) {
+        const elevations = results.map(r => r.elevation);
+        const y_min = Math.min(...elevations);
+        const y_max = Math.max(...elevations);
+        const y_range = y_max - y_min;
+
+        const traces = [];
+
+        // 1. Vẽ Tường
+        traces.push({
+            x: [0, 0],
+            y: [inputs.wall_top, inputs.wall_bottom],
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: '#333', width: 5 },
+            name: 'Tường Cừ'
+        });
+
+        // 2. Vẽ Mặt đất
+        traces.push({
+            x: [-1, 0],
+            y: [inputs.ground_behind, inputs.ground_behind],
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'green', dash: 'solid' },
+            name: 'Mặt đất (Sau)'
+        });
+        traces.push({
+            x: [0, 1],
+            y: [inputs.ground_front, inputs.ground_front],
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'darkred', dash: 'solid' },
+            name: 'Mặt đất (Trước)'
+        });
+
+        // 3. Vẽ Mực nước
+        traces.push({
+            x: [-1, 0],
+            y: [inputs.water_behind, inputs.water_behind],
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'blue', dash: 'dash' },
+            name: 'Mực nước (Sau)'
+        });
+        traces.push({
+            x: [0, 1],
+            y: [inputs.water_front, inputs.water_front],
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'cyan', dash: 'dash' },
+            name: 'Mực nước (Trước)'
+        });
+
+        // 4. Vẽ Neo
+        inputs.anchors.forEach(anchor => {
+            traces.push({
+                x: [-0.5, 0],
+                y: [anchor.elevation, anchor.elevation],
+                type: 'scatter',
+                mode: 'lines+markers',
+                line: { color: 'orange', width: 3 },
+                marker: { symbol: 'triangle-left', size: 12, color: 'orange' },
+                name: `Neo #${anchor.id}`
+            });
+        });
+
+        const layout = plotlyLayout('Mô hình Hình học', 'Vị trí Tương đối', 'Cao độ (m)');
+        layout.xaxis.range = [-1.5, 1.5];
+        layout.xaxis.showticklabels = false;
+        layout.yaxis.range = [inputs.wall_bottom - y_range * 0.1, inputs.wall_top + y_range * 0.1];
+
+        Plotly.newPlot(App.dom.chartGeom, traces, layout, PLOTLY_CONFIG);
+    }
+
+    /**
+     * 2. Vẽ Biểu đồ Áp lực (Pressure)
+     */
+    function plotPressure(results) {
+        const elevations = results.map(r => r.elevation);
         
-        // Tính tổng áp lực chủ động (đất + nước)
-        const active_total = results.map(r => (r.pressure_active_kPa || 0) + (r.pressure_water_behind_kPa || 0));
+        // p_active_kPa là TỔNG áp lực (Đất + Tải trọng + Nước)
+        const p_active = results.map(r => r.p_active_kPa); 
         
-        // Tính tổng áp lực bị động (đất + nước) và nhân với -1 để vẽ sang trái
-        const passive_total = results.map(r => -((r.pressure_passive_kPa || 0) + (r.pressure_water_front_kPa || 0)));
+        // p_passive_kPa là phản lực bị động
+        const p_passive = results.map(r => r.p_passive_kPa);
 
         const traceActive = {
-            x: active_total,
-            y: elev,
+            x: p_active,
+            y: elevations,
             type: 'scatter',
             mode: 'lines',
-            name: 'Áp lực Chủ động (Tổ hợp)',
-            fill: 'tozerox', 
-            fillcolor: 'rgba(214, 39, 40, 0.2)', 
-            line: { color: 'rgba(214, 39, 40, 0.6)' }
+            fill: 'tozerox',
+            line: { color: 'red' },
+            name: 'Áp lực Chủ động (Net)'
         };
-
+        
         const tracePassive = {
-            x: passive_total,
-            y: elev,
+            x: p_passive,
+            y: elevations,
             type: 'scatter',
             mode: 'lines',
-            name: 'Áp lực Bị động (Tổ hợp)',
-            fill: 'tozerox', 
-            fillcolor: 'rgba(31, 119, 180, 0.2)', 
-            line: { color: 'rgba(31, 119, 180, 0.6)' }
+            fill: 'tozerox',
+            line: { color: 'green' },
+            name: 'Phản lực Bị động'
         };
         
-        const layout = {
-            title: 'Biểu đồ áp lực đấy (Tổ hợp)',
-            xaxis: { 
-                title: 'Áp lực (kPa)', 
-                zeroline: true, 
-                zerolinewidth: 2, 
-                zerolinecolor: '#000' 
-            },
-            yaxis: { title: 'Cao độ (m)' },
-            margin: { l: 60, r: 20, t: 40, b: 50 },
-            hovermode: 'y unified',
-            legend: { yanchor: "top", y: 0.99, xanchor: "left", x: 0.01 }
-        };
-        
-        Plotly.newPlot(App.dom.chartPressure, [traceActive, tracePassive], layout);
+        // (Để tách p_a và p_q, C++ phải trả về các trường riêng biệt)
+
+        const layout = plotlyLayout('Biểu đồ Áp lực Đất (Net)', 'Áp lực (kPa)', 'Cao độ (m)', true);
+        Plotly.newPlot(App.dom.chartPressure, [traceActive, tracePassive], layout, PLOTLY_CONFIG);
     }
 
     /**
-     * Vẽ biểu đồ hình học mô hình.
-     * @param {Array} results Mảng đối tượng ResultNode.
-     * @param {object} inputs Đối tượng input.
+     * 3. Vẽ Biểu đồ Chuyển vị (Deflection)
      */
-    function plotGeometryChart(results, inputs) {
-        const shapes = [];
-        const annotations = [];
-        
-        let minX = -10, maxX = 10; // Khoảng X cho hình học
+    function plotDeflection(results) {
+        const elevations = results.map(r => r.elevation);
+        const deflections = results.map(r => r.displacement_mm);
 
-        // 1. Thêm các Lớp đất
-        const sortedSoil = [...inputs.soil_layers].sort((a, b) => b.top_elevation - a.top_elevation);
-        let bottomElev = inputs.wall_bottom - 5; // Đáy biểu đồ
-        
-        sortedSoil.forEach((layer, i) => {
-            let top = layer.top_elevation;
-            let bottom = (i + 1 < sortedSoil.length) ? sortedSoil[i+1].top_elevation : bottomElev;
-            
-            shapes.push({
-                type: 'rect',
-                xref: 'paper', x0: 0, x1: 1, // Toàn chiều rộng
-                y0: bottom, y1: top,
-                fillcolor: `rgba(150, 150, 150, ${0.1 + (i*0.05)})`,
-                line: { width: 0 }
-            });
-            annotations.push({
-                x: 0.95, xref: 'paper',
-                y: (top + bottom) / 2,
-                text: layer.name,
-                showarrow: false,
-                font: { color: '#555', size: 10 }
-            });
-        });
-
-        // 2. Thêm Tường
-        shapes.push({
-            type: 'line',
-            x0: 0, x1: 0,
-            y0: inputs.wall_bottom, y1: inputs.wall_top,
-            line: { color: 'black', width: 4 }
-        });
-
-        // 3. Thêm các đường Mực nước/Mặt đất
-        const addLine = (y, color, name) => {
-            shapes.push({
-                type: 'line',
-                x0: minX, x1: maxX,
-                y0: y, y1: y,
-                line: { color: color, width: 2, dash: 'dot' }
-            });
-            annotations.push({
-                x: minX + 0.5, y: y, text: name, showarrow: false, ay: -10
-            });
+        const trace = {
+            x: deflections,
+            y: elevations,
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'blue' },
+            name: 'Chuyển vị'
         };
-        
-        addLine(inputs.ground_behind, 'green', 'Ground (Behind)');
-        addLine(inputs.ground_front, 'darkgreen', 'Ground (Front)');
-        addLine(inputs.water_behind, 'blue', 'Water (Behind)');
-        addLine(inputs.water_front, 'darkblue', 'Water (Front)');
-        
-        // 4. Thêm Neo
-        inputs.anchors.forEach(anchor => {
-             annotations.push({
-                x: 0, y: anchor.elevation,
-                text: `? Anchor ${anchor.id}`,
-                showarrow: true, ax: -30, ay: 0,
-                font: { color: 'red' }
-            });
-        });
 
-        const layout = {
-            title: 'Model Geometry',
-            xaxis: { visible: false, range: [minX, maxX] },
-            yaxis: { title: 'Elevation (m)', range: [bottomElev, inputs.wall_top + 5] },
-            margin: { l: 60, r: 20, t: 40, b: 50 },
-            shapes: shapes,
-            annotations: annotations,
-            showlegend: false
-        };
-        
-        Plotly.newPlot(App.dom.chartGeom, [], layout);
+        const layout = plotlyLayout('Biểu đồ Chuyển vị', 'Chuyển vị (mm)', 'Cao độ (m)');
+        Plotly.newPlot(App.dom.chartDeflection, [trace], layout, PLOTLY_CONFIG);
     }
-    
+
     /**
-     * Điền bảng tóm tắt (max/min).
-     * @param {Array} results Mảng đối tượng ResultNode.
+     * 4. Vẽ Biểu đồ Moment
      */
-    function populateSummaryTable(results) {
-        const deflect = results.map(r => r.displacement_mm);
-        const moment = results.map(r => r.moment_kNm);
-        const shear = results.map(r => r.shear_kN);
+    function plotMoment(results) {
+        const elevations = results.map(r => r.elevation);
+        const moments = results.map(r => r.moment_kNm);
 
-        const maxDeflect = Math.max(...deflect.map(Math.abs));
-        const maxMoment = Math.max(...moment.map(Math.abs));
-        const maxShear = Math.max(...shear.map(Math.abs));
+        const trace = {
+            x: moments,
+            y: elevations,
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'purple' },
+            name: 'Moment'
+        };
 
-        App.dom.tableSummaryContainer.innerHTML = `
-            <table class="table table-sm table-bordered" style="max-width: 600px;">
+        const layout = plotlyLayout('Biểu đồ Moment', 'Moment (kNm/m)', 'Cao độ (m)');
+        Plotly.newPlot(App.dom.chartMoment, [trace], layout, PLOTLY_CONFIG);
+    }
+
+    /**
+     * 5. Vẽ Biểu đồ Lực cắt (Shear)
+     */
+    function plotShear(results) {
+        const elevations = results.map(r => r.elevation);
+        const shears = results.map(r => r.shear_kN);
+
+        const trace = {
+            x: shears,
+            y: elevations,
+            type: 'scatter',
+            mode: 'lines',
+            line: { color: 'orange' },
+            name: 'Lực cắt'
+        };
+
+        const layout = plotlyLayout('Biểu đồ Lực cắt', 'Lực cắt (kN/m)', 'Cao độ (m)');
+        Plotly.newPlot(App.dom.chartShear, [trace], layout, PLOTLY_CONFIG);
+    }
+
+
+    /**
+     * 6. Hiển thị Bảng Tóm tắt
+     */
+    function displaySummaryTable(results) {
+        // Tìm giá trị lớn nhất
+        const maxMoment = Math.max(...results.map(r => r.moment_kNm));
+        const minMoment = Math.min(...results.map(r => r.moment_kNm));
+        const maxShear = Math.max(...results.map(r => r.shear_kN));
+        const minShear = Math.min(...results.map(r => r.shear_kN));
+        const maxDeflection = Math.max(...results.map(r => r.displacement_mm));
+        const minDeflection = Math.min(...results.map(r => r.displacement_mm));
+
+        // (Chúng ta có thể thêm logic tìm cao độ của các giá trị này)
+
+        const html = `
+            <table class="table table-sm table-bordered">
                 <thead class="table-light">
-                    <tr><th>Parameter</th><th>Value</th><th>Unit</th></tr>
+                    <tr>
+                        <th>Hạng mục</th>
+                        <th>Giá trị Lớn nhất</th>
+                        <th>Giá trị Nhỏ nhất</th>
+                    </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Max Deflection</td><td>${maxDeflect.toFixed(2)}</td><td>mm</td></tr>
-                    <tr><td>Max Bending Moment</td><td>${maxMoment.toFixed(2)}</td><td>kNm/m</td></tr>
-                    <tr><td>Max Shear Force</td><td>${maxShear.toFixed(2)}</td><td>kN/m</td></tr>
+                    <tr>
+                        <td>Moment (kNm/m)</td>
+                        <td>${maxMoment.toFixed(2)}</td>
+                        <td>${minMoment.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Lực cắt (kN/m)</td>
+                        <td>${maxShear.toFixed(2)}</td>
+                        <td>${minShear.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td>Chuyển vị (mm)</td>
+                        <td>${maxDeflection.toFixed(2)}</td>
+                        <td>${minDeflection.toFixed(2)}</td>
+                    </tr>
                 </tbody>
             </table>
         `;
+        App.dom.tableSummaryContainer.innerHTML = html;
     }
 
     /**
-     * Điền bảng kết quả chi tiết.
-     * @param {Array} results Mảng đối tượng ResultNode.
+     * 7. Hiển thị Bảng Kết quả Chi tiết
      */
-    function populateDetailedTable(results) {
+    function displayResultsTable(results) {
         // 1. Tạo Header
-        App.dom.tableResultsHeader.innerHTML = '';
         const headers = Object.keys(results[0]);
-        const trHead = document.createElement('tr');
-        headers.forEach(h => {
-            const th = document.createElement('th');
-            th.textContent = h;
-            trHead.appendChild(th);
-        });
-        App.dom.tableResultsHeader.appendChild(trHead);
+        let headerHtml = '<tr>';
+        headers.forEach(h => headerHtml += `<th>${h}</th>`);
+        headerHtml += '</tr>';
+        App.dom.tableResultsHeader.innerHTML = headerHtml;
 
         // 2. Tạo Body
-        App.dom.tableResultsBody.innerHTML = '';
+        let bodyHtml = '';
         results.forEach(row => {
-            const tr = document.createElement('tr');
-            headers.forEach(h => {
-                const td = document.createElement('td');
-                let val = row[h];
-                if (typeof val === 'number') {
-                    if (Math.abs(val) > 100) {
-                         td.textContent = val.toFixed(1);
-                    } else if (Math.abs(val) > 0.1) {
-                         td.textContent = val.toFixed(3);
-                    } else if (val === 0) {
-                         td.textContent = 0;
-                    }
-                    else {
-                        td.textContent = val.toExponential(2);
-                    }
-                } else {
-                    td.textContent = val;
-                }
-                tr.appendChild(td);
+            bodyHtml += '<tr>';
+            headers.forEach(key => {
+                const val = row[key];
+                // Làm tròn số nếu là kiểu number
+                const displayVal = (typeof val === 'number') ? val.toFixed(3) : val;
+                bodyHtml += `<td>${displayVal}</td>`;
             });
-            App.dom.tableResultsBody.appendChild(tr);
+            bodyHtml += '</tr>';
         });
+        App.dom.tableResultsBody.innerHTML = bodyHtml;
     }
-
+    
     /**
-     * Lưu bảng kết quả chi tiết ra CSV.
+     * 8. Xuất Bảng Kết quả ra CSV
      */
-    function handleSaveResultsCSV() {
-        const rows = [];
+    App.handleSaveResultsCSV = function() {
+        const header = App.dom.tableResultsHeader.innerText.trim();
+        const body = App.dom.tableResultsBody.innerText.trim();
         
-        // 1. Lấy Header
-        const header = [];
-        App.dom.tableResultsHeader.querySelectorAll('th').forEach(th => {
-            header.push(th.textContent);
-        });
-        rows.push(header);
-
-        // 2. Lấy Body
-        App.dom.tableResultsBody.querySelectorAll('tr').forEach(tr => {
-            const row = [];
-            tr.querySelectorAll('td').forEach(td => {
-                row.push(td.textContent);
-            });
-            rows.push(row);
-        });
+        if (!header || !body) {
+            App.setStatus('Không có dữ liệu kết quả để lưu.', 'text-danger');
+            return;
+        }
         
-        const csvString = Papa.unparse(rows);
-        App.downloadFile(csvString, 'sheetpile_results.csv', 'text/csv'); // Gọi hàm trợ giúp
+        const csvContent = header + '\n' + body;
+        
+        App.downloadFile(csvContent, 'sheetpile_results.csv', 'text/csv');
+        App.setStatus('Đã lưu kết quả CSV.', 'text-success');
     }
-    App.handleSaveResultsCSV = handleSaveResultsCSV; // Expose
 
 })(SheetPileApp); // Truyền vào không gian tên chung
