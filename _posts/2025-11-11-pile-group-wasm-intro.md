@@ -10,7 +10,8 @@ tags:
   - C++
   - WebAssembly
   - FEM
-author_profile: "TS. Nguyễn Hải Hà"
+author_profile: true
+author: "TS. Nguyễn Hải Hà"
 read_time: true
 toc: true
 toc_label: "Mục lục"
@@ -32,8 +33,8 @@ Logic cốt lõi của nó bao gồm:
 
 Việc sử dụng Turbo Pascal, dù mạnh mẽ về logic, gây ra rào cản về giao diện (DOS) và khả năng phân phối. Chúng tôi đã thực hiện các bước sau:
 
-1.  **Chuyển đổi ngôn ngữ:** Toàn bộ logic Pascal đã được chuyển sang **C++** (`pilegroup.cpp`).
-2.  **Biên dịch tối ưu:** Sử dụng **Emscripten** để biên dịch C++ thành mô-đun Wasm (`pilegroup.wasm`).
+1.  **Chuyển đổi ngôn ngữ:** Toàn bộ logic Pascal đã được chuyển sang **C++**.
+2.  **Biên dịch tối ưu:** Sử dụng **Emscripten** để biên dịch C++ thành mô-đun.
 3.  **Tích hợp Web:** Xây dựng một giao diện web hiện đại (HTML/JS/Bootstrap) cho phép nhập liệu dễ dàng (kể cả từ CSV/Excel) và hiển thị kết quả trực quan (bảng, biểu đồ).
 
 **Lợi ích của Wasm:** Tốc độ tính toán ma trận, vốn đòi hỏi nhiều tài nguyên, được duy trì ở mức native C++, đảm bảo độ tin cậy và hiệu suất ngay trong trình duyệt.
@@ -49,4 +50,10 @@ Việc sử dụng Turbo Pascal, dù mạnh mẽ về logic, gây ra rào cản 
 
 Bạn có thể nhập liệu bằng tay qua giao diện multi-tab hoặc tải dữ liệu bố trí cọc từ tệp CSV/Excel. Kết quả bao gồm: chuyển vị bệ, nội lực chi tiết từng cọc (N, Q, M) và kiểm toán móng khối quy ước (USmax, USmin).
 
-**[Mở Ứng dụng Bệ cọc đài cao ngay]**
+### 🚀 Trải nghiệm ngay
+
+Hãy tự mình trải nghiệm ngay bây giờ. Mọi phản hồi và góp ý xin vui lòng để lại trong phần bình luận bên dưới hoặc liên hệ trực tiếp với chúng tôi.
+
+<a href="/apps/pilegroup/" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+    Chạy Ứng dụng Pile Group 3D
+</a>

@@ -13,11 +13,13 @@ tags:
 toc: true
 toc_label: "Mục lục"
 toc_icon: "fas fa-clipboard-list"
+author_profile: true
+author: "TS. Nguyễn Hải Hà"
 ---
 
 ### 1. Bài toán Địa kỹ thuật Cổ điển
 
-Trong kỹ thuật địa kỹ thuật và công trình ngầm, tường cừ ván (Sheet Pile Wall) là một trong những giải pháp móng sâu và tường chắn phổ biến nhất. Chúng được sử dụng để thi công hố móng, bảo vệ bờ sông, xây dựng bến cảng, và ổn định mái dốc.
+Trong kỹ thuật địa kỹ thuật và công trình ngầm, **tường cừ ván (Sheet Pile Wall)** là một trong những giải pháp móng sâu và tường chắn phổ biến nhất. Chúng được sử dụng để thi công hố móng, bảo vệ bờ sông, xây dựng bến cảng, và ổn định mái dốc.
 
 Tuy nhiên, việc phân tích và thiết kế tường cừ ván không hề đơn giản. Nó đòi hỏi sự hiểu biết sâu sắc về tương tác đất-kết cấu (Soil-Structure Interaction), áp lực đất chủ động/bị động, và áp lực nước. Các phương pháp truyền thống như Cân bằng Giới hạn (Limit Equilibrium Method - LEM) tuy đơn giản nhưng có nhiều hạn chế khi mô hình hóa các điều kiện phức tạp như đất nhiều lớp, hệ neo, hay tải trọng động.
 
@@ -34,8 +36,7 @@ Vấn đề là, các phần mềm FEM chuyên dụng (như Plaxis, GeoStudio, M
 
 ### 3. SheetPileFEM: Mang FEM lên Trình duyệt
 
-Với mong muốn dân chủ hóa các công cụ phân tích kỹ thuật, chúng tôi đã phát triển **SheetPileFEM** — một ứng dụng web gọn nhẹ nhưng mạnh mẽ để phân tích tường cừ ván.
-
+Với mong muốn dân chủ hóa các công cụ phân tích kỹ thuật, chúng tôi đã phát triển **SheetPileFEM** — một ứng dụng web gọn nhẹ nhưng mạnh mẽ để phân tích tường cừ ván. Lõi tính toán được xây dựng bằng **C++** và biên dịch sang **WebAssembly (WASM)**, cho phép nó chạy trực tiếp trên trình duyệt với hiệu suất gần như ứng dụng Desktop.
 
 **Điều này có nghĩa là gì?**
 Chúng tôi đã gói gọn một lõi tính toán FEM địa kỹ thuật lên trang Web và bạn có thể chạy nó trên mọi thiết bị, từ PC đến điện thoại, mà **không cần cài đặt bất cứ thứ gì**.
