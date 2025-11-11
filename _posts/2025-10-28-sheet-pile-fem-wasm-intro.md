@@ -1,5 +1,5 @@
 ---
-title: "SheetPileFEM: PHÂN TÍCH TƯỜNG CỪ VÁN THEO PHƯƠNG PHÁP PHẦN TỬ HỮU HẠN"
+title: "SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn"
 date: 2025-10-28 10:00:00 +0700
 categories: 
     - Sheet Pile Wall

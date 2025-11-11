@@ -1,5 +1,5 @@
 ---
-title: "PILE GROUP 3D: TÍNH TOÁN MÓNG CỌC ĐÀI CAO THEO ZAVRIEV - SPIRO"
+title: "Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro"
 date: 2025-11-10 8:00:00 +0700
 categories:
   - Pile Foundation
