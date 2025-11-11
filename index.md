@@ -16,13 +16,13 @@ header:
   cta_label: "Khám phá Tất cả Web App"
   cta_url: "/apps/" # Link tới trang apps.md
   
-excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ thuật Xây dựng Nền Móng."
+excerpt: "Trang Web chuyên môn và Các Ứng dụng Web cho Kỹ thuật Xây dựng."
 ---
 
 ## 🚀 Các Ứng dụng Web Nền Móng Nổi bật
 
 <div class="feature__wrapper">
-<div class="feature__item--center"> <h3 class="archive__item-title">Các Ứng dụng Web Nền Móng Nổi bật</h3>
+<div class="feature__item--center"> <h3 class="archive__item-title">Các Ứng dụng Web cho Kỹ thuật Xây dựng nổi bật</h3>
 </div>
 </div>
 
@@ -37,7 +37,7 @@ excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ t
       <div class="archive__item-body">
         <h3 class="archive__item-title">Bệ cọc đài cao (Pile Group 3D)</h3>
         <div class="archive__item-excerpt">
-          <p>Phân tích móng cọc cao (cọc xiên, bệ cứng) theo phương pháp ma trận độ cứng 3D (Zavriev-Spiro). Port từ mã Turbo Pascal cổ điển.</p>
+          <p>Phân tích móng cọc  đài cao (cọc xiên, bệ cứng) theo phương pháp ma trận độ cứng 3D (Zavriev-Spiro).</p>
         </div>
         <a href="/apps/pilegroup/" class="btn btn--info">Mở Ứng dụng</a>
       </div>
@@ -52,7 +52,7 @@ excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ t
       <div class="archive__item-body">
         <h3 class="archive__item-title">Tường Cừ Ván thép (Sheet Pile FEM)</h3>
         <div class="archive__item-excerpt">
-          <p>Phân tích tường cừ ván thép có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM), tối ưu hóa bằng WebAssembly.</p>
+          <p>Phân tích Tường cừ ván có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM).</p>
         </div>
         <a href="/apps/sheetpilefem/" class="btn btn--info">Mở Ứng dụng</a>
       </div>
@@ -68,9 +68,8 @@ excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ t
 
 <div class="page__content">
 <ul>
-  <li><a href="/apps/pep3/">PEP3 - Đánh giá Phát triển</a></li>
-  <li><a href="/apps/hypocycloid/">Vẽ đường Hypocycloid</a></li>
-  <li><a href="/apps/taylor-series/">Taylor Series Visualizer</a></li>
+    <li><a href="/apps/hypocycloid/">Vẽ Đường Hypocycloid</a></li>
+  <li><a href="/apps/taylor-series/">Vẽ Chuỗi Taylor</a></li>
 </ul>
 </div>
 
