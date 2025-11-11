@@ -1,11 +1,18 @@
 ---
 layout: post
-title: "SheetPileFEM-WASM: Phân tích Cừ Ván bằng Phương pháp PTHH trên Web"
+title: "SheetPileFEM: PHÂN TÍCH TƯỜNG CỪ VÁN THEO PHƯƠNG PHÁP PHẦN TỬ HỮU HẠN TRÊN WEB"
 description: "Giới thiệu ứng dụng web SheetPileFEM, sử dụng lõi WebAssembly (WASM) để phân tích tường cừ ván theo phương pháp phần tử hữu hạn (FEM) ngay trên trình duyệt."
 date: 2025-10-28 10:00:00 +0700
 categories: [Geotechnical, FEM, WebApp]
-tags: [Sheet Pile, FEM, WASM, Civil Engineering, Phân tích Kết cấu]
-image: /assets/images/posts/sheetpilefem-hero.png
+tags:
+  - Nền móng
+  - Tường cừ ván
+  - C++
+  - WebAssembly
+  - FEM
+toc: true
+toc_label: "Mục lục"
+toc_icon: "fas fa-clipboard-list"
 ---
 
 ### 1. Bài toán Địa kỹ thuật Cổ điển
@@ -27,14 +34,14 @@ Vấn đề là, các phần mềm FEM chuyên dụng (như Plaxis, GeoStudio, M
 
 ### 3. SheetPileFEM-WASM: Mang FEM lên Trình duyệt
 
-Với mong muốn dân chủ hóa các công cụ phân tích kỹ thuật, chúng tôi đã phát triển **SheetPileFEM-WASM** — một ứng dụng web gọn nhẹ nhưng mạnh mẽ để phân tích tường cừ ván.
+Với mong muốn dân chủ hóa các công cụ phân tích kỹ thuật, chúng tôi đã phát triển **SheetPileFEM** — một ứng dụng web gọn nhẹ nhưng mạnh mẽ để phân tích tường cừ ván.
 
 
 
 "WASM" là viết tắt của **WebAssembly**. Đây là một công nghệ đột phá cho phép chạy các đoạn mã được biên dịch từ C++, Rust, hay Fortran (ngôn ngữ của các lõi FEM truyền thống) với tốc độ gần-như-native ngay trên trình duyệt web của bạn.
 
 **Điều này có nghĩa là gì?**
-Chúng tôi đã gói gọn một lõi tính toán FEM địa kỹ thuật vào file `sheetpilefem.js` (thông qua WASM) và bạn có thể chạy nó trên mọi thiết bị, từ PC đến điện thoại, mà **không cần cài đặt bất cứ thứ gì**.
+Chúng tôi đã gói gọn một lõi tính toán FEM địa kỹ thuật vào WASM và bạn có thể chạy nó trên mọi thiết bị, từ PC đến điện thoại, mà **không cần cài đặt bất cứ thứ gì**.
 
 ### 4. Các tính năng chính (Phiên bản Miễn phí)
 
@@ -48,7 +55,7 @@ Phiên bản miễn phí được cung cấp ngay trên trang web này được 
 
 ### 5. Mô hình Freemium: Từ Giáo dục đến Chuyên nghiệp
 
-**SheetPileFEM-WASM** được xây dựng theo mô hình "Freemium" để phục vụ cả cộng đồng:
+**SheetPileFEM** được xây dựng theo mô hình "Freemium" để phục vụ cả cộng đồng:
 
 1.  **Bản Miễn phí (Free):**
     * **Đối tượng:** Sinh viên, kỹ sư mới, hoặc các bài toán đơn giản.
@@ -68,5 +75,5 @@ Chúng tôi tin tưởng rằng công cụ này sẽ là một tài nguyên họ
 Hãy tự mình trải nghiệm ngay bây giờ. Mọi phản hồi và góp ý xin vui lòng để lại trong phần bình luận bên dưới hoặc liên hệ trực tiếp với chúng tôi.
 
 <a href="/apps/sheetpilefem/" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-    Chạy SheetPileFEM-WASM (Miễn phí)
+    Chạy SheetPileFEM (Miễn phí)
 </a>

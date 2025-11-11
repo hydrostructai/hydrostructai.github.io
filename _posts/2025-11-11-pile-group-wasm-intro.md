@@ -10,7 +10,7 @@ tags:
   - C++
   - WebAssembly
   - FEM
-author_profile: true
+author_profile: "TS. Nguyễn Hải Hà"
 read_time: true
 toc: true
 toc_label: "Mục lục"
@@ -21,7 +21,7 @@ Trong chuỗi dự án hồi sinh các công cụ kỹ thuật cổ điển, ch�
 
 ## Nguồn gốc: Di sản kỹ thuật từ Turbo Pascal
 
-Chương trình gốc được viết bởi KS. Nguyễn Hải Hà (Đại học Thủy Lợi) vào khoảng năm 2005, dựa trên **Phương pháp Ma trận Độ cứng** theo lý thuyết của Zavriev-Spiro. Đây là một công cụ thiết yếu để phân tích các hệ thống móng cọc chịu tải trọng không gian (6 bậc tự do), đặc biệt là móng cọc xiên và móng đài cao (thường gặp trong công trình thủy lợi, cảng biển).
+Chương trình gốc được viết bởi cố PGS.TS Nguyễn Viết Trung (Đại học Giao thông Vận tải), dựa trên **Phương pháp Ma trận Độ cứng** theo lý thuyết của Zavriev-Spiro. Đây là một công cụ thiết yếu để phân tích các hệ thống móng cọc chịu tải trọng không gian (6 bậc tự do), đặc biệt là móng cọc xiên và móng đài cao (thường gặp trong công trình thủy lợi, cảng biển).
 
 Logic cốt lõi của nó bao gồm:
 1.  Tính toán ma trận độ cứng riêng của cọc (A3) bằng cách nội suy từ các bảng tra (phụ thuộc vào điều kiện mũi cọc: tựa đất, tựa đá, ngàm đá).
