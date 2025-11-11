@@ -16,13 +16,13 @@ header:
   cta_label: "Khám phá Tất cả Web App"
   cta_url: "/apps/" # Link tới trang apps.md
   
-excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ thuật Xây dựng."
+excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ thuật Xây dựng Nền Móng."
 ---
 
-## 🚀 Các Ứng dụng Web Nổi bật
+## 🚀 Các Ứng dụng Web Nền Móng Nổi bật
 
 <div class="feature__wrapper">
-<div class="feature__item--center"> <h3 class="archive__item-title">Các Ứng dụng Web Nổi bật</h3>
+<div class="feature__item--center"> <h3 class="archive__item-title">Các Ứng dụng Web Nền Móng Nổi bật</h3>
 </div>
 </div>
 
@@ -32,44 +32,14 @@ excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ t
   <div class="feature__item">
     <div class="archive__item">
       <div class="archive__item-teaser">
-        <img src="/assets/images/app-icons/sheetpile-icon.png" alt="SheetPileFEM-WASM icon">
+        <img src="/assets/images/app-icons/pilegroup-icon.png" alt="Pile Group icon"> 
       </div>
       <div class="archive__item-body">
-        <h3 class="archive__item-title">SheetPileFEM-WASM</h3>
+        <h3 class="archive__item-title">Bệ cọc đài cao (Pile Group 3D)</h3>
         <div class="archive__item-excerpt">
-          <p>Phân tích Cừ Ván (FEM) mạnh mẽ bằng WebAssembly. Chạy ngay trên trình duyệt với các tính năng Freemium (dùng thử).</p>
+          <p>Phân tích móng cọc cao (cọc xiên, bệ cứng) theo phương pháp ma trận độ cứng 3D (Zavriev-Spiro). Port từ mã Turbo Pascal cổ điển.</p>
         </div>
-        <a href="/apps/sheetpilefem/" class="btn btn--success">Mở Ứng dụng</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="feature__item">
-    <div class="archive__item">
-      <div class="archive__item-teaser">
-        <img src="/assets/images/app-icons/taylor-icon.png" alt="Taylor Series icon">
-      </div>
-      <div class="archive__item-body">
-        <h3 class="archive__item-title">Trực quan hóa Chuỗi Taylor</h3>
-        <div class="archive__item-excerpt">
-          <p>Công cụ tương tác minh họa cách chuỗi Taylor xấp xỉ hàm <code>sin(x)</code> khi bậc <code>n</code> thay đổi.</p>
-        </div>
-        <a href="/apps/taylor-series/" class="btn btn--info">Mở Ứng dụng</a>
-      </div>
-    </div>
-  </div>
-
-  <div class="feature__item">
-    <div class="archive__item">
-      <div class="archive__item-teaser">
-        <img src="/assets/images/app-icons/hypocycloid-icon.png" alt="Hypocycloid icon">
-      </div>
-      <div class="archive__item-body">
-        <h3 class="archive__item-title">Vẽ đường Hypocycloid</h3>
-        <div class="archive__item-excerpt">
-          <p>Một canvas sáng tạo để vẽ các đường cong hình học phức tạp và đẹp mắt (như đồ chơi Spirograph).</p>
-        </div>
-        <a href="/apps/hypocycloid/" class="btn btn--info">Mở Ứng dụng</a>
+        <a href="/apps/pilegroup/" class="btn btn--info">Mở Ứng dụng</a>
       </div>
     </div>
   </div>
@@ -77,32 +47,34 @@ excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ t
   <div class="feature__item">
     <div class="archive__item">
       <div class="archive__item-teaser">
-        <img src="/assets/images/app-icons/pep3-icon.png" alt="PEP3 icon">
+        <img src="/assets/images/app-icons/sheetpile-icon.png" alt="Sheet Pile FEM icon">
       </div>
       <div class="archive__item-body">
-        <h3 class="archive__item-title">PEP3 - Đánh giá Phát triển</h3>
+        <h3 class="archive__item-title">Tường Cừ Ván thép (Sheet Pile FEM)</h3>
         <div class="archive__item-excerpt">
-          <p>Biểu mẫu kỹ thuật số dựa trên quy trình PEP3, chuẩn hóa việc đánh giá và ghi lại các giai đoạn phát triển.</p>
+          <p>Phân tích tường cừ ván thép có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM), tối ưu hóa bằng WebAssembly.</p>
         </div>
-        <a href="/apps/pep3/" class="btn btn--info">Mở Ứng dụng</a>
+        <a href="/apps/sheetpilefem/" class="btn btn--info">Mở Ứng dụng</a>
       </div>
     </div>
   </div>
+  
 {% endif %}
 </div>
 
 ---
 
-## ✍️ Bài viết Kỹ thuật Mới nhất
+## 🛠️ Other Tools (Các công cụ khác)
 
-Dưới đây là các bài viết, hướng dẫn, và phân tích mới nhất từ blog.
-
-<div class="feature__wrapper">
-{% for post in site.posts limit:5 %}
-  {% include archive-single.html type="list" %}
-{% endfor %}
+<div class="page__content">
+<ul>
+  <li><a href="/apps/pep3/">PEP3 - Đánh giá Phát triển</a></li>
+  <li><a href="/apps/hypocycloid/">Vẽ đường Hypocycloid</a></li>
+  <li><a href="/apps/taylor-series/">Taylor Series Visualizer</a></li>
+</ul>
 </div>
 
-<a href="/posts/" class="btn btn--primary" style="margin-top: 20px;">
-  Xem tất cả Bài viết
-</a>
+---
+
+## ✍️ Bài viết mới nhất
+{% include post_grid.html type="post" %}
