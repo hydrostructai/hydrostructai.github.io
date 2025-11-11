@@ -16,13 +16,13 @@ header:
   cta_label: "Khám phá Tất cả Web App"
   cta_url: "/apps/" # Link tới trang apps.md
   
-excerpt: "Trang Web Chuyên môn và Các Ứng dụng Web cho Kỹ thuật Xây dựng."
+excerpt: "Các Ứng dụng Web cho Kỹ thuật Xây dựng."
 ---
 
-## 🚀 Các Ứng dụng Web Nền Móng Nổi bật
+## 🚀 Các Ứng dụng Web Nổi bật
 
 <div class="feature__wrapper">
-<div class="feature__item--center"> <h3 class="archive__item-title">Các Ứng dụng Web cho Kỹ thuật Xây dựng nổi bật</h3>
+<div class="feature__item--center"> <h3 class="archive__item-title">Móng cọc và Tường cừ</h3>
 </div>
 </div>
 
