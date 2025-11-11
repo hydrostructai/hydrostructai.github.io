@@ -9,7 +9,8 @@ repository: "hydrostructai/hydrostructai.github.io"
 
 
 # --- Cấu hình Theme (Minimal Mistakes Setup) ---
-theme: "minimal-mistakes-jekyll" # THAY remote_theme bằng theme
+# theme: "minimal-mistakes-jekyll" # THAY remote_theme bằng theme
+remote_theme: "mmistakes/minimal-mistakes"
 minimal_mistakes_skin: "air" # Giao diện màu. Thử: "default", "dark", "aqua", "neon"
 
 # --- Cấu hình Plugins (ĐÃ SỬA LỖI BUILD) ---
