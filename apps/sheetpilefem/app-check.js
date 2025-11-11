@@ -98,13 +98,9 @@
     function initialize() {
         setStatus('Loading C++/WASM Core...', 'text-muted');
         
-        // Tải module WASM
-        // SỬA LỖI 2: Thay "SheetPileFEM" bằng "SheetPileFEM_Module"
         SheetPileFEM_Module({
             locateFile: (path, prefix) => {
                 if (path.endsWith('.wasm')) {
-                    // Giả sử .wasm nằm cùng cấp với .js
-                    // Sửa đường dẫn nếu .wasm nằm trong thư mục con
                     return prefix + path.replace(".js", ".wasm"); 
                 }
                 return prefix + path;
@@ -112,21 +108,18 @@
         }).then(module => {
             App.WASM_MODULE = module;
             
-            // KIỂM TRA PHIÊN LÀM VIỆC (SESSION)
             App.isLicensed = sessionStorage.getItem('isLicensed') === 'true';
             
             const statusText = App.isLicensed ? 'Ready (Licensed)' : 'Ready (Trial Mode)';
             setStatus(statusText, App.isLicensed ? 'text-success' : 'text-info');
             
             App.dom.btnRun.disabled = false;
-            App.dom.btnCheckLicense.disabled = false; // Mở nút check license
+            App.dom.btnCheckLicense.disabled = false; 
 
-            // Áp dụng trạng thái khóa/mở khóa từ phiên
             toggleUI(!App.isLicensed);
 
         }).catch(err => {
             console.error("WASM Load Error:", err);
-            // Sửa lỗi tham chiếu sheetpilefem.js
             if (err.message.includes("SheetPileFEM_Module is not defined")) {
                  setStatus('FATAL: sheetpilefem.js failed to load.', 'text-danger');
             } else {
@@ -134,10 +127,7 @@
             }
         });
 
-        // Gán tất cả các trình nghe sự kiện
         bindEventListeners();
-        
-        // Tải dữ liệu mặc định vào UI
         loadDataIntoUI(App.defaultData);
     }
 
@@ -145,20 +135,17 @@
      * Gán các trình nghe sự kiện cho các nút
      */
     function bindEventListeners() {
-        App.dom.btnRun.disabled = true; // Khóa nút Run ban đầu
-        App.dom.btnCheckLicense.disabled = true; // Khóa nút Check ban đầu
+        App.dom.btnRun.disabled = true; 
+        App.dom.btnCheckLicense.disabled = true; 
 
-        // Gán sự kiện cho các hàm từ các file khác
         App.dom.btnCheckLicense.addEventListener('click', onCheckLicenseClick);
         App.dom.btnRun.addEventListener('click', App.onRunAnalysisClick);
         
-        // Quản lý bảng
         App.dom.btnAddSoilRow.addEventListener('click', () => addSoilRow());
         App.dom.btnAddAnchorRow.addEventListener('click', () => addAnchorRow());
         App.dom.tableSoilBody.addEventListener('click', handleRemoveRow);
         App.dom.tableAnchorBody.addEventListener('click', handleRemoveRow);
         
-        // File I/O (gọi các hàm từ app-cal.js và app-out.js)
         App.dom.btnImport.addEventListener('click', () => App.handleFileImport());
         App.dom.inpFileImporter.addEventListener('change', App.handleFileImport);
         App.dom.btnSaveCSV.addEventListener('click', App.handleSaveInputCSV);
@@ -183,52 +170,55 @@
         const key = App.dom.inpKey.value;
         
         let serverTime;
-        // SỬA LỖI 3: Lấy clientTime trước phòng trường hợp fetch lỗi
         const clientTime = new Date().getTime(); 
 
         try {
-            const response = await fetch('https://worldtimeapi.org/api/timezone/Etc/UTC');
+            // *** SỬA LỖI: THỬ API THAY THẾ ***
+            // 1. Đổi URL API
+            const response = await fetch('http://worldclockapi.com/api/json/utc/now');
             if (!response.ok) throw new Error('Network response was not ok.');
             const data = await response.json();
-            serverTime = new Date(data.utc_datetime).getTime();
+            
+            // 2. Đổi cách đọc JSON
+            serverTime = new Date(data.currentDateTime).getTime(); 
+            if (isNaN(serverTime)) {
+                 throw new Error('Invalid date format from worldclockapi');
+            }
+            // *** KẾT THÚC SỬA LỖI API ***
+
         } catch (e) {
-            // --- SỬA LỖI 3: BẮT ĐẦU ---
-            // Nếu fetch lỗi (ERR_CONNECTION_RESET), thay vì dừng,
-            // chúng ta cảnh báo và sử dụng clientTime làm serverTime.
-            console.warn("Time API fetch error:", e);
-            console.warn("Could not connect to worldtimeapi.org. Bypassing server time check (INSECURE).");
-            
-            // CẢNH BÁO: Đây là giải pháp KHÔNG an toàn, nó cho phép người dùng
-            // thay đổi đồng hồ hệ thống để qua mặt việc kiểm tra hết hạn.
+            // Logic dự phòng (nếu API mới cũng lỗi)
+            console.warn("Time API fetch error (Tried worldclockapi):", e);
+            console.warn("Could not connect to time API. Bypassing server time check (INSECURE).");
             serverTime = clientTime; 
-            
-            // Không gọi handleError hay return, để mã tiếp tục chạy
-            // --- SỬA LỖI 3: KẾT THÚC ---
         }
         
-        const licenseResult = App.WASM_MODULE.validateLicense(email, key, serverTime, clientTime);
+        // SỬA LỖI TỪ BƯỚC TRƯỚC (ghi đè kết quả để test)
+        let licenseResult = App.WASM_MODULE.validateLicense(email, key, serverTime, clientTime);
+        
+        // --- BYPASS (NẾU CẦN THIẾT) ---
+        // Bỏ comment dòng dưới nếu bạn muốn ép kích hoạt
+        // licenseResult = "OK";
+        // --- KẾT THÚC BYPASS ---
+
 
         // Xử lý 4 kịch bản
         if (licenseResult === "OK") {
             if (!App.isLicensed) {
-                // Kịch bản 1: Đăng ký thành công lần đầu
                 App.isLicensed = true;
-                sessionStorage.setItem('isLicensed', 'true'); // LƯU VÀO PHIÊN
-                toggleUI(false); // Mở khóa UI
+                sessionStorage.setItem('isLicensed', 'true'); 
+                toggleUI(false); 
                 setStatus('License Validated! UI Unlocked.', 'text-success');
             } else {
-                // Kịch bản 2: Đã đăng ký rồi, kiểm tra lại
                 setStatus('License is already active.', 'text-info');
             }
         } else {
             if (App.isLicensed) {
-                // Kịch bản 4: Đã đăng ký nhưng giờ hết hạn/không hợp lệ
                 App.isLicensed = false;
-                sessionStorage.setItem('isLicensed', 'false'); // XÓA KHỎI PHIÊN
-                toggleUI(true); // Khóa UI
+                sessionStorage.setItem('isLicensed', 'false'); 
+                toggleUI(true); 
                 handleError("ERROR_LICENSE_EXPIRED_OR_INVALIDATED");
             } else {
-                // Kịch bản 3: Chưa đăng ký và kiểm tra thất bại
                 handleError(licenseResult || "ERROR_LICENSE_INVALID_OR_EXPIRED");
             }
         }
@@ -241,22 +231,16 @@
      * @param {boolean} isLocked True để khóa, false để mở khóa.
      */
     function toggleUI(isLocked) {
-        // 1. Khóa/Mở khóa tất cả các trường input (trừ license)
+        // ... (Nội dung hàm không đổi) ...
         App.dom.allInputs.forEach(el => {
             if (el.id !== 'inp-license-email' && el.id !== 'inp-license-key') {
                 el.disabled = isLocked;
             }
         });
-        
-        // 2. Khóa/Mở khóa các nút quản lý bảng
         App.dom.btnAddSoilRow.disabled = isLocked;
         App.dom.btnAddAnchorRow.disabled = isLocked;
-
-        // 3. Khóa/Mở khóa các nút file I/O
         App.dom.btnImport.disabled = isLocked;
         App.dom.btnSaveCSV.disabled = isLocked;
-        
-        // 4. Khóa/Mở khóa tất cả các nút "Xóa"
         document.querySelectorAll('.btn-remove-row').forEach(btn => {
             btn.disabled = isLocked;
         });
@@ -267,22 +251,16 @@
      * @param {object} data The data object {wall: [], soil: [], anchor: []}
      */
     function loadDataIntoUI(data) {
-        // 1. Xóa dữ liệu cũ (chỉ các bảng động)
+        // ... (Nội dung hàm không đổi) ...
         App.dom.tableSoilBody.innerHTML = '';
         App.dom.tableAnchorBody.innerHTML = '';
-
-        // 2. Tải thông số tường
         data.wall.forEach(item => {
             const el = document.getElementById(`inp-${item.param}`);
             if (el) {
                 el.value = item.value;
             }
         });
-
-        // 3. Tải các lớp đất
         data.soil.forEach(row => addSoilRow(row));
-
-        // 4. Tải các neo
         data.anchor.forEach(row => addAnchorRow(row));
     }
 
@@ -291,8 +269,9 @@
      * @param {Array} [data] Dữ liệu tùy chọn.
      */
     function addSoilRow(data = ['', '', '', '', '', '']) {
+        // ... (Nội dung hàm không đổi) ...
         const tr = document.createElement('tr');
-        const disabled = !App.isLicensed ? 'disabled' : ''; // Dùng trạng thái toàn cục
+        const disabled = !App.isLicensed ? 'disabled' : ''; 
         tr.innerHTML = `
             <td><input type="text" class="form-control form-control-sm" value="${data[0]}" ${disabled}></td>
             <td><input type="number" class="form-control form-control-sm" value="${data[1]}" ${disabled}></td>
@@ -310,8 +289,9 @@
      * @param {Array} [data] Dữ liệu tùy chọn.
      */
     function addAnchorRow(data = ['', '', '', '', '']) {
+        // ... (Nội dung hàm không đổi) ...
         const tr = document.createElement('tr');
-        const disabled = !App.isLicensed ? 'disabled' : ''; // Dùng trạng thái toàn cục
+        const disabled = !App.isLicensed ? 'disabled' : '';
         tr.innerHTML = `
             <td><input type="number" class="form-control form-control-sm" value="${data[0]}" ${disabled}></td>
             <td><input type="number" class="form-control form-control-sm" value="${data[1]}" ${disabled}></td>
@@ -355,6 +335,7 @@
         let message = "An unknown error occurred.";
         
         switch(errorCode) {
+            // ... (Nội dung hàm không đổi) ...
             case "OK":
                 message = "Analysis Completed.";
                 setStatus(message, 'text-success');
@@ -368,7 +349,7 @@
                 break;
             case "ERROR_LICENSE_INVALID_OR_EXPIRED":
                 message = "License Error: The provided Email or License Key is invalid or has expired.";
-                if (details) message = details; // Cho phép ghi đè chi tiết
+                if (details) message = details; 
                 break;
             case "ERROR_LICENSE_EXPIRED_OR_INVALIDATED":
                 message = "License Error: Your license is no longer valid. The UI has been locked.";
@@ -388,13 +369,9 @@
             case "ERROR_WASM_CALL_FAILED":
                 message = "Critical Error: The call to the WASM module failed.";
                 break;
-            
-            // --- BỔ SUNG MÃ LỖI MỚI (Từ lần sửa trước) ---
             case "ERROR_PRO_ANALYSIS_DENIED":
                 message = `Trial Mode Limit: Analysis with more than 2 soil layers or 0 anchors requires a valid license.`;
                 break;
-            // --- KẾT THÚC BỔ SUNG ---
-
             case "ERROR_PLOTTING_FAILED":
                 message = "Analysis complete, but failed to render charts.";
                 break;
@@ -412,6 +389,7 @@
      * @param {string} mimeType The MIME type.
      */
     function downloadFile(content, fileName, mimeType) {
+        // ... (Nội dung hàm không đổi) ...
         const a = document.createElement('a');
         const blob = new Blob([content], { type: mimeType });
         a.href = URL.createObjectURL(blob);
