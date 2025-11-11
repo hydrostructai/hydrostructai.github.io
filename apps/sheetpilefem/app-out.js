@@ -1,35 +1,35 @@
 /**
- * SheetPileFEM-WASM - Module Hi?n th? K?t qu?
+ * SheetPileFEM-WASM - Module Hiển thị Kết quả
  * app-out.js
  *
- * Ch?u tr�ch nhi?m:
- * 1. H�m `displayResults` ch�nh.
- * 2. T?t c? c�c h�m v? bi?u d? Plotly (Geometry, Pressure, Deflection, v.v.).
- * 3. C�c h�m di?n d? li?u v�o b?ng k?t qu? (Summary, Detailed).
- * 4. Logic cho n�t "Save Results CSV".
+ * Chịu trách nhiệm:
+ * 1. Hàm `displayResults` chính.
+ * 2. Tất cả các hàm vẽ biểu đồ Plotly (Geometry, Pressure, Deflection, v.v.).
+ * 3. Các hàm điền dữ liệu vào bảng kết quả (Summary, Detailed).
+ * 4. Logic cho nút "Save Results CSV".
  */
 (function(App) {
     "use-strict";
 
     /**
-     * H�m ch�nh d? hi?n th? t?t c? k?t qu?.
-     * @param {Array} results M?ng c�c d?i tu?ng ResultNode t? WASM.
-     * @param {object} inputs �?i tu?ng input (c?n cho bi?u d? h�nh h?c).
+     * Hàm chính để hiển thị tất cả kết quả.
+     * @param {Array} results Mảng các đối tượng ResultNode từ WASM.
+     * @param {object} inputs Đối tượng input (cần cho biểu đồ hình học).
      */
     App.displayResults = function(results, inputs) {
-        // 1. V? Bi?u d?
+        // 1. Vẽ Biểu đồ
         plotGeometryChart(results, inputs);
         plotStandardCharts(results);
         plotPressureChart(results); 
         
-        // 2. �i?n B?ng
+        // 2. Điền Bảng
         populateSummaryTable(results);
         populateDetailedTable(results);
     }
     
     /**
-     * V? 3 bi?u d? ph�n t�ch chu?n (Chuy?n v?, Moment, L?c c?t).
-     * @param {Array} results M?ng c�c d?i tu?ng ResultNode.
+     * Vẽ 3 biểu đồ phân tích chuẩn (Chuyển vị, Moment, Lực cắt).
+     * @param {Array} results Mảng các đối tượng ResultNode.
      */
     function plotStandardCharts(results) {
         const elev = results.map(r => r.elevation);
@@ -58,16 +58,16 @@
     }
 
     /**
-     * V? bi?u d? �p l?c �?t
-     * @param {Array} results M?ng d?i tu?ng ResultNode.
+     * Vẽ biểu đồ Áp lực Đất
+     * @param {Array} results Mảng đối tượng ResultNode.
      */
     function plotPressureChart(results) {
         const elev = results.map(r => r.elevation);
         
-        // T�nh t?ng �p l?c ch? d?ng (d?t + nu?c)
+        // Tính tổng áp lực chủ động (đất + nước)
         const active_total = results.map(r => (r.pressure_active_kPa || 0) + (r.pressure_water_behind_kPa || 0));
         
-        // T�nh t?ng �p l?c b? d?ng (d?t + nu?c) v� nh�n v?i -1 d? v? sang tr�i
+        // Tính tổng áp lực bị động (đất + nước) và nhân với -1 để vẽ sang trái
         const passive_total = results.map(r => -((r.pressure_passive_kPa || 0) + (r.pressure_water_front_kPa || 0)));
 
         const traceActive = {
@@ -75,7 +75,7 @@
             y: elev,
             type: 'scatter',
             mode: 'lines',
-            name: '�p l?c Ch? d?ng (T? h?p)',
+            name: 'Áp lực Chủ động (Tổ hợp)',
             fill: 'tozerox', 
             fillcolor: 'rgba(214, 39, 40, 0.2)', 
             line: { color: 'rgba(214, 39, 40, 0.6)' }
@@ -86,21 +86,21 @@
             y: elev,
             type: 'scatter',
             mode: 'lines',
-            name: '�p l?c B? d?ng (T? h?p)',
+            name: 'Áp lực Bị động (Tổ hợp)',
             fill: 'tozerox', 
             fillcolor: 'rgba(31, 119, 180, 0.2)', 
             line: { color: 'rgba(31, 119, 180, 0.6)' }
         };
         
         const layout = {
-            title: 'Bi?u d? �p l?c d?y (T? h?p)',
+            title: 'Biểu đồ áp lực đấy (Tổ hợp)',
             xaxis: { 
-                title: '�p l?c (kPa)', 
+                title: 'Áp lực (kPa)', 
                 zeroline: true, 
                 zerolinewidth: 2, 
                 zerolinecolor: '#000' 
             },
-            yaxis: { title: 'Cao d? (m)' },
+            yaxis: { title: 'Cao độ (m)' },
             margin: { l: 60, r: 20, t: 40, b: 50 },
             hovermode: 'y unified',
             legend: { yanchor: "top", y: 0.99, xanchor: "left", x: 0.01 }
@@ -110,19 +110,19 @@
     }
 
     /**
-     * V? bi?u d? h�nh h?c m� h�nh.
-     * @param {Array} results M?ng d?i tu?ng ResultNode.
-     * @param {object} inputs �?i tu?ng input.
+     * Vẽ biểu đồ hình học mô hình.
+     * @param {Array} results Mảng đối tượng ResultNode.
+     * @param {object} inputs Đối tượng input.
      */
     function plotGeometryChart(results, inputs) {
         const shapes = [];
         const annotations = [];
         
-        let minX = -10, maxX = 10; // Kho?ng X cho h�nh h?c
+        let minX = -10, maxX = 10; // Khoảng X cho hình học
 
-        // 1. Th�m c�c L?p d?t
+        // 1. Thêm các Lớp đất
         const sortedSoil = [...inputs.soil_layers].sort((a, b) => b.top_elevation - a.top_elevation);
-        let bottomElev = inputs.wall_bottom - 5; // ��y bi?u d?
+        let bottomElev = inputs.wall_bottom - 5; // Đáy biểu đồ
         
         sortedSoil.forEach((layer, i) => {
             let top = layer.top_elevation;
@@ -130,7 +130,7 @@
             
             shapes.push({
                 type: 'rect',
-                xref: 'paper', x0: 0, x1: 1, // To�n chi?u r?ng
+                xref: 'paper', x0: 0, x1: 1, // Toàn chiều rộng
                 y0: bottom, y1: top,
                 fillcolor: `rgba(150, 150, 150, ${0.1 + (i*0.05)})`,
                 line: { width: 0 }
@@ -144,7 +144,7 @@
             });
         });
 
-        // 2. Th�m Tu?ng
+        // 2. Thêm Tường
         shapes.push({
             type: 'line',
             x0: 0, x1: 0,
@@ -152,7 +152,7 @@
             line: { color: 'black', width: 4 }
         });
 
-        // 3. Th�m c�c du?ng M?c nu?c/M?t d?t
+        // 3. Thêm các đường Mực nước/Mặt đất
         const addLine = (y, color, name) => {
             shapes.push({
                 type: 'line',
@@ -170,7 +170,7 @@
         addLine(inputs.water_behind, 'blue', 'Water (Behind)');
         addLine(inputs.water_front, 'darkblue', 'Water (Front)');
         
-        // 4. Th�m Neo
+        // 4. Thêm Neo
         inputs.anchors.forEach(anchor => {
              annotations.push({
                 x: 0, y: anchor.elevation,
@@ -194,8 +194,8 @@
     }
     
     /**
-     * �i?n b?ng t�m t?t (max/min).
-     * @param {Array} results M?ng d?i tu?ng ResultNode.
+     * Điền bảng tóm tắt (max/min).
+     * @param {Array} results Mảng đối tượng ResultNode.
      */
     function populateSummaryTable(results) {
         const deflect = results.map(r => r.displacement_mm);
@@ -221,11 +221,11 @@
     }
 
     /**
-     * �i?n b?ng k?t qu? chi ti?t.
-     * @param {Array} results M?ng d?i tu?ng ResultNode.
+     * Điền bảng kết quả chi tiết.
+     * @param {Array} results Mảng đối tượng ResultNode.
      */
     function populateDetailedTable(results) {
-        // 1. T?o Header
+        // 1. Tạo Header
         App.dom.tableResultsHeader.innerHTML = '';
         const headers = Object.keys(results[0]);
         const trHead = document.createElement('tr');
@@ -236,7 +236,7 @@
         });
         App.dom.tableResultsHeader.appendChild(trHead);
 
-        // 2. T?o Body
+        // 2. Tạo Body
         App.dom.tableResultsBody.innerHTML = '';
         results.forEach(row => {
             const tr = document.createElement('tr');
@@ -264,19 +264,19 @@
     }
 
     /**
-     * Luu b?ng k?t qu? chi ti?t ra CSV.
+     * Lưu bảng kết quả chi tiết ra CSV.
      */
     function handleSaveResultsCSV() {
         const rows = [];
         
-        // 1. L?y Header
+        // 1. Lấy Header
         const header = [];
         App.dom.tableResultsHeader.querySelectorAll('th').forEach(th => {
             header.push(th.textContent);
         });
         rows.push(header);
 
-        // 2. L?y Body
+        // 2. Lấy Body
         App.dom.tableResultsBody.querySelectorAll('tr').forEach(tr => {
             const row = [];
             tr.querySelectorAll('td').forEach(td => {
@@ -286,8 +286,8 @@
         });
         
         const csvString = Papa.unparse(rows);
-        App.downloadFile(csvString, 'sheetpile_results.csv', 'text/csv'); // G?i h�m tr? gi�p
+        App.downloadFile(csvString, 'sheetpile_results.csv', 'text/csv'); // Gọi hàm trợ giúp
     }
     App.handleSaveResultsCSV = handleSaveResultsCSV; // Expose
 
-})(SheetPileApp); // Truy?n v�o kh�ng gian t�n chung
+})(SheetPileApp); // Truyền vào không gian tên chung

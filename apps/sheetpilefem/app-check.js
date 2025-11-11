@@ -1,30 +1,30 @@
 /**
- * SheetPileFEM-WASM - Module Ki?m tra License & Qu?n l� UI
+ * SheetPileFEM-WASM - Module Kiểm tra License & Quản lý UI
  * app-check.js
  *
- * Ch?u tr�ch nhi?m:
- * 1. Kh?i t?o ?ng d?ng v� t?i WASM.
- * 2. Ki?m tra `sessionStorage` d? duy tr� tr?ng th�i license.
- * 3. X? l� logic cho n�t "Ki?m tra Gi?y ph�p".
- * 4. Kh�a/M? kh�a giao di?n (toggleUI).
- * 5. Qu?n l� c�c h�m tr? gi�p (setStatus, handleError, downloadFile).
- * 6. Qu?n l� vi?c th�m/x�a h�ng trong b?ng (v� li�n quan d?n tr?ng th�i UI).
+ * Chịu trách nhiệm:
+ * 1. Khởi tạo ứng dụng và tải WASM.
+ * 2. Kiểm tra `sessionStorage` để duy trì trạng thái license.
+ * 3. Xử lý logic cho nút "Kiểm tra Giấy phép".
+ * 4. Khóa/Mở khóa giao diện (toggleUI).
+ * 5. Quản lý các hàm trợ giúp (setStatus, handleError, downloadFile).
+ * 6. Quản lý việc thêm/xóa hàng trong bảng (vì liên quan đến trạng thái UI).
  */
 (function(App) {
     "use-strict";
 
-    // --- 1. Tr?ng th�i v� Module Chung ---
+    // --- 1. Trạng thái và Module Chung ---
     App.WASM_MODULE = null;
-    App.isLicensed = false; // Tr?ng th�i license du?c luu trong b? nh?
+    App.isLicensed = false; // Trạng thái license được lưu trong bộ nhớ
 
-    // --- 2. Cache c�c ph?n t? DOM ---
+    // --- 2. Cache các phần tử DOM ---
     App.dom = {
         // Run Button & Status
         btnRun: document.getElementById('btn-run-analysis'),
         statusMessage: document.getElementById('status-message'),
         
         // License
-        btnCheckLicense: document.getElementById('btn-check-license'), // N�T M?I
+        btnCheckLicense: document.getElementById('btn-check-license'), // NÚT MỚI
         inpEmail: document.getElementById('inp-license-email'),
         inpKey: document.getElementById('inp-license-key'),
 
@@ -64,11 +64,11 @@
         tableResultsHeader: document.getElementById('table-results-header'),
         tableResultsBody: document.getElementById('table-results-body'),
 
-        // T?t c? c�c tru?ng input c?n kh�a/m? kh�a
+        // Tất cả các trường input cần khóa/mở khóa
         allInputs: document.querySelectorAll('#input-section input, #input-section select')
     };
 
-    // --- 3. D? li?u M?c d?nh ---
+    // --- 3. Dữ liệu Mặc định ---
     App.defaultData = {
         wall: [
             { param: 'wall_top', value: 2.0 },
@@ -90,15 +90,15 @@
         ]
     };
 
-    // --- 4. Kh?i t?o ---
+    // --- 4. Khởi tạo ---
 
     /**
-     * H�m kh?i t?o ch�nh
+     * Hàm khởi tạo chính
      */
     function initialize() {
         setStatus('Loading C++/WASM Core...', 'text-muted');
         
-        // T?i module WASM
+        // Tải module WASM
         SheetPileFEM({
             locateFile: (path, prefix) => {
                 if (path.endsWith('.wasm')) {
@@ -109,16 +109,16 @@
         }).then(module => {
             App.WASM_MODULE = module;
             
-            // KI?M TRA PHI�N L�M VI?C (SESSION)
+            // KIỂM TRA PHIÊN LÀM VIỆC (SESSION)
             App.isLicensed = sessionStorage.getItem('isLicensed') === 'true';
             
             const statusText = App.isLicensed ? 'Ready (Licensed)' : 'Ready (Trial Mode)';
             setStatus(statusText, App.isLicensed ? 'text-success' : 'text-info');
             
             App.dom.btnRun.disabled = false;
-            App.dom.btnCheckLicense.disabled = false; // M? n�t check license
+            App.dom.btnCheckLicense.disabled = false; // Mở nút check license
 
-            // �p d?ng tr?ng th�i kh�a/m? kh�a t? phi�n
+            // Áp dụng trạng thái khóa/mở khóa từ phiên
             toggleUI(!App.isLicensed);
 
         }).catch(err => {
@@ -126,31 +126,31 @@
             setStatus('FATAL: WASM Core failed to load.', 'text-danger');
         });
 
-        // G�n t?t c? c�c tr�nh nghe s? ki?n
+        // Gán tất cả các trình nghe sự kiện
         bindEventListeners();
         
-        // T?i d? li?u m?c d?nh v�o UI
+        // Tải dữ liệu mặc định vào UI
         loadDataIntoUI(App.defaultData);
     }
 
     /**
-     * G�n c�c tr�nh nghe s? ki?n cho c�c n�t
+     * Gán các trình nghe sự kiện cho các nút
      */
     function bindEventListeners() {
-        App.dom.btnRun.disabled = true; // Kh�a n�t Run ban d?u
-        App.dom.btnCheckLicense.disabled = true; // Kh�a n�t Check ban d?u
+        App.dom.btnRun.disabled = true; // Khóa nút Run ban đầu
+        App.dom.btnCheckLicense.disabled = true; // Khóa nút Check ban đầu
 
-        // G�n s? ki?n cho c�c h�m t? c�c file kh�c
+        // Gán sự kiện cho các hàm từ các file khác
         App.dom.btnCheckLicense.addEventListener('click', onCheckLicenseClick);
         App.dom.btnRun.addEventListener('click', App.onRunAnalysisClick);
         
-        // Qu?n l� b?ng
+        // Quản lý bảng
         App.dom.btnAddSoilRow.addEventListener('click', () => addSoilRow());
         App.dom.btnAddAnchorRow.addEventListener('click', () => addAnchorRow());
         App.dom.tableSoilBody.addEventListener('click', handleRemoveRow);
         App.dom.tableAnchorBody.addEventListener('click', handleRemoveRow);
         
-        // File I/O (g?i c�c h�m t? app-cal.js v� app-out.js)
+        // File I/O (gọi các hàm từ app-cal.js và app-out.js)
         App.dom.btnImport.addEventListener('click', () => App.handleFileImport());
         App.dom.inpFileImporter.addEventListener('change', App.handleFileImport);
         App.dom.btnSaveCSV.addEventListener('click', App.handleSaveInputCSV);
@@ -160,7 +160,7 @@
     // --- 5. Logic License & UI ---
 
     /**
-     * LOGIC M?I: X? l� khi nh?n n�t "Ki?m tra Gi?y ph�p"
+     * LOGIC MỚI: Xử lý khi nhấn nút "Kiểm tra Giấy phép"
      */
     async function onCheckLicenseClick() {
         if (!App.WASM_MODULE) {
@@ -190,27 +190,27 @@
         const clientTime = new Date().getTime();
         const licenseResult = App.WASM_MODULE.validateLicense(email, key, serverTime, clientTime);
 
-        // X? l� 4 k?ch b?n
+        // Xử lý 4 kịch bản
         if (licenseResult === "OK") {
             if (!App.isLicensed) {
-                // K?ch b?n 1: �ang k� th�nh c�ng l?n d?u
+                // Kịch bản 1: Đăng ký thành công lần đầu
                 App.isLicensed = true;
-                sessionStorage.setItem('isLicensed', 'true'); // LUU V�O PHI�N
-                toggleUI(false); // M? kh�a UI
+                sessionStorage.setItem('isLicensed', 'true'); // LƯU VÀO PHIÊN
+                toggleUI(false); // Mở khóa UI
                 setStatus('License Validated! UI Unlocked.', 'text-success');
             } else {
-                // K?ch b?n 2: �� dang k� r?i, ki?m tra l?i
+                // Kịch bản 2: Đã đăng ký rồi, kiểm tra lại
                 setStatus('License is already active.', 'text-info');
             }
         } else {
             if (App.isLicensed) {
-                // K?ch b?n 4: �� dang k� nhung gi? h?t h?n/kh�ng h?p l?
+                // Kịch bản 4: Đã đăng ký nhưng giờ hết hạn/không hợp lệ
                 App.isLicensed = false;
-                sessionStorage.setItem('isLicensed', 'false'); // X�A KH?I PHI�N
-                toggleUI(true); // Kh�a UI
+                sessionStorage.setItem('isLicensed', 'false'); // XÓA KHỎI PHIÊN
+                toggleUI(true); // Khóa UI
                 handleError("ERROR_LICENSE_EXPIRED_OR_INVALIDATED");
             } else {
-                // K?ch b?n 3: Chua dang k� v� ki?m tra th?t b?i
+                // Kịch bản 3: Chưa đăng ký và kiểm tra thất bại
                 handleError(licenseResult || "ERROR_LICENSE_INVALID_OR_EXPIRED");
             }
         }
@@ -219,41 +219,41 @@
     }
 
     /**
-     * Kh�a ho?c m? kh�a to�n b? giao di?n d?a tr�n tr?ng th�i license.
-     * @param {boolean} isLocked True d? kh�a, false d? m? kh�a.
+     * Khóa hoặc mở khóa toàn bộ giao diện dựa trên trạng thái license.
+     * @param {boolean} isLocked True để khóa, false để mở khóa.
      */
     function toggleUI(isLocked) {
-        // 1. Kh�a/M? kh�a t?t c? c�c tru?ng input (tr? license)
+        // 1. Khóa/Mở khóa tất cả các trường input (trừ license)
         App.dom.allInputs.forEach(el => {
             if (el.id !== 'inp-license-email' && el.id !== 'inp-license-key') {
                 el.disabled = isLocked;
             }
         });
         
-        // 2. Kh�a/M? kh�a c�c n�t qu?n l� b?ng
+        // 2. Khóa/Mở khóa các nút quản lý bảng
         App.dom.btnAddSoilRow.disabled = isLocked;
         App.dom.btnAddAnchorRow.disabled = isLocked;
 
-        // 3. Kh�a/M? kh�a c�c n�t file I/O
+        // 3. Khóa/Mở khóa các nút file I/O
         App.dom.btnImport.disabled = isLocked;
         App.dom.btnSaveCSV.disabled = isLocked;
         
-        // 4. Kh�a/M? kh�a t?t c? c�c n�t "X�a"
+        // 4. Khóa/Mở khóa tất cả các nút "Xóa"
         document.querySelectorAll('.btn-remove-row').forEach(btn => {
             btn.disabled = isLocked;
         });
     }
 
     /**
-     * T?i d? li?u (nhu defaultData) v�o c�c b?ng.
+     * Tải dữ liệu (như defaultData) vào các bảng.
      * @param {object} data The data object {wall: [], soil: [], anchor: []}
      */
     function loadDataIntoUI(data) {
-        // 1. X�a d? li?u cu (ch? c�c b?ng d?ng)
+        // 1. Xóa dữ liệu cũ (chỉ các bảng động)
         App.dom.tableSoilBody.innerHTML = '';
         App.dom.tableAnchorBody.innerHTML = '';
 
-        // 2. T?i th�ng s? tu?ng
+        // 2. Tải thông số tường
         data.wall.forEach(item => {
             const el = document.getElementById(`inp-${item.param}`);
             if (el) {
@@ -261,20 +261,20 @@
             }
         });
 
-        // 3. T?i c�c l?p d?t
+        // 3. Tải các lớp đất
         data.soil.forEach(row => addSoilRow(row));
 
-        // 4. T?i c�c neo
+        // 4. Tải các neo
         data.anchor.forEach(row => addAnchorRow(row));
     }
 
     /**
-     * Th�m m?t h�ng v�o b?ng d?t (ki?m tra tr?ng th�i license).
-     * @param {Array} [data] D? li?u t�y ch?n.
+     * Thêm một hàng vào bảng đất (kiểm tra trạng thái license).
+     * @param {Array} [data] Dữ liệu tùy chọn.
      */
     function addSoilRow(data = ['', '', '', '', '', '']) {
         const tr = document.createElement('tr');
-        const disabled = !App.isLicensed ? 'disabled' : ''; // D�ng tr?ng th�i to�n c?c
+        const disabled = !App.isLicensed ? 'disabled' : ''; // Dùng trạng thái toàn cục
         tr.innerHTML = `
             <td><input type="text" class="form-control form-control-sm" value="${data[0]}" ${disabled}></td>
             <td><input type="number" class="form-control form-control-sm" value="${data[1]}" ${disabled}></td>
@@ -288,12 +288,12 @@
     }
 
     /**
-     * Th�m m?t h�ng v�o b?ng neo (ki?m tra tr?ng th�i license).
-     * @param {Array} [data] D? li?u t�y ch?n.
+     * Thêm một hàng vào bảng neo (kiểm tra trạng thái license).
+     * @param {Array} [data] Dữ liệu tùy chọn.
      */
     function addAnchorRow(data = ['', '', '', '', '']) {
         const tr = document.createElement('tr');
-        const disabled = !App.isLicensed ? 'disabled' : ''; // D�ng tr?ng th�i to�n c?c
+        const disabled = !App.isLicensed ? 'disabled' : ''; // Dùng trạng thái toàn cục
         tr.innerHTML = `
             <td><input type="number" class="form-control form-control-sm" value="${data[0]}" ${disabled}></td>
             <td><input type="number" class="form-control form-control-sm" value="${data[1]}" ${disabled}></td>
@@ -306,7 +306,7 @@
     }
 
     /**
-     * X? l� s? ki?n click cho n�t 'X' tr�n h�ng c?a b?ng.
+     * Xử lý sự kiện click cho nút 'X' trên hàng của bảng.
      * @param {Event} e The click event.
      */
     function handleRemoveRow(e) {
@@ -315,10 +315,10 @@
         }
     }
 
-    // --- 6. H�m tr? gi�p (Cung c?p cho c�c module kh�c) ---
+    // --- 6. Hàm trợ giúp (Cung cấp cho các module khác) ---
 
     /**
-     * �?t th�ng b�o tr?ng th�i.
+     * Đặt thông báo trạng thái.
      * @param {string} text The message to display.
      * @param {string} className The Bootstrap class (e.g., 'text-success', 'text-danger').
      */
@@ -329,7 +329,7 @@
     App.setStatus = setStatus; // Expose
 
     /**
-     * X? l� l?i.
+     * Xử lý lỗi.
      * @param {string} errorCode The error code (e.g., "ERROR_TIME_TAMPER_DETECTED").
      * @param {string} [details] Optional extra details.
      */
@@ -350,6 +350,7 @@
                 break;
             case "ERROR_LICENSE_INVALID_OR_EXPIRED":
                 message = "License Error: The provided Email or License Key is invalid or has expired.";
+                if (details) message = details; // Cho phép ghi đè chi tiết
                 break;
             case "ERROR_LICENSE_EXPIRED_OR_INVALIDATED":
                 message = "License Error: Your license is no longer valid. The UI has been locked.";
@@ -369,6 +370,13 @@
             case "ERROR_WASM_CALL_FAILED":
                 message = "Critical Error: The call to the WASM module failed.";
                 break;
+            
+            // --- BỔ SUNG MÃ LỖI MỚI ---
+            case "ERROR_PRO_ANALYSIS_DENIED":
+                message = `Trial Mode Limit: Analysis with more than 2 soil layers or 0 anchors requires a valid license.`;
+                break;
+            // --- KẾT THÚC BỔ SUNG ---
+
             case "ERROR_PLOTTING_FAILED":
                 message = "Analysis complete, but failed to render charts.";
                 break;
@@ -380,7 +388,7 @@
     App.handleError = handleError; // Expose
 
     /**
-     * Tr? gi�p t?i file.
+     * Trợ giúp tải file.
      * @param {string} content File content.
      * @param {string} fileName The name of the file.
      * @param {string} mimeType The MIME type.
@@ -396,10 +404,10 @@
     }
     App.downloadFile = downloadFile; // Expose
 
-    // Expose c�c h�m qu?n l� UI c?n thi?t cho c�c module kh�c
+    // Expose các hàm quản lý UI cần thiết cho các module khác
     App.loadDataIntoUI = loadDataIntoUI;
     
-    // --- B?t d?u ?ng d?ng ---
+    // --- Bắt đầu ứng dụng ---
     document.addEventListener('DOMContentLoaded', initialize);
 
-})(SheetPileApp); // Truy?n v�o kh�ng gian t�n chung
+})(SheetPileApp); // Truyền vào không gian tên chung
