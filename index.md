@@ -75,6 +75,9 @@ excerpt: "Blog chuyên môn và Các Ứng dụng Web (WASM, FEM, AI) cho Kỹ t
 </div>
 
 ---
-
 ## ✍️ Bài viết mới nhất
-{% include post_grid.html type="post" %}
+{% comment %} Thay thế post_grid.html không tồn tại bằng vòng lặp chuẩn của Minimal Mistakes {% endcomment %}
+{% assign posts = site.posts | limit: 5 %}
+{% for post in posts %}
+  {% include archive-single.html type="list" %}
+{% endfor %}
