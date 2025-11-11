@@ -50,7 +50,7 @@ excerpt: "Các Ứng dụng Web cho Kỹ thuật Xây dựng."
         <img src="/assets/images/app-icons/sheetpile-icon.png" alt="Sheet Pile FEM icon">
       </div>
       <div class="archive__item-body">
-        <h3 class="archive__item-title">Tường Cừ Ván thép (Sheet Pile FEM)</h3>
+        <h3 class="archive__item-title">Phân tích Tường Cừ ván theo PP PTHH (Sheet Pile FEM)</h3>
         <div class="archive__item-excerpt">
           <p>Phân tích Tường cừ ván có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM).</p>
         </div>
