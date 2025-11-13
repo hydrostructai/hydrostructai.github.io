@@ -29,8 +29,4 @@ Bạn có thể:
 
 ### 3. Trải nghiệm ngay
 
-Hãy thử thay đổi các tham số và xem những mẫu hình độc đáo mà bạn có thể tạo ra.
-
-<a href="/tools/hypocycloid/index.html" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-    Vẽ Đường Hypocycloid
-</a>
+[**Khám phá Hypocycloid Generator**](/tools/hypocycloid/)
