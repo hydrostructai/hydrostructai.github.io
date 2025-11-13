@@ -25,12 +25,10 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             
-            /* --- SỬA LOGIC LAYOUT --- */
             display: flex;
             flex-direction: row; /* Mặc định là side-by-side */
             height: 100vh;
             overflow: hidden;
-            /* --- KẾT THÚC SỬA --- */
         }
 
         canvas {
@@ -38,41 +36,33 @@
             flex-grow: 1; /* Canvas lấp đầy không gian còn lại */
         }
 
-        /* --- SỬA LOGIC LAYOUT (Bảng điều khiển) --- */
         #controls-panel {
-            /* Gỡ bỏ position: absolute để đưa vào luồng flex */
-            /* position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            */
-            
-            /* Giao diện hiện đại */
-            background-color: #f8f9fa; /* Đổi sang màu nền đục cho dễ đọc */
-            border-left: 1px solid var(--border-color); /* Thêm viền trái */
-            border-radius: 0; /* Bỏ border radius */
+            background-color: #f8f9fa; 
+            border-left: 1px solid var(--border-color); 
+            border-radius: 0; 
             box-shadow: var(--box-shadow);
-            /* backdrop-filter: blur(5px); */ /* Bỏ blur */
             
             padding: 20px;
             box-sizing: border-box;
             
-            /* Bố cục flex */
             display: flex;
-            flex-direction: column; /* Xếp chồng các nhóm input */
+            flex-direction: column; 
             gap: 20px;
             
-            /* Kích thước & Cuộn */
-            width: 350px; /* Đặt chiều rộng cố định */
-            flex-shrink: 0; /* Không cho co lại */
-            height: 100vh; /* Cao 100% */
-            overflow-y: auto; /* Cho phép cuộn nếu không đủ chỗ */
+            /* --- SỬA LOGIC KÍCH THƯỚC --- */
+            width: 20vw;      /* Mở rộng 20% khung nhìn */
+            min-width: 300px; /* Thêm: Đảm bảo không quá hẹp */
+            max-width: 500px; /* Thêm: Đảm bảo không quá rộng trên màn hình ultrawide */
+            /* --- KẾT THÚC SỬA --- */
+
+            flex-shrink: 0; 
+            height: 100vh; 
+            overflow-y: auto; 
         }
-        /* --- KẾT THÚC SỬA --- */
 
         .input-group {
             display: flex;
-            flex-direction: column; /* Sửa: Xếp chồng các input-item */
+            flex-direction: column; 
             gap: 15px;
         }
 
@@ -93,15 +83,15 @@
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             font-size: 1rem;
-            width: 100%; /* Sửa: Chiếm 100% chiều rộng của control panel */
-            box-sizing: border-box; /* Thêm box-sizing */
+            width: 100%; 
+            box-sizing: border-box; 
         }
 
         input[type="color"] {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            width: 100%; /* Sửa: Chiếm 100% chiều rộng */
+            width: 100%; 
             height: 38px;
             padding: 0;
             border: 1px solid var(--border-color);
@@ -109,7 +99,6 @@
             cursor: pointer;
         }
 
-        /* Sửa: Bố cục nhóm màu sắc */
         .color-input-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -118,7 +107,7 @@
         
         .button-group {
             display: flex;
-            flex-direction: column; /* Sửa: Xếp chồng các nút */
+            flex-direction: column; 
             gap: 10px;
         }
 
@@ -138,7 +127,6 @@
             background-color: #0056b3;
         }
 
-        /* --- SỬA CSS RESPONSIVE (MOBILE) --- */
         @media (max-width: 768px) {
             body {
                 flex-direction: column; /* Xếp chồng: canvas trên, controls dưới */
@@ -146,15 +134,18 @@
 
             #controls-panel {
                 width: 100%; /* Chiếm 100% chiều rộng */
-                height: auto; /* Chiều cao tự động */
+                height: auto; 
                 flex-shrink: 1;
-                flex-direction: column; /* Vẫn là cột */
-                border-left: none; /* Bỏ viền trái */
-                border-top: 1px solid var(--border-color); /* Thêm viền trên */
+                flex-direction: column; 
+                border-left: none; 
+                border-top: 1px solid var(--border-color); 
+                /* Gỡ bỏ min/max-width trên mobile */
+                min-width: unset; 
+                max-width: unset;
             }
 
             .input-group {
-                flex-direction: row; /* Quay lại thành hàng trên mobile */
+                flex-direction: row; 
                 justify-content: space-around;
             }
 
@@ -163,10 +154,9 @@
             }
 
             .button-group {
-                flex-direction: row; /* Nút cũng thành hàng */
+                flex-direction: row; 
             }
         }
-        /* --- KẾT THÚC SỬA --- */
     </style>
 </head>
 <body>
@@ -234,34 +224,19 @@
         let R, r, speed, path = [], angle = 0, isRunning = false, animationFrameId;
 
         function setCanvasSize() {
-            // Sửa: Lấy kích thước từ body để đảm bảo full màn hình
             canvas.width = canvas.clientWidth;
             canvas.height = canvas.clientHeight;
-            // Đặt gốc tọa độ về giữa
             ctx.translate(canvas.width / 2, canvas.height / 2);
         }
 
-        // --- SỬA LỖI RESPONSIVE ---
-        // Gọi hàm reset khi thay đổi kích thước cửa sổ
-        // để xóa quỹ đạo cũ và vẽ lại trên canvas mới
         window.addEventListener('resize', reset);
-        // --- KẾT THÚC SỬA LỖI ---
 
         function drawStaticElements() {
-            // Đặt lại ma trận transform về mặc định
             ctx.setTransform(1, 0, 0, 1, 0, 0);
-            
-            // Xóa toàn bộ canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Vẽ nền
             ctx.fillStyle = bgColorInput.value;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Di chuyển gốc tọa độ về giữa
             ctx.translate(canvas.width / 2, canvas.height / 2);
-
-            // Vẽ vòng tròn lớn (nếu R đã được định nghĩa)
             if (R) {
                 ctx.beginPath();
                 ctx.strokeStyle = largeCircleColorInput.value;
@@ -274,35 +249,27 @@
         function animate() {
             if (!isRunning) return;
 
-            // Vẽ các thành phần tĩnh (Nền, Vòng lớn)
             drawStaticElements();
 
-            // Tính toán tọa độ
             const Cx = (R - r) * Math.cos(angle);
             const Cy = (R - r) * Math.sin(angle);
             
-            // Sửa lại công thức Hypocycloid cho đúng
-            // Tọa độ điểm vẽ (x, y)
             const x = (R - r) * Math.cos(angle) + r * Math.cos(((R - r) / r) * angle);
             const y = (R - r) * Math.sin(angle) - r * Math.sin(((R - r) / r) * angle);
 
-            // Thêm điểm vào quỹ đạo
             path.push({x, y});
 
-            // Vẽ vòng tròn nhỏ
             ctx.beginPath();
             ctx.strokeStyle = smallCircleColorInput.value;
             ctx.lineWidth = 2;
             ctx.arc(Cx, Cy, r, 0, 2 * Math.PI);
             ctx.stroke();
             
-            // Vẽ điểm trên vòng tròn nhỏ
             ctx.beginPath();
             ctx.fillStyle = pathColorInput.value;
             ctx.arc(x, y, 4, 0, 2 * Math.PI);
             ctx.fill();
             
-            // Vẽ đường nối tâm vòng nhỏ tới điểm vẽ
             ctx.beginPath();
             ctx.strokeStyle = smallCircleColorInput.value;
             ctx.lineWidth = 1;
@@ -310,20 +277,16 @@
             ctx.lineTo(x, y);
             ctx.stroke();
 
-            // Vẽ quỹ đạo
             ctx.beginPath();
             ctx.strokeStyle = pathColorInput.value;
             ctx.lineWidth = 2;
             for (let i = 0; i < path.length; i++) {
-                // Sử dụng lineto cho điểm đầu tiên nếu là điểm bắt đầu
                 (i === 0) ? ctx.moveTo(path[i].x, path[i].y) : ctx.lineTo(path[i].x, path[i].y);
             }
             ctx.stroke();
             
             angle += speed;
 
-            // Sửa điều kiện dừng: Dừng khi vòng nhỏ quay đủ số vòng
-            // (Số vòng quay của vòng nhỏ = R / r)
             const totalRevolutions = R / r;
             if (angle < totalRevolutions * 2 * Math.PI + speed) {
                 animationFrameId = requestAnimationFrame(animate);
@@ -334,7 +297,6 @@
         }
 
         function runAnimation() {
-            // Nếu đang chạy, reset trước khi chạy lại
             if (isRunning) {
                 reset();
             }
@@ -347,7 +309,6 @@
             isRunning = true;
             runBtn.textContent = 'Đang vẽ...';
             
-            // Vẽ các thành phần tĩnh trước khi bắt đầu
             setCanvasSize();
             drawStaticElements(); 
             
@@ -361,18 +322,16 @@
             path = [];
             angle = 0;
             
-            // Lấy giá trị R hiện tại để vẽ vòng tĩnh
             R = parseFloat(largeRadiusInput.value); 
             
             setCanvasSize();
-            drawStaticElements(); // Vẽ lại nền và vòng lớn tĩnh
+            drawStaticElements(); 
         }
 
         runBtn.addEventListener('click', runAnimation);
         resetBtn.addEventListener('click', reset);
         
-        // Khởi tạo ban đầu
-        R = parseFloat(largeRadiusInput.value); // Lấy R để vẽ lần đầu
+        R = parseFloat(largeRadiusInput.value); 
         setCanvasSize();
         drawStaticElements();
     </script>

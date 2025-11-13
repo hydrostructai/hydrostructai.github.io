@@ -23,9 +23,9 @@ Trong kỹ thuật địa kỹ thuật và công trình ngầm, **tường cừ 
 
 Tuy nhiên, việc phân tích và thiết kế tường cừ ván không hề đơn giản. Nó đòi hỏi sự hiểu biết sâu sắc về tương tác đất-kết cấu (Soil-Structure Interaction), áp lực đất chủ động/bị động, và áp lực nước. Các phương pháp truyền thống như Cân bằng Giới hạn (Limit Equilibrium Method - LEM) tuy đơn giản nhưng có nhiều hạn chế khi mô hình hóa các điều kiện phức tạp như đất nhiều lớp, hệ neo, hay tải trọng động.
 
-### 2. Sự trỗi dậy của Phương pháp Phần tử Hữu hạn (FEM)
+### 2. Phương pháp Phần tử Hữu hạn (FEM)
 
-Phương pháp Phần tử Hữu hạn (FEM) cung cấp một mô hình phân tích chính xác và linh hoạt hơn nhiều. Thay vì các giả định đơn giản hóa, FEM cho phép chúng ta:
+Phương pháp phần tử hữu hạn (FEM – Finite Element Method) là một trong những công cụ tính toán và phân tích kết cấu hiện đại được sử dụng rộng rãi trong kỹ thuật xây dựng, cơ học ứng dụng và nhiều ngành kỹ thuật khác, FEM cho phép chúng ta:
 
 * Mô hình hóa tường cừ như một cấu kiện dầm-đàn hồi (beam-spring).
 * Định nghĩa chính xác đặc tính của từng lớp đất.

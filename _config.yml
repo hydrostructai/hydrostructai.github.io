@@ -1,93 +1,188 @@
-# --- Thông tin Trang web (Site Info) ---
-title: "HydroStructAI"
-title_separator: "|" # Ký tự phân cách tiêu đề
-email: "your-email@example.com"
-description: "Blog kỹ thuật và Web App (WASM, FEM, AI) cho Kỹ thuật Xây dựng."
-url: "https://hydrostructai.com" # URL chính thức MỚI
-baseurl: "" # Để trống
-repository: "hydrostructai/hydrostructai.github.io"
+# Welcome to Jekyll!
+#
+# This config file is meant for settings that affect your whole blog, values
+# which you are expected to set up once and rarely edit after that. If you find
+# yourself editing this file very often, consider using Jekyll's data files
+# feature for the data you need to update frequently.
+#
+# For technical reasons, this file is *NOT* reloaded automatically when you use
+# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
 
+# Site Settings
+locale: "vi"
+title: "Hydro Structure AI"
+title_separator: "|"
+name: "Hydro Structure AI"
+description: "Các ứng dụng Web cho Kỹ thuật Xây dựng"
+url: "https"
+baseurl: 
+# ĐÃ XÓA: Dòng 'repository:' đã bị xóa
+teaser: # path to an image to be used as a teaser - relative to /assets/images/
+logo: # path to an image to be used for the site logo - relative to /assets/images/
+masthead_title: # overrides the website title displayed in the masthead, use " " for no title
+# path to an image to be used for the site logo - relative to /assets/images/
+# path to a file relative to site root or url
+# external_url: 
 
-# --- Cấu hình Theme (Minimal Mistakes Setup) ---
-# theme: "minimal-mistakes-jekyll" # THAY remote_theme bằng theme
-remote_theme: "mmistakes/minimal-mistakes"
-minimal_mistakes_skin: "air" # Giao diện màu. Thử: "default", "dark", "aqua", "neon"
-
-# --- Cấu hình Plugins (ĐÃ SỬA LỖI BUILD) ---
-# --- Cấu hình Plugins (ĐÃ SỬA LỖI BUILD) ---
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
-  - jekyll-sitemap
-  - jekyll-remote-theme   # <-- BẬT LẠI DÒNG NÀY (BẮT BUỘC)
-  - jekyll-paginate
-  - jekyll-include-cache
-
-
-
-# --- Cấu hình Phân trang (Bắt buộc cho layout 'home') ---
-paginate: 5 # Số bài viết trên mỗi trang
-paginate_path: "/posts/page:num/" # Đường dẫn cho các trang tiếp theo
-
-# --- Cấu hình Mặc định (Defaults) ---
-# Tự động gán layout và các tính năng cho bài viết/trang
-defaults:
-  # Áp dụng cho tất cả bài viết
-  - scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "single" # Layout chuẩn của MM
-      author_profile: true # Hiển thị sidebar tác giả
-      read_time: true # Hiển thị thời gian đọc
-      comments: true # Cho phép bình luận (cần cấu hình thêm)
-      share: true # Hiển thị nút chia sẻ
-      related: true # Hiển thị bài viết liên quan
-      toc: true # Tự động tạo mục lục
-      toc_sticky: true # Giữ mục lục khi cuộn
-  # Áp dụng cho tất cả các trang
-  - scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "single" # Dùng chung layout "single"
-      author_profile: true # Hiển thị sidebar tác giả
-
-# --- Cấu hình Tác giả (Author Sidebar) ---
-# Thông tin này sẽ hiển thị ở sidebar bên trái
+# Site Author
 author:
-  name: "Tên Kỹ sư của bạn"
-  avatar: "/assets/images/my-avatar.png" # Cập nhật ảnh của bạn
-  bio: "Kỹ sư Địa kỹ thuật & Lập trình viên. Đam mê FEM, WASM và AI."
+  name: "Hydro Structure AI"
+  avatar: # path to avatar image, e.g. "/assets/images/bio-photo.jpg"
+  bio: "Các ứng dụng Web cho Kỹ thuật Xây dựng"
   location: "Hanoi, Vietnam"
   links:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
-      url: "mailto:your-email@example.com"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/hydrostructai"
-    - label: "LinkedIn"
-      icon: "fab fa-fw fa-linkedin"
-      url: "https://linkedin.com/in/your-profile"
-    # Thêm các link khác nếu muốn
+      url: "mailto:ha.nguyen@hydrostructai.com"
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://hydrostructai.com"
+    # ĐÃ XÓA: Khối link GitHub
 
-# --- Cấu hình Tính năng Theme ---
-search: true # Bật tính năng tìm kiếm tích hợp
-analytics:
-  provider: "google-gtag" # Bật Google Analytics
-  google:
-    tracking_id: "G-XXXXXXXXXX" # Thay bằng ID của bạn
-    anonymize_ip: false
+# Site Footer
+footer:
+  links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:ha.nguyen@hydrostructai.com"
+    # ĐÃ XÓA: Khối link GitHub
 
-# --- Cấu trúc Build ---
+# Reading Files
+include:
+  - .htaccess
+  - _pages
+  - apps
+  - tools
+exclude:
+  -,
+  - "*.sublime-project"
+  - "*.sublime-workspace"
+  - vendor
+  - .asset-cache
+  - .bundle
+  - .jekyll-assets-cache
+  - .sass-cache
+  - assets/js/plugins
+  - assets/js/_main.js
+  - assets/js/vendor
+  - Capfile
+  - CHANGELOG
+  - config
+  - Gemfile
+  - Gruntfile.js
+  - gulpfile.js
+  - LICENSE
+  - log
+  - node_modules
+  - package.json
+  - package-lock.json
+  - Rakefile
+  - README
+  - tmp
+  - /docs # Exclude development directory
+keep_files:
+  - .git
+  - .svn
+encoding: "utf-8"
+markdown_ext: "markdown,mkdown,mkdn,mkd,md"
+
+# Conversion
 markdown: kramdown
+highlighter: rouge
+lsi: false
+excerpt_separator: "\n\n"
+incremental: false
+
+# Markdown Processing
 kramdown:
   input: GFM
+  hard_wrap: false
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  smart_quotes: lsquo,rsquo,ldquo,rdquo
   syntax_highlighter: rouge
 
-# --- Loại trừ ---
-exclude:
-  - Gemfile
-  - Gemfile.lock
-  - README.md
+# Sass/SCSS
+sass:
+  sass_dir: _sass
+  style: compressed # https://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
+
+# Outputting
+permalink: /:categories/:title/
+paginate: 5 # number of posts to show
+paginate_path: /page:num/
+timezone: "Asia/Ho_Chi_Minh" # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+# Plugins (previously gems:)
+plugins:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+  - jekyll-include-cache
+  - jekyll-archives
+
+# mimic GitHub Pages with --safe
+whitelist:
+  - jekyll-paginate
+  - jekyll-sitemap
+  - jekyll-gist
+  - jekyll-feed
+  - jemoji
+  - jekyll-include-cache
+
+# Archives
+#  Type
+#  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
+#  - Jekyll Archives plugin archive pages ~> type: jekyll-archives
+#  Path (examples)
+#  - Archive page should exist at path.
+#  - /categories/my-category/
+#  - /tags/my-tag/
+category_archive:
+  type: jekyll-archives
+  path: /categories/
+tag_archive:
+  type: jekyll-archives
+  path: /tags/
+
+# HTML Compression
+# - https://jch.penson.io/jekyll-compress-html/
+compress_html:
+  clippings: all
+  ignore:
+    envs: development
+
+# Defaults
+defaults:
+  # _posts
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: single
+      author_profile: true
+      read_time: true
+      comments: true
+      share: true
+      related: true
+      
+# === BỔ SUNG CẤU HÌNH SONG NGỮ ===
+# Ngôn ngữ mặc định của trang web
+lang: "vi"
+
+# Danh sách ngôn ngữ được hỗ trợ
+languages: ["vi", "en"]
+
+# Cấu hình cho plugin jekyll-archives (giữ nguyên)
+jekyll-archives:
+  enabled:
+    - categories
+    - tags
+  layout: archive
+  permalinks:
+    tag: /tags/:name/
+    category: /categories/:name/

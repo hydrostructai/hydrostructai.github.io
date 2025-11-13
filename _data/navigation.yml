@@ -1,12 +1,12 @@
+# _data/navigation.yml
+# main navigation
 main:
-  - title: "Blog"
-    url: "/"
-  - title: "Web Apps"
-    url: "/apps/"
-  - title: "Về chúng tôi"
-    url: "/about/"
-  - title: "Theo Thẻ (Tags)"
-    url: "/tags/"
-  # Bạn có thể thêm link bên ngoài
-  - title: "Dự án GitHub"
-    url: "https://github.com/hydrostructai"
+  - title: "{{ site.data.t[site.lang].nav.blog | default: 'Blog' }}"
+    url: /
+  - title: "{{ site.data.t[site.lang].nav.web_apps | default: 'Web Apps' }}"
+    url: /apps/
+  - title: "{{ site.data.t[site.lang].nav.about | default: 'Về chúng tôi' }}"
+    url: /about/
+  - title: "{{ site.data.t[site.lang].nav.tags | default: 'Theo Thẻ (Tags)' }}"
+    url: /tags/
+  # ĐÃ XÓA: Mục "Dự án GitHub"
