@@ -22,6 +22,9 @@ gem "jekyll-feed", group: :jekyll_plugins
 gem "jekyll-sitemap", group: :jekyll_plugins
 gem "jekyll-paginate", group: :jekyll_plugins
 gem "jekyll-seo-tag", group: :jekyll_plugins
+gem "jekyll-gist"         # <-- Fix lỗi trước đó
+gem "jemoji"              # <-- Fix lỗi trước đó
+gem "jekyll-archives"     # <-- THÊM VÀO: Fix lỗi 'cannot load jekyll-archives'
 
 # 5. Các phụ thuộc khác
 gem "kramdown"
