@@ -5,8 +5,9 @@
  */
 
 // Biến toàn cục để lưu trữ kết quả
-let solution;
+let solution; // Sẽ được định nghĩa KHI nhấn nút
 let mapping; // Đối tượng để lưu các hàm ánh xạ
+let calcButton; // Biến cho nút tính toán
 
 // Hàm setup() của p5.js chạy một lần khi tải trang
 function setup() {
@@ -15,24 +16,54 @@ function setup() {
     canvas.parent('canvas-container');
 
     // 2. Tạo các hàm ánh xạ tọa độ
-    // mapX: Chuyển tọa độ X toán học sang pixel X của canvas
-    // mapY: Chuyển tọa độ Y toán học sang pixel Y của canvas (lưu ý Y bị đảo ngược)
     mapping = {
         mapX: (x) => map(x, GRAPH_CONFIG.xMin, GRAPH_CONFIG.xMax, 0, width),
         mapY: (y) => map(y, GRAPH_CONFIG.yMin, GRAPH_CONFIG.yMax, height, 0),
     };
 
-    // 3. Giải hệ phương trình (chỉ chạy một lần)
-    solution = solveForCircle();
+    // 3. (SỬA) Gắn sự kiện cho nút, KHÔNG tính toán ngay
+    calcButton = select('#calculateButton');
+    calcButton.mousePressed(handleCalculation);
 
-    // 4. Hiển thị kết quả lên HTML
-    displayResults(solution);
+    // 4. (XÓA) Không gọi giải và hiển thị kết quả ngay
+    // solution = solveForCircle();
+    // displayResults(solution);
 
-    // 5. Ngừng lặp (vì đây là biểu đồ tĩnh)
+    // 5. Ngừng lặp (chỉ vẽ biểu đồ tĩnh ban đầu)
     noLoop();
+    
+    // p5.js sẽ tự động gọi draw() một lần sau setup()
 }
 
-// Hàm draw() của p5.js chạy sau setup()
+/**
+ * (MỚI) Hàm này chỉ được gọi khi nhấn nút
+ */
+function handleCalculation() {
+    // Thông báo cho người dùng
+    calcButton.html('Đang tính toán...');
+    calcButton.attribute('disabled', true);
+    select('#results').html('<h3>Kết quả Chi tiết</h3><p>Đang giải hệ phương trình... (việc này có thể mất vài giây)</p>');
+    
+    // Dùng setTimeout để cho phép trình duyệt cập nhật DOM
+    // trước khi chạy hàm tính toán nặng (solveForCircle)
+    setTimeout(() => {
+        // 3. Giải hệ phương trình (CHỈ KHI ĐƯỢC GỌI)
+        solution = solveForCircle();
+
+        // 4. Hiển thị Kết quả lên HTML
+        displayResults(solution);
+
+        // 5. Vẽ lại canvas để thêm hình tròn
+        redraw(); // Gọi lại hàm draw() một lần nữa
+
+        // Reset nút
+        calcButton.html('Tính toán Diện tích');
+        calcButton.removeAttribute('disabled');
+    }, 50); // Đợi 50ms để cập nhật UI
+}
+
+
+// Hàm draw() của p5.js
 function draw() {
     background(255); // Nền trắng
 
@@ -44,7 +75,7 @@ function draw() {
     drawFunction(g, GRAPH_CONFIG.colors.g, 2); // Đường g (tím), đậm 2px
     drawFunction(h, GRAPH_CONFIG.colors.h, 2); // Đường h (xanh), đậm 2px
 
-    // Vẽ hình tròn và các đường gióng
+    // (SỬA) Chỉ vẽ hình tròn NẾU 'solution' đã được tính
     if (solution) {
         // Vẽ đường gióng cho các điểm tiếp xúc
         drawTangencyLines(solution);
@@ -55,7 +86,7 @@ function draw() {
 }
 
 /**
- * (CẬP NHẬT) Hiển thị kết quả ra các vùng HTML
+ * Hiển thị kết quả ra các vùng HTML
  */
 function displayResults(sol) {
     const format = (num) => num.toFixed(4);
@@ -65,6 +96,7 @@ function displayResults(sol) {
     areaDiv.html(`<h3>Diện tích (πR²): <span>${format(sol.area)}</span></h3>`, false); // false = không chèn HTML
 
     // 2. Hiển thị Kết quả Chi tiết (bên cạnh)
+    // (SỬA LỖI) Giờ đây div#results đã tồn tại trong HTML
     const resultsDiv = select('#results');
     resultsDiv.html(
         `<h3>Kết quả Chi tiết</h3>
@@ -132,14 +164,14 @@ function drawFunction(func, color, weight) {
 }
 
 /**
- * (MỚI) Hàm trợ giúp vẽ đường nét đứt
+ * Hàm trợ giúp vẽ đường nét đứt
  */
 function setLineDash(list) {
     drawingContext.setLineDash(list);
 }
 
 /**
- * (MỚI) Vẽ các đường gióng từ điểm tiếp xúc
+ * Vẽ các đường gióng từ điểm tiếp xúc
  */
 function drawTangencyLines(sol) {
     const { mapX, mapY } = mapping;
@@ -168,7 +200,7 @@ function drawTangencyLines(sol) {
 
 
 /**
- * (CẬP NHẬT) Vẽ hình tròn, tô màu VÀ đường gióng tâm
+ * Vẽ hình tròn, tô màu VÀ đường gióng tâm
  */
 function drawSolutionCircle(sol) {
     const { mapX, mapY } = mapping;
@@ -178,8 +210,6 @@ function drawSolutionCircle(sol) {
     const py_c = mapY(sol.yc);
     
     // Tính bán kính (R) bằng pixel
-    // Chúng ta phải tính toán dựa trên tỷ lệ pixel/đơn vị
-    // (Giả sử tỷ lệ x và y là như nhau, nếu không vòng tròn sẽ là hình elip)
     const pixelPerUnitX = width / (GRAPH_CONFIG.xMax - GRAPH_CONFIG.xMin);
     const R_pixel = sol.R * pixelPerUnitX;
     

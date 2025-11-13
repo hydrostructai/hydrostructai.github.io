@@ -47,6 +47,30 @@ h1 {
     max-width: 100%;
 }
 
+/* === BỔ SUNG CSS CHO NÚT MỚI === */
+#calculateButton {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 1.1em;
+    font-weight: bold;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 15px; /* Thêm khoảng cách */
+}
+#calculateButton:hover {
+    background-color: #0056b3;
+}
+#calculateButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+/* === KẾT THÚC BỔ SUNG CSS === */
+
+
 /* Vùng hiển thị diện tích (dưới biểu đồ) */
 #area-display {
     padding: 10px 25px;
