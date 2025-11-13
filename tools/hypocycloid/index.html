@@ -19,55 +19,61 @@
         }
 
         body {
-            /* Sửa: Dùng font Poppins hiện đại */
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             margin: 0;
             padding: 0;
             background-color: var(--bg-color);
             color: var(--text-color);
-            /* Sửa: Đảm bảo canvas chiếm toàn bộ không gian */
+            
+            /* --- SỬA LOGIC LAYOUT --- */
             display: flex;
+            flex-direction: row; /* Mặc định là side-by-side */
             height: 100vh;
             overflow: hidden;
+            /* --- KẾT THÚC SỬA --- */
         }
 
         canvas {
             display: block;
-            flex-grow: 1; /* Đảm bảo canvas lấp đầy không gian */
+            flex-grow: 1; /* Canvas lấp đầy không gian còn lại */
         }
 
-        /* --- BẮT ĐẦU SỬA ĐỔI BẢNG ĐIỀU KHIỂN --- */
+        /* --- SỬA LOGIC LAYOUT (Bảng điều khiển) --- */
         #controls-panel {
-            position: absolute;
-            /* Mặc định cho Desktop: Nổi ở dưới */
+            /* Gỡ bỏ position: absolute để đưa vào luồng flex */
+            /* position: absolute;
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
+            */
             
             /* Giao diện hiện đại */
-            background-color: var(--control-bg);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
+            background-color: #f8f9fa; /* Đổi sang màu nền đục cho dễ đọc */
+            border-left: 1px solid var(--border-color); /* Thêm viền trái */
+            border-radius: 0; /* Bỏ border radius */
             box-shadow: var(--box-shadow);
-            backdrop-filter: blur(5px);
+            /* backdrop-filter: blur(5px); */ /* Bỏ blur */
             
-            padding: 15px;
+            padding: 20px;
             box-sizing: border-box;
             
             /* Bố cục flex */
             display: flex;
-            flex-wrap: wrap; /* Tự động xuống hàng nếu không đủ chỗ */
-            gap: 15px;
-            justify-content: center;
-            align-items: flex-end;
-            max-width: 95%;
+            flex-direction: column; /* Xếp chồng các nhóm input */
+            gap: 20px;
+            
+            /* Kích thước & Cuộn */
+            width: 350px; /* Đặt chiều rộng cố định */
+            flex-shrink: 0; /* Không cho co lại */
+            height: 100vh; /* Cao 100% */
+            overflow-y: auto; /* Cho phép cuộn nếu không đủ chỗ */
         }
-        /* --- KẾT THÚC SỬA ĐỔI BẢNG ĐIỀU KHIỂN --- */
+        /* --- KẾT THÚC SỬA --- */
 
         .input-group {
             display: flex;
-            gap: 10px;
-            align-items: flex-end;
+            flex-direction: column; /* Sửa: Xếp chồng các input-item */
+            gap: 15px;
         }
 
         .input-item {
@@ -87,23 +93,32 @@
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
             font-size: 1rem;
-            width: 100px;
+            width: 100%; /* Sửa: Chiếm 100% chiều rộng của control panel */
+            box-sizing: border-box; /* Thêm box-sizing */
         }
 
         input[type="color"] {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            width: 38px;
+            width: 100%; /* Sửa: Chiếm 100% chiều rộng */
             height: 38px;
             padding: 0;
             border: 1px solid var(--border-color);
             border-radius: 5px;
             cursor: pointer;
         }
+
+        /* Sửa: Bố cục nhóm màu sắc */
+        .color-input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
         
         .button-group {
             display: flex;
+            flex-direction: column; /* Sửa: Xếp chồng các nút */
             gap: 10px;
         }
 
@@ -123,41 +138,42 @@
             background-color: #0056b3;
         }
 
-        /* --- BẮT ĐẦU CSS RESPONSIVE (MOBILE) --- */
+        /* --- SỬA CSS RESPONSIVE (MOBILE) --- */
         @media (max-width: 768px) {
+            body {
+                flex-direction: column; /* Xếp chồng: canvas trên, controls dưới */
+            }
+
             #controls-panel {
-                /* Di chuyển lên trên cùng */
-                top: 10px;
-                bottom: auto;
-                left: 10px;
-                right: 10px;
-                transform: none; /* Reset transform */
-                
-                flex-direction: column; /* Xếp chồng */
-                align-items: stretch; /* Kéo dãn các nhóm */
-                gap: 15px;
+                width: 100%; /* Chiếm 100% chiều rộng */
+                height: auto; /* Chiều cao tự động */
+                flex-shrink: 1;
+                flex-direction: column; /* Vẫn là cột */
+                border-left: none; /* Bỏ viền trái */
+                border-top: 1px solid var(--border-color); /* Thêm viền trên */
             }
 
             .input-group {
+                flex-direction: row; /* Quay lại thành hàng trên mobile */
                 justify-content: space-around;
             }
 
-            input[type="number"] {
-                width: auto; /* Để input tự co dãn */
-                flex-grow: 1;
+            .color-input-grid {
+                grid-template-columns: 1fr 1fr 1fr 1fr; /* Dàn 4 màu ra */
             }
-            
+
             .button-group {
-                flex-direction: column; /* Nút cũng xếp chồng */
+                flex-direction: row; /* Nút cũng thành hàng */
             }
         }
-        /* --- KẾT THÚC CSS RESPONSIVE (MOBILE) --- */
+        /* --- KẾT THÚC SỬA --- */
     </style>
 </head>
 <body>
     <canvas id="hypocycloidCanvas"></canvas>
 
     <div id="controls-panel">
+        
         <div class="input-group">
             <div class="input-item">
                 <label for="largeRadius">Bán kính lớn (R)</label>
@@ -174,21 +190,24 @@
         </div>
         
         <div class="input-group">
-            <div class="input-item">
-                <label for="bgColor">Nền</label>
-                <input type="color" id="bgColor" value="#ffffff">
-            </div>
-            <div class="input-item">
-                <label for="largeCircleColor">Vòng lớn</label>
-                <input type="color" id="largeCircleColor" value="#4A90E2">
-            </div>
-            <div class="input-item">
-                <label for="smallCircleColor">Vòng nhỏ</label>
-                <input type="color" id="smallCircleColor" value="#333333">
-            </div>
-            <div class="input-item">
-                <label for="pathColor">Quỹ đạo</label>
-                <input type="color" id="pathColor" value="#D0021B">
+            <label>Màu sắc</label>
+            <div class="color-input-grid">
+                <div class="input-item">
+                    <label for="bgColor">Nền</label>
+                    <input type="color" id="bgColor" value="#ffffff">
+                </div>
+                <div class="input-item">
+                    <label for="largeCircleColor">Vòng lớn</label>
+                    <input type="color" id="largeCircleColor" value="#4A90E2">
+                </div>
+                <div class="input-item">
+                    <label for="smallCircleColor">Vòng nhỏ</label>
+                    <input type="color" id="smallCircleColor" value="#333333">
+                </div>
+                <div class="input-item">
+                    <label for="pathColor">Quỹ đạo</label>
+                    <input type="color" id="pathColor" value="#D0021B">
+                </div>
             </div>
         </div>
 
@@ -216,8 +235,8 @@
 
         function setCanvasSize() {
             // Sửa: Lấy kích thước từ body để đảm bảo full màn hình
-            canvas.width = document.body.clientWidth;
-            canvas.height = document.body.clientHeight;
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
             // Đặt gốc tọa độ về giữa
             ctx.translate(canvas.width / 2, canvas.height / 2);
         }
