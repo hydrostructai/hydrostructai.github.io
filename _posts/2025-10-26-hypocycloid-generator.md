@@ -1,7 +1,9 @@
 ---
 layout: post
 title: "Vẽ đường cong Hypocycloid (Spirograph)"
-description: "Công cụ đồ họa vui nhộn để khám phá vẻ đẹp của các đường cong toán học được tạo ra từ các vòng tròn lăn bên trong nhau (tương tự đồ chơi Spirograph)."
+permalink: /_posts/
+author_profile: true
+author_name: "Nguyễn Hải Hà"
 date: 2025-10-26 10:00:00 +0700
 categories: [Math, WebApp]
 tags: [Visualization, Geometry, Đồ họa, JavaScript]

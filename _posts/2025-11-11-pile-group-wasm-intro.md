@@ -1,6 +1,10 @@
 ---
+layout: post
 title: "Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro"
+permalink: /_posts/
 date: 2025-11-10 8:00:00 +0700
+image: /assets/images/posts/pilegroup-hero.png 
+
 categories:
   - Pile Foundation
   - Geotechnical
@@ -19,14 +23,14 @@ toc_label: "Mục lục"
 toc_icon: "fas fa-clipboard-list"
 ---
 
-Trong chuỗi dự án hồi sinh các công cụ kỹ thuật cổ điển, chúng tôi vui mừng giới thiệu ứng dụng **Pile Group 3D** (Bệ cọc đài cao). Ứng dụng này đã được chuyển đổi thành công từ mã nguồn **Turbo Pascal 7.0** kinh điển sang lõi tính toán **WebAssembly (Wasm)** hiệu năng cao.
+Ứng dụng **Pile Group 3D** (Bệ cọc đài cao) đã được chuyển đổi từ mã nguồn **Turbo Pascal 7.0** kinh điển sang lõi tính toán **WebAssembly** hiệu năng cao.
 
-## Nguồn gốc: Di sản kỹ thuật từ Turbo Pascal
+## Nguồn gốc chương trình
 
 Chương trình gốc được viết bởi cố PGS.TS Nguyễn Viết Trung (Đại học Giao thông Vận tải), dựa trên **Phương pháp Ma trận Độ cứng** theo lý thuyết của Zavriev-Spiro. Đây là một công cụ thiết yếu để phân tích các hệ thống móng cọc chịu tải trọng không gian (6 bậc tự do), đặc biệt là móng cọc xiên và móng đài cao (thường gặp trong công trình thủy lợi, cảng biển).
 
 Logic cốt lõi của nó bao gồm:
-1.  Tính toán ma trận độ cứng riêng của cọc (A3) bằng cách nội suy từ các bảng tra (phụ thuộc vào điều kiện mũi cọc: tựa đất, tựa đá, ngàm đá).
+1.  Tính toán ma trận độ cứng riêng của cọc bằng cách nội suy từ các bảng tra (phụ thuộc vào điều kiện mũi cọc: tựa đất, tựa đá, ngàm đá).
 2.  Sử dụng các ma trận chuyển đổi tọa độ (A1, A2) để tổng hợp ma trận độ cứng tổng thể của bệ.
 3.  Giải hệ phương trình tuyến tính để tìm chuyển vị và nội lực.
 

@@ -1,12 +1,15 @@
 ---
 layout: post
 title: "Vẽ Chuỗi Taylor"
-description: "Một ứng dụng toán học mang tính giáo dục, cho phép người dùng xem chuỗi Taylor của hàm sin(x) được xây dựng từng bước (bậc n)."
+permalink: /_posts/
+author_profile: true
+author_name: "Nguyễn Hải Hà"
 date: 2025-10-27 10:00:00 +0700
 categories: [Math, WebApp]
 tags: [Visualization, Taylor Series, JavaScript, Giáo dục]
 # Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
-# image: /assets/images/posts/taylor-series-hero.png 
+image: /assets/images/posts/taylor-series-hero.png 
+
 ---
 
 ### 1. Khái niệm Xấp xỉ Hàm

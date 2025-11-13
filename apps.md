@@ -1,8 +1,9 @@
 ---
-layout: posts
+layout: pages
 title: "Ứng dụng Web (Web Apps)"
 permalink: /apps/
 author_profile: true
+author_name: "Nguyễn Hải Hà"
 ---
 
 Trang này tổng hợp các ứng dụng web và công cụ tính toán được phát triển bởi HydroStructAI.

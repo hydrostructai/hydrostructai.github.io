@@ -1,10 +1,14 @@
 ---
 layout: post
-title: "Vẽ Trái Tim Tham Số (Parametric Heart)"
-description: "Một công cụ đồ họa tương tác để vẽ đường cong trái tim bằng phương trình tham số, cho phép tùy chỉnh các hệ số A, B, C, D, E."
+title: "Vẽ Trái Tim"
+permalink: /_posts/
+author_profile: true
+author_name: "Nguyễn Hải Hà"
 date: 2025-11-14 10:00:00 +0700
 categories: [Math, WebApp]
 tags: [Visualization, Parametric Equation, Đồ họa, JavaScript]
+# Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
+#image: /assets/images/posts/hypocycloid-hero.png 
 ---
 
 ### 1. Phép thuật của Phương trình Tham số

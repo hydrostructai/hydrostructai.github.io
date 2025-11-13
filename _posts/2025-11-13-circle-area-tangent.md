@@ -1,10 +1,15 @@
 ---
 layout: post
 title: "Bài toán Hình tròn Tiếp tuyến (Apollonius Problem)"
-description: "Một ứng dụng web tương tác để vẽ và giải bài toán tìm hình tròn tiếp tuyến với ba đường cong hàm số bất kỳ."
+permalink: /_posts/
+author_profile: true
+author_name: "Nguyễn Hải Hà"
 date: 2025-11-13 10:00:00 +0700
 categories: [Math, WebApp]
 tags: [Visualization, Geometry, JavaScript, p5js, numericjs, Giải tích]
+# Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
+image: /assets/images/posts/circleare-hero.png 
+
 ---
 
 ### 1. Bài toán Hình học Giải tích Thú vị
