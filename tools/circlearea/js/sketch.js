@@ -31,10 +31,6 @@ function setup() {
     timerDisplay = select('#timer-display'); // Lấy phần tử đếm ngược
     calcButton.mousePressed(handleCalculation);
 
-    // 4. (XÓA) Không gọi giải và hiển thị kết quả ngay
-    // solution = solveForCircle();
-    // displayResults(solution);
-
     // 5. Ngừng lặp (chỉ vẽ biểu đồ tĩnh ban đầu)
     noLoop();
     
@@ -71,7 +67,6 @@ function handleCalculation() {
     }, 1000);
 
     // Dùng setTimeout để cho phép trình duyệt cập nhật DOM
-    // trước khi chạy hàm tính toán nặng (solveForCircle)
     setTimeout(() => {
         // 3. Giải hệ phương trình (CHỈ KHI ĐƯỢC GỌI)
         solution = solveForCircle();
@@ -89,7 +84,7 @@ function handleCalculation() {
         // Reset nút
         calcButton.html('Tính toán Diện tích');
         calcButton.removeAttribute('disabled');
-    }, 50); // Đợi 50ms để cập nhật UI
+    }, 50); 
 }
 
 
@@ -101,11 +96,15 @@ function draw() {
     drawAxes();
 
     // Vẽ 3 hàm số
-    drawFunction(f, GRAPH_CONFIG.colors.f, 2); // Đường f (đỏ), đậm 2px
-    drawFunction(g, GRAPH_CONFIG.colors.g, 2); // Đường g (tím), đậm 2px
-    drawFunction(h, GRAPH_CONFIG.colors.h, 2); // Đường h (xanh), đậm 2px
+    drawFunction(f, GRAPH_CONFIG.colors.f, 2); // Đường f (đỏ)
+    drawFunction(g, GRAPH_CONFIG.colors.g, 2); // Đường g (tím)
+    drawFunction(h, GRAPH_CONFIG.colors.h, 2); // Đường h (xanh)
 
-    // (SỬA) Chỉ vẽ hình tròn NẾU 'solution' đã được tính
+    // === BỔ SUNG: Vẽ các phương trình ===
+    drawEquations();
+    // === KẾT THÚC BỔ SUNG ===
+
+    // Chỉ vẽ hình tròn NẾU 'solution' đã được tính
     if (solution) {
         // Vẽ đường gióng cho các điểm tiếp xúc
         drawTangencyLines(solution);
@@ -123,7 +122,7 @@ function displayResults(sol) {
     
     // 1. Hiển thị Diện tích (dưới biểu đồ)
     const areaDiv = select('#area-display');
-    areaDiv.html(`<h3>Diện tích (πR²): <span>${format(sol.area)}</span></h3>`, false); // false = không chèn HTML
+    areaDiv.html(`<h3>Diện tích (πR²): <span>${format(sol.area)}</span></h3>`, false); 
 
     // 2. Hiển thị Kết quả Chi tiết (bên cạnh)
     const resultsDiv = select('#results');
@@ -147,17 +146,11 @@ function drawAxes() {
     const { mapX, mapY } = mapping;
     stroke(GRAPH_CONFIG.colors.axis);
     strokeWeight(1.5);
-
-    // Trục X (tại y=0)
     line(mapX(GRAPH_CONFIG.xMin), mapY(0), mapX(GRAPH_CONFIG.xMax), mapY(0));
-    // Trục Y (tại x=0)
     line(mapX(0), mapY(GRAPH_CONFIG.yMin), mapX(0), mapY(GRAPH_CONFIG.yMax));
-
-    // Thêm các vạch chia
     strokeWeight(1);
     textAlign(CENTER, CENTER);
     fill(GRAPH_CONFIG.colors.axis);
-    
     for (let x = Math.ceil(GRAPH_CONFIG.xMin); x < GRAPH_CONFIG.xMax; x++) {
         if (x === 0) continue;
         line(mapX(x), mapY(0.1), mapX(x), mapY(-0.1));
@@ -178,19 +171,89 @@ function drawFunction(func, color, weight) {
     noFill();
     stroke(color);
     strokeWeight(weight);
-    
     beginShape();
-    // Vẽ với độ phân giải cao (nhiều điểm ảnh)
     for (let px = 0; px <= width; px += 1) {
-        // Chuyển đổi pixel X ngược lại tọa độ toán học x
         let x = map(px, 0, width, GRAPH_CONFIG.xMin, GRAPH_CONFIG.xMax);
         let y = func(x);
-
-        // Chuyển (x, y) toán học sang (px, py)
         vertex(px, mapY(y));
     }
     endShape();
 }
+
+/**
+ * (MỚI) Hàm trợ giúp vẽ mũi tên
+ * (Sử dụng tọa độ pixel đã được ánh xạ)
+ */
+function drawArrow(x1, y1, x2, y2, color) {
+    push();
+    stroke(color);
+    strokeWeight(1.5);
+    fill(color);
+    line(x1, y1, x2, y2); // Vẽ đường thẳng
+    
+    // Vẽ đầu mũi tên
+    let angle = atan2(y2 - y1, x2 - x1);
+    translate(x2, y2);
+    rotate(angle);
+    triangle(0, 0, -6, -3, -6, 3);
+    pop();
+}
+
+/**
+ * (MỚI) Vẽ các phương trình lên biểu đồ
+ */
+function drawEquations() {
+    const { mapX, mapY } = mapping;
+
+    // 1. Phương trình y = -sin(x) + 3 (Xanh lá)
+    let h_color = GRAPH_CONFIG.colors.h;
+    let h_label_x = 1.1;
+    let h_label_y = 3.5;
+    let h_point_x = 0.5;
+    let h_point_y = h(h_point_x); // y = -sin(0.5) + 3 ≈ 2.52
+    
+    push();
+    fill(h_color);
+    noStroke();
+    textAlign(LEFT, CENTER);
+    textSize(14);
+    text('y = -sin(x) + 3', mapX(h_label_x), mapY(h_label_y));
+    pop();
+    drawArrow(mapX(h_label_x - 0.05), mapY(h_label_y - 0.05), mapX(h_point_x), mapY(h_point_y + 0.05), h_color);
+    
+    // 2. Phương trình y = e^x (Tím)
+    let g_color = GRAPH_CONFIG.colors.g;
+    let g_label_x = -2.8;
+    let g_label_y = 0.5;
+    let g_point_x = -1;
+    let g_point_y = g(g_point_x); // y = e^-1 ≈ 0.37
+    
+    push();
+    fill(g_color);
+    noStroke();
+    textAlign(LEFT, CENTER);
+    textSize(14);
+    text('y = eˣ', mapX(g_label_x), mapY(g_label_y));
+    pop();
+    drawArrow(mapX(g_label_x + 0.3), mapY(g_label_y), mapX(g_point_x), mapY(g_point_y), g_color);
+    
+    // 3. Phương trình y = -x^3 + x (Đỏ)
+    let f_color = GRAPH_CONFIG.colors.f;
+    let f_label_x = 0.5;
+    let f_label_y = -0.5;
+    let f_point_x = 0.5;
+    let f_point_y = f(f_point_x); // y = -0.125 + 0.5 = 0.375
+    
+    push();
+    fill(f_color);
+    noStroke();
+    textAlign(LEFT, CENTER);
+    textSize(14);
+    text('y = -x³ + x', mapX(f_label_x), mapY(f_label_y));
+    pop();
+    drawArrow(mapX(f_label_x), mapY(f_label_y + 0.1), mapX(f_point_x), mapY(f_point_y - 0.05), f_color);
+}
+
 
 /**
  * Hàm trợ giúp vẽ đường nét đứt

@@ -2,7 +2,7 @@
 layout: page
 title: Về HydroStructAI
 permalink: /about/
-description: "Tầm nhìn và sứ mệnh của HydroStructAI - Dân chủ hóa công cụ phân tích kỹ thuật (FEM, WASM, AI) cho ngành Xây dựng."
+description: "Tầm nhìn và sứ mệnh của HydroStructAI - Xây dựng công cụ phân tích kỹ thuật Web App hiệu quả cho ngành Xây dựng."
 ---
 
 ### Sứ mệnh của Chúng tôi
