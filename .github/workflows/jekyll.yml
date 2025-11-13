@@ -27,7 +27,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.1' # Sử dụng phiên bản Ruby hiện đại
-          bundler-cache: true # Tự động chạy 'bundle install' và cache gem
+          run: bundle install
 
       - name: Setup Pages
         id: pages
