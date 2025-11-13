@@ -28,6 +28,6 @@ Công cụ này trực quan hóa bài toán và cung cấp lời giải số h�
 
 Công cụ hiển thị các đường gióng đến các điểm tiếp xúc, tọa độ tâm và tính toán diện tích hình tròn tìm được.
 
-<a href="/tools/circlearea/" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+<a href="/tools/circlearea/index.html" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
     Chạy Công cụ Hình tròn Tiếp tuyến
 </a>
