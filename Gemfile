@@ -13,7 +13,7 @@ gem "jekyll-sitemap", "~> 1.4.0"
 gem "jekyll-paginate"
 gem "jekyll-include-cache"
 
-# --- CÁC DÒNG ĐÃ THÊM ĐỂ FIX LỖI BUILD ---
-gem "jekyll-gist"         # <-- Thêm để fix lỗi 'cannot load such file -- jekyll-gist'
-gem "jemoji"              # <-- Thêm để tránh lỗi tiếp theo
-gem "jekyll-archives"     # <-- Thêm để tránh lỗi tiếp theo
+# --- 3 DÒNG THÊM VÀO ĐỂ SỬA LỖI BUILD ---
+gem "jekyll-gist"         # <-- THÊM VÀO: Fix lỗi 'cannot load jekyll-gist'
+gem "jemoji"              # <-- THÊM VÀO: Đồng bộ với _config.yml
+gem "jekyll-archives"     # <-- THÊM VÀO: Đồng bộ với _config.yml

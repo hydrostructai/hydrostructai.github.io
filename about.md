@@ -1,13 +1,14 @@
 ---
-layout: page
-title: Về HydroStructAI
+layout: posts
+title: "Về HydroStructAI"
 permalink: /about/
-description: "Tầm nhìn và sứ mệnh của HydroStructAI - Xây dựng công cụ phân tích kỹ thuật Web App hiệu quả cho ngành Xây dựng."
+author_profile: true
+author_name: "Nguyễn Hải Hà"
 ---
 
 ### Sứ mệnh của Chúng tôi
 
-**HydroStructAI** là một sáng kiến được sinh ra từ ngã tư của Kỹ thuật Xây dựng và Công nghệ Thông tin.
+**HydroStructAI** nghĩa là kết hợp của Hydro + Structure + AI, kết hợp của Công trình thủy + Kết cấu xây dựng + Trí tuệ nhân tạo.
 
 Sứ mệnh của chúng tôi là **dân chủ hóa các công cụ phân tích kỹ thuật phức tạp**. Chúng tôi tin rằng mọi kỹ sư, nhà nghiên cứu và sinh viên đều xứng đáng có quyền truy cập vào các phần mềm mô phỏng mạnh mẽ mà không bị rào cản bởi chi phí bản quyền đắt đỏ hay yêu cầu phần cứng nặng nề.
 
