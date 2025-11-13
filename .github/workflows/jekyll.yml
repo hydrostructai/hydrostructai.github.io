@@ -1,20 +1,12 @@
-# Tệp:.github/workflows/jekyll.yml
-# XÓA tệp workflow cũ của bạn và THAY THẾ bằng tệp này.
-# Đây là quy trình build GitHub Actions hiện đại, thay thế cho action cũ.
-name: Build and Deploy Jekyll Site to GitHub Pages
+# https://github.com/actions/starter-workflows/blob/main/pages/jekyll.yml
+# ... (các comment khác) ...
+
+name: Build and Deploy Jekyll Site
 
 on:
   push:
-    branches: ["main", "master"] # Đặt thành nhánh mặc định của bạn
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+    branches:
+      - main # Or your default branch
 
 jobs:
   build:
@@ -22,31 +14,38 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.1' # Sử dụng phiên bản Ruby hiện đại
-          run: bundle install
+          ruby-version: '3.1' # Giữ phiên bản Ruby
+          # bundler-cache: true # <-- XÓA DÒNG NÀY. Nó là nguyên nhân gây lỗi.
+          
+      # --- THÊM CÁC BƯỚC SAU ĐỂ FIX LỖI ---
+      - name: Install Bundler
+        run: gem install bundler
+        
+      - name: Install dependencies
+        run: bundle install # <-- THÊM BƯỚC NÀY ĐỂ CÀI ĐẶT GEMS
+
+      # --- KẾT THÚC PHẦN SỬA LỖI ---
 
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v5
 
-      - name: Build with Jekyll
-        # Sử dụng Gemfile và _config.yml đã được sửa
-        run: bundle exec jekyll build  
+      - name: Build
+        run: bundle exec jekyll build # <-- Lệnh này bây giờ sẽ chạy được
         env:
           JEKYLL_ENV: production
-      
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-        with:
-          path: './_site'
 
   deploy:
-    needs: build
     runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' # Only deploy from main branch
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

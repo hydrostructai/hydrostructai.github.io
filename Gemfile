@@ -17,10 +17,12 @@ gem "jekyll-include-cache", group: :jekyll_plugins
 # Khắc phục lỗi "faraday-retry" từ bản ghi log
 gem "faraday-retry"
 
+
 # 4. Các Plugin Jekyll Tiêu chuẩn
 gem "jekyll-feed", group: :jekyll_plugins
 gem "jekyll-sitemap", group: :jekyll_plugins
 gem "jekyll-paginate", group: :jekyll_plugins
+gem "jekyll-include-cache"
 gem "jekyll-seo-tag", group: :jekyll_plugins
 gem "jekyll-gist"         # <-- Fix lỗi trước đó
 gem "jemoji"              # <-- Fix lỗi trước đó
