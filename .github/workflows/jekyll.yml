@@ -35,7 +35,9 @@ jobs:
 
       - name: Build with Jekyll
         # Sử dụng Gemfile và _config.yml đã được sửa
-        run: bundle exec jekyll build --destination./_site
+        run: bundle exec jekyll build  
+        env:
+          JEKYLL_ENV: production
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
