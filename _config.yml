@@ -48,13 +48,13 @@ footer:
     # ĐÃ XÓA: Khối link GitHub
 
 # Reading Files
+# Reading Files
 include:
   - .htaccess
   - _pages
   - apps
   - tools
 exclude:
-  -,
   - "*.sublime-project"
   - "*.sublime-workspace"
   - vendor
