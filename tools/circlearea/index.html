@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài toán Hình tròn Tiếp tuyến</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
+<body>
+    <h1>Bài toán Hình tròn Tiếp tuyến (Apollonius)</h1>
+
+    <main class="main-content">
+
+        <div class="chart-wrapper">
+            <div id="canvas-container"></div>
+            
+            <div id="area-display">
+                <h3>Diện tích: <span>...</span></h3>
+            </div>
+        </div>
+
+        <div class="bottom-wrapper">
+            
+            <div id="results">
+                <h3>Kết quả Tính toán</h3>
+                <p>Đang tính toán, vui lòng đợi...</p>
+            </div>
+            
+            <div id="explanation">
+                <h3>Diễn giải Thuật toán</h3>
+                <p>
+                    Bài toán này được giải bằng cách tìm một tâm $(x_c, y_c)$ và một bán kính $R$ sao cho hình tròn $(x-x_c)^2 + (y-y_c)^2 = R^2$ tiếp xúc với cả ba đường cong $f(x)$, $g(x)$, và $h(x)$.
+                </p>
+                
+                <h4>1. Điều kiện Tiếp tuyến</h4>
+                <p>
+                    Một hình tròn tiếp xúc với một đường cong $y=k(x)$ tại điểm $P(x_p, y_p)$ nếu:
+                </p>
+                <ul>
+                    <li><b>Khoảng cách:</b> Khoảng cách từ tâm $(x_c, y_c)$ đến điểm $P$ phải bằng $R$.</li>
+                    <li><b>Pháp tuyến:</b> Đường thẳng pháp tuyến (vuông góc với tiếp tuyến) của đường cong $k(x)$ tại $P$ phải đi qua tâm $(x_c, y_c)$.</li>
+                </ul>
+                
+                <h4>2. Hệ Phương trình Phi tuyến</h4>
+                <p>
+                    Chúng ta có 3 điểm tiếp xúc chưa biết $P_f, P_g, P_h$. Điều này dẫn đến một hệ <b>6 phương trình phi tuyến</b> với <b>6 ẩn số</b>:
+                </p>
+                <ul>
+                    <li><b>3 ẩn chính:</b> $x_c$ (tâm x), $y_c$ (tâm y), $R$ (bán kính)</li>
+                    <li><b>3 ẩn phụ:</b> $x_f, x_g, x_h$ (hoành độ của 3 điểm tiếp xúc)</li>
+                </ul>
+                <p>
+                    Hệ này được xây dựng từ 3 phương trình khoảng cách (Lỗi 1-3) và 3 phương trình pháp tuyến (Lỗi 4-6) như đã định nghĩa trong `solver.js`.
+                </p>
+
+                <h4>3. Giải thuật (numeric.js)</h4>
+                <p>
+                    Hệ này không thể giải bằng đại số thông thường. Chúng ta sử dụng thư viện <b>numeric.js</b> với thuật toán <b>tối ưu hóa phi tuyến</b> (`numeric.uncmin`).
+                </p>
+                <p>
+                    Chúng ta định nghĩa một "Hàm Mục tiêu" (Objective Function) là tổng bình phương của 6 lỗi (từ 6 phương trình). Thuật toán sẽ tìm bộ 6 ẩn số $X = [x_c, y_c, R, ...]$ sao cho giá trị của hàm này là <b>nhỏ nhất</b> (gần bằng 0), đó chính là nghiệm của bài toán.
+                </p>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="lib/p5.min.js"></script>
+    <script src="lib/numeric.min.js"></script>
+    
+    <script src="js/constants.js"></script>
+    <script src="js/solver.js"></script>
+    <script src="js/sketch.js"></script>
+</body>
+</html>

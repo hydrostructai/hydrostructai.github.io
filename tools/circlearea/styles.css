@@ -1,0 +1,153 @@
+/* =================================
+   Thiết lập Chung & Font
+   ================================= */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    line-height: 1.6;
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 30px;
+}
+
+/* =================================
+   Bố cục Chính
+   ================================= */
+.main-content {
+    display: flex;
+    flex-direction: column; /* Xếp chồng: Biểu đồ (trên) -> Nội dung (dưới) */
+    align-items: center; /* Căn giữa theo chiều ngang */
+    width: 100%;
+    gap: 30px; /* Khoảng cách giữa phần trên và phần dưới */
+}
+
+/* =================================
+   Phần Trên: Biểu đồ & Diện tích
+   ================================= */
+.chart-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Căn giữa canvas và diện tích */
+    gap: 15px; /* Khoảng cách giữa canvas và diện tích */
+    width: 100%;
+    max-width: 800px; /* Giới hạn chiều rộng của biểu đồ nếu cần */
+}
+
+#canvas-container {
+    border: 1px solid #bdc3c7;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    /* p5.js sẽ tự động đặt kích thước */
+    /* Đảm bảo canvas vừa vặn */
+    max-width: 100%;
+}
+
+/* Vùng hiển thị diện tích (dưới biểu đồ) */
+#area-display {
+    padding: 10px 25px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+#area-display h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #2c3e50;
+}
+
+#area-display h3 span {
+    color: #e74c3c; /* Màu đỏ nổi bật */
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+/* =================================
+   Phần Dưới: Kết quả & Diễn giải
+   ================================= */
+.bottom-wrapper {
+    display: flex;
+    flex-wrap: wrap; /* Cho phép xuống hàng trên màn hình nhỏ */
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px; /* Giới hạn chiều rộng tổng */
+}
+
+/* Kiểu "Thẻ" (Card) chung cho 2 cột */
+#results,
+#explanation {
+    background-color: #ffffff;
+    border: 1px solid #bdc3c7;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    height: fit-content; /* Chiều cao tự động */
+}
+
+/* Cột 1: Kết quả */
+#results {
+    flex: 1; /* Chiếm 1 phần không gian */
+    min-width: 300px; /* Kích thước tối thiểu trước khi xuống hàng */
+}
+
+#results h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    color: #3498db; /* Màu xanh */
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+#results p {
+    font-size: 1.1em;
+}
+
+#results p span {
+    font-weight: bold;
+    color: #e74c3c;
+    font-family: 'Courier New', Courier, monospace;
+    display: block; /* Hiển thị số trên dòng riêng */
+    margin-top: 4px;
+}
+
+/* Cột 2: Diễn giải */
+#explanation {
+    flex: 2; /* Chiếm 2 phần không gian (rộng hơn) */
+    min-width: 400px; /* Kích thước tối thiểu trước khi xuống hàng */
+}
+
+#explanation h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    color: #27ae60; /* Màu xanh lá */
+    border-bottom: 2px solid #27ae60;
+    padding-bottom: 10px;
+}
+
+#explanation h4 {
+    color: #2c3e50;
+    margin-top: 20px;
+    margin-bottom: 5px;
+}
+
+#explanation p {
+    font-size: 1em;
+    margin-bottom: 15px;
+}
+
+#explanation ul {
+    padding-left: 20px;
+    margin-top: 0;
+}
+
+#explanation li {
+    margin-bottom: 10px;
+}
