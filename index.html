@@ -81,7 +81,7 @@ header:
 ---
 ## ✍️ Bài viết mới nhất
 {% comment %} Thay thế post_grid.html không tồn tại bằng vòng lặp chuẩn của Minimal Mistakes {% endcomment %}
-{% assign posts = site.posts | limit: 5 %}
+{% assign posts = site.posts | limit: 10 %}
 {% for post in posts %}
   {% include archive-single.html type="list" %}
 {% endfor %}
