@@ -8,6 +8,11 @@
 let solution; // Sẽ được định nghĩa KHI nhấn nút
 let mapping; // Đối tượng để lưu các hàm ánh xạ
 let calcButton; // Biến cho nút tính toán
+let timerDisplay; // Biến cho bộ đếm ngược
+let timerInterval; // Biến để giữ ID của setInterval
+
+// Thời gian dự kiến để giải (tính bằng giây)
+const EXPECTED_CALC_TIME = 5;
 
 // Hàm setup() của p5.js chạy một lần khi tải trang
 function setup() {
@@ -23,6 +28,7 @@ function setup() {
 
     // 3. (SỬA) Gắn sự kiện cho nút, KHÔNG tính toán ngay
     calcButton = select('#calculateButton');
+    timerDisplay = select('#timer-display'); // Lấy phần tử đếm ngược
     calcButton.mousePressed(handleCalculation);
 
     // 4. (XÓA) Không gọi giải và hiển thị kết quả ngay
@@ -39,16 +45,40 @@ function setup() {
  * (MỚI) Hàm này chỉ được gọi khi nhấn nút
  */
 function handleCalculation() {
-    // Thông báo cho người dùng
+    // Ngừng bộ đếm cũ nếu có
+    if (timerInterval) {
+        clearInterval(timerInterval);
+    }
+
+    // Cập nhật UI
     calcButton.html('Đang tính toán...');
     calcButton.attribute('disabled', true);
     select('#results').html('<h3>Kết quả Chi tiết</h3><p>Đang giải hệ phương trình... (việc này có thể mất vài giây)</p>');
-    
+
+    // Bắt đầu đếm ngược
+    let countdown = EXPECTED_CALC_TIME;
+    timerDisplay.html('Thời gian dự kiến: ' + countdown + ' giây...');
+    timerDisplay.style('display', 'block');
+
+    timerInterval = setInterval(() => {
+        countdown--;
+        if (countdown >= 0) {
+            timerDisplay.html('Thời gian dự kiến: ' + countdown + ' giây...');
+        } else {
+            timerDisplay.html('Vẫn đang xử lý... (thuật toán phức tạp)');
+            clearInterval(timerInterval); // Ngừng đếm nhưng vẫn chạy
+        }
+    }, 1000);
+
     // Dùng setTimeout để cho phép trình duyệt cập nhật DOM
     // trước khi chạy hàm tính toán nặng (solveForCircle)
     setTimeout(() => {
         // 3. Giải hệ phương trình (CHỈ KHI ĐƯỢC GỌI)
         solution = solveForCircle();
+        
+        // Ngừng bộ đếm ngay khi có kết quả
+        clearInterval(timerInterval);
+        timerDisplay.style('display', 'none');
 
         // 4. Hiển thị Kết quả lên HTML
         displayResults(solution);
@@ -96,7 +126,6 @@ function displayResults(sol) {
     areaDiv.html(`<h3>Diện tích (πR²): <span>${format(sol.area)}</span></h3>`, false); // false = không chèn HTML
 
     // 2. Hiển thị Kết quả Chi tiết (bên cạnh)
-    // (SỬA LỖI) Giờ đây div#results đã tồn tại trong HTML
     const resultsDiv = select('#results');
     resultsDiv.html(
         `<h3>Kết quả Chi tiết</h3>

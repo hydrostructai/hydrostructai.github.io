@@ -59,7 +59,8 @@ h1 {
     border-radius: 8px;
     cursor: pointer;
     transition: background-color 0.3s;
-    margin-top: 15px; /* Thêm khoảng cách */
+    margin-top: 5px; /* Giảm khoảng cách trên */
+    gap: 5px; /* Giảm khoảng cách dưới */
 }
 #calculateButton:hover {
     background-color: #0056b3;
@@ -68,8 +69,12 @@ h1 {
     background-color: #cccccc;
     cursor: not-allowed;
 }
-/* === KẾT THÚC BỔ SUNG CSS === */
 
+/* === BỔ SUNG CSS CHO BỘ ĐẾM NGƯỢC === */
+#timer-display {
+    margin: 0;
+    padding: 0;
+}
 
 /* Vùng hiển thị diện tích (dưới biểu đồ) */
 #area-display {
@@ -105,9 +110,10 @@ h1 {
     max-width: 1200px; /* Giới hạn chiều rộng tổng */
 }
 
-/* Kiểu "Thẻ" (Card) chung cho 2 cột */
+/* Kiểu "Thẻ" (Card) chung cho 3 cột */
 #results,
-#explanation {
+#explanation,
+#equation-list {
     background-color: #ffffff;
     border: 1px solid #bdc3c7;
     border-radius: 8px;
@@ -142,7 +148,29 @@ h1 {
     margin-top: 4px;
 }
 
-/* Cột 2: Diễn giải */
+/* Cột 2: Danh sách phương trình (Mới) */
+#equation-list {
+    flex: 1;
+    min-width: 300px;
+}
+#equation-list h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    color: #e74c3c; /* Màu đỏ */
+    border-bottom: 2px solid #e74c3c;
+    padding-bottom: 10px;
+}
+#equation-list ul {
+    padding-left: 20px;
+    margin: 0;
+}
+#equation-list li {
+    font-size: 1.1em;
+    list-style-type: none;
+}
+
+
+/* Cột 3: Diễn giải */
 #explanation {
     flex: 2; /* Chiếm 2 phần không gian (rộng hơn) */
     min-width: 400px; /* Kích thước tối thiểu trước khi xuống hàng */
