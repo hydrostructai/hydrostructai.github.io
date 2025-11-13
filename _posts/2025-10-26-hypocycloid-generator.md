@@ -29,6 +29,6 @@ Bạn có thể:
 
 Hãy thử thay đổi các tham số và xem những mẫu hình độc đáo mà bạn có thể tạo ra.
 
-<a href="/apps/hypocycloid/" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-    Chạy Hypocycloid Generator
+<a href="/tools/hypocycloid/index.html" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+    Vẽ Đường Hypocycloid
 </a>

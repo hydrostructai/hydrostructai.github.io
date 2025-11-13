@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Trực quan hóa Chuỗi Taylor"
+title: "Vẽ Chuỗi Taylor"
 description: "Một ứng dụng toán học mang tính giáo dục, cho phép người dùng xem chuỗi Taylor của hàm sin(x) được xây dựng từng bước (bậc n)."
 date: 2025-10-27 10:00:00 +0700
 categories: [Math, WebApp]
@@ -30,6 +30,6 @@ Công cụ này cho phép bạn:
 
 Ứng dụng được viết hoàn toàn bằng JavaScript và chạy mượt mà trên trình duyệt của bạn.
 
-<a href="/apps/taylor-series/" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
-    Chạy Taylor Series Visualizer
+<a href="/tools/taylor-series/index.html" class="button" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; font-weight: bold;">
+    Vẽ Chuỗi Taylor
 </a>
