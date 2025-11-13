@@ -15,6 +15,8 @@ function setup() {
     canvas.parent('canvas-container');
 
     // 2. Tạo các hàm ánh xạ tọa độ
+    // mapX: Chuyển tọa độ X toán học sang pixel X của canvas
+    // mapY: Chuyển tọa độ Y toán học sang pixel Y của canvas (lưu ý Y bị đảo ngược)
     mapping = {
         mapX: (x) => map(x, GRAPH_CONFIG.xMin, GRAPH_CONFIG.xMax, 0, width),
         mapY: (y) => map(y, GRAPH_CONFIG.yMin, GRAPH_CONFIG.yMax, height, 0),
@@ -117,9 +119,13 @@ function drawFunction(func, color, weight) {
     strokeWeight(weight);
     
     beginShape();
+    // Vẽ với độ phân giải cao (nhiều điểm ảnh)
     for (let px = 0; px <= width; px += 1) {
+        // Chuyển đổi pixel X ngược lại tọa độ toán học x
         let x = map(px, 0, width, GRAPH_CONFIG.xMin, GRAPH_CONFIG.xMax);
         let y = func(x);
+
+        // Chuyển (x, y) toán học sang (px, py)
         vertex(px, mapY(y));
     }
     endShape();
@@ -172,6 +178,8 @@ function drawSolutionCircle(sol) {
     const py_c = mapY(sol.yc);
     
     // Tính bán kính (R) bằng pixel
+    // Chúng ta phải tính toán dựa trên tỷ lệ pixel/đơn vị
+    // (Giả sử tỷ lệ x và y là như nhau, nếu không vòng tròn sẽ là hình elip)
     const pixelPerUnitX = width / (GRAPH_CONFIG.xMax - GRAPH_CONFIG.xMin);
     const R_pixel = sol.R * pixelPerUnitX;
     
@@ -185,7 +193,7 @@ function drawSolutionCircle(sol) {
     
     // --- Vẽ hình tròn (SAU) ---
     setLineDash([]); // Reset về nét liền
-    fill(GRAPH_CONFIG.colors.circle + 'AA'); // Tô màu vàng trong (Yêu cầu 4)
+    fill(GRAPH_CONFIG.colors.circle + 'AA'); // Tô màu vàng trong
     strokeWeight(2);
     stroke(0); // Viền đen
     
