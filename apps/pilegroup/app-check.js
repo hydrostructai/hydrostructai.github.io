@@ -3,11 +3,9 @@
  *
  * Chịu trách nhiệm (Kiến trúc MỚI):
  * 1. Đọc trạng thái license từ localStorage khi tải trang.
- * 2. Xử lý sự kiện click cho các nút "Check License" (trong tab và trên sidebar).
+ * 2. Xử lý sự kiện click cho nút "Check License" (trong tab "Bản quyền").
  * 3. Gửi yêu cầu (fetch) đến server (giả lập API) để xác thực email và key.
  * 4. Cập nhật localStorage và UI (màu sắc, text) dựa trên kết quả.
- *
- * Tệp này KHÔNG còn trách nhiệm tải WASM hay quản lý UI nhập liệu.
  */
 
 /**
@@ -16,11 +14,11 @@
  * @param {string} message - Tin nhắn để hiển thị
  */
 function updateLicenseStatusUI(status, message) {
-    // ID này đến từ index.html mới
+    // ID này đến từ index.html mới (trong tab "Bản quyền")
     const statusDiv = document.getElementById('license-status');
     if (!statusDiv) return;
 
-    // Xóa các lớp màu cũ
+    // Xóa các lớp màu cũ (Bootstrap 5)
     statusDiv.classList.remove('alert-success', 'alert-danger', 'alert-info', 'alert-secondary');
 
     switch (status) {
@@ -46,7 +44,7 @@ function updateLicenseStatusUI(status, message) {
  * (Đây là hàm async vì nó sử dụng fetch)
  */
 async function handleLicenseCheck() {
-    // 1. Lấy dữ liệu từ input
+    // 1. Lấy dữ liệu từ input (ID từ index.html mới)
     const emailInput = document.getElementById('user-email');
     const keyInput = document.getElementById('license-key');
     
@@ -77,35 +75,29 @@ async function handleLicenseCheck() {
             })
         });
 
-        // Giả sử server của bạn luôn trả về JSON
         const data = await response.json();
 
         if (response.ok && data.status === 'success') {
             // 5. THÀNH CÔNG
-            // Lưu trạng thái đã kích hoạt vào localStorage
             localStorage.setItem('pilegroupLicensed', 'true');
-            updateLicenseStatusUI('success', data.message || 'Kích hoạt thành công!');
+            updateLicenseStatusUI('success', data.message || 'Kích hoạt thành công! Không giới hạn số cọc.');
         } else {
-            // 6. THẤT BẠI (Server trả về lỗi, ví dụ: key sai, email không khớp)
+            // 6. THẤT BẠI
             localStorage.setItem('pilegroupLicensed', 'false');
             updateLicenseStatusUI('error', data.message || 'Key hoặc Email không hợp lệ.');
         }
 
     } catch (error) {
-        // 7. LỖI (Mạng, server sập, không thể kết nối)
+        // 7. LỖI (Mạng, server sập, hoặc đang test offline)
         
-        // ---- GIẢ LẬP OFFLINE ĐỂ TEST ----
-        // (Vì chúng ta không có API thật, tôi sẽ giả lập ở đây)
-        console.warn("Đang sử dụng logic giả lập API (offline test).");
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Giả lập 1s
+        console.warn("Lỗi API thật, đang sử dụng logic giả lập offline.");
+        // Giả lập 1s
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
         
-        // (Chúng ta không gọi wasmModule.checkLicense ở đây nữa, 
-        // vì hàm đó chỉ kiểm tra định dạng. Việc xác thực thật
-        // phải do server làm.)
-        
+        // ---- LOGIC GIẢ LẬP ĐỂ TEST ----
         if (licenseKey.toLowerCase().includes('valid')) {
             localStorage.setItem('pilegroupLicensed', 'true');
-            updateLicenseStatusUI('success', 'Kích hoạt thành công! (Test)');
+            updateLicenseStatusUI('success', 'Kích hoạt thành công! (Test). Không giới hạn số cọc.');
         } else {
             localStorage.setItem('pilegroupLicensed', 'false');
             updateLicenseStatusUI('error', 'Key hoặc Email không hợp lệ. (Test)');
@@ -120,27 +112,19 @@ async function handleLicenseCheck() {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Lấy các phần tử DOM
     const btnCheckInContent = document.getElementById('btn-check-license');
-    const btnCheckInSidebar = document.getElementById('btn-check-license-sidebar');
-    const licenseMenuLink = document.querySelector('a[data-target="div_license"]');
     
     // 2. Kiểm tra trạng thái đã lưu khi tải trang
     const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
     if (isLicensed) {
-        updateLicenseStatusUI('success', 'Đã kích hoạt');
+        updateLicenseStatusUI('success', 'Trạng thái: Đã kích hoạt. Không giới hạn số cọc.');
     } else {
-        updateLicenseStatusUI('not_checked', 'Chưa kích hoạt');
+        updateLicenseStatusUI('not_checked', 'Trạng thái: Chưa kích hoạt. Giới hạn 10 cọc.');
     }
 
-    // 3. Gán sự kiện cho nút "Check License" TRÊN SIDEBAR
-    // (Nút này chỉ mở tab "Bản quyền")
-    if (btnCheckInSidebar && licenseMenuLink) {
-        btnCheckInSidebar.addEventListener('click', () => {
-            licenseMenuLink.click();
-        });
-    }
-
-    // 4. Gán sự kiện cho nút "Kiểm tra" CHÍNH (TRONG TAB BẢN QUYỀN)
+    // 3. Gán sự kiện cho nút "Kiểm tra" CHÍNH (TRONG TAB BẢN QUYỀN)
     if (btnCheckInContent) {
         btnCheckInContent.addEventListener('click', handleLicenseCheck);
     }
+    
+    // 4. (Đã xóa logic cho btn-check-license-sidebar)
 });

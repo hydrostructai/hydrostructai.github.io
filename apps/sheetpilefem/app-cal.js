@@ -1,17 +1,19 @@
 /*
- * app-cal.js (cho Sheet Pile FEM)
+ * app-cal.js (cho Sheet Pile FEM - Kiến trúc MỚI)
  *
  * Chịu trách nhiệm:
  * 1. Tải và khởi tạo module WebAssembly (WASM).
- * 2. Gán sự kiện cho nút "Run Analysis".
- * 3. Thực hiện kiểm tra license phía client.
- * 4. Thu thập toàn bộ dữ liệu input từ HTML.
+ * 2. Gán sự kiện cho nút "Run Analysis" (ID: btn-run-analysis).
+ * 3. Thu thập toàn bộ dữ liệu input từ HTML.
+ * 4. Kiểm tra logic bản quyền (giới hạn 2 lớp đất) KHI NHẤN RUN.
  * 5. Gọi hàm WASM và xử lý kết quả trả về.
  * 6. Gọi các hàm trong app-out.js để hiển thị kết quả hoặc lỗi.
  */
 
 // Biến toàn cục để giữ module WASM sau khi khởi tạo
 let wasmModule;
+// Biến toàn cục cho Bootstrap Tab (để chuyển tab khi lỗi)
+let licenseTabTrigger;
 
 /**
  * Hàm trợ giúp để lấy giá trị số (float) từ một input
@@ -29,6 +31,7 @@ function getFloatValue(elementId, fieldName) {
 
 /**
  * Thu thập toàn bộ dữ liệu đầu vào từ các form và bảng.
+ * (Hàm này giữ nguyên logic từ file gốc vì các ID input không đổi)
  * @returns {object} Một đối tượng JSON chứa toàn bộ dữ liệu đầu vào.
  */
 function gatherInputData() {
@@ -123,57 +126,77 @@ function gatherInputData() {
 async function runAnalysis() {
     // 1. Kiểm tra module đã sẵn sàng
     if (!wasmModule) {
-        alert("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
+        if (typeof displayError === 'function') {
+            displayError("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
+        } else {
+            alert("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
+        }
         return;
     }
 
     // 2. Kích hoạt trạng thái "Đang tải" (gọi hàm từ app-out.js)
-    showLoading(true);
-    hideError();
-    hideResults();
+    if (typeof showLoading === 'function') showLoading(true);
+    if (typeof hideError === 'function') hideError();
+    if (typeof hideResults === 'function') hideResults();
 
     try {
-        // 3. KIỂM TRA LICENSE (Theo yêu cầu)
+        // === LOGIC BẢN QUYỀN MỚI ===
+        // 1. Đọc trạng thái đã lưu
         const isLicensed = localStorage.getItem('sheetpileLicensed') === 'true';
         
-        // Đếm số lớp đất và neo TRƯỚC khi thu thập dữ liệu
+        // 2. Đếm số lớp đất từ bảng
         const soilLayerCount = document.querySelectorAll('#soil-layer-table tbody tr').length;
-        const anchorCount = document.querySelectorAll('#anchor-table tbody tr').length;
 
-        if (!isLicensed && (soilLayerCount > 2 || anchorCount > 0)) {
-            // VI PHẠM ĐIỀU KIỆN
-            throw new Error(
-                "Lỗi Bản Quyền: Tài khoản miễn phí chỉ cho phép tính toán với tối đa 2 lớp đất và không có neo/chống. Vui lòng đăng ký để mở khóa toàn bộ tính năng."
-            );
+        // 3. Kiểm tra điều kiện (chỉ kiểm tra lớp đất)
+        if (!isLicensed && soilLayerCount > 2) {
+            // 4. Vi phạm -> Báo lỗi và chuyển tab
+            const errorMessage = `Hãy đăng ký để tính toán nhiều hơn 2 lớp đất. (Hiện tại: ${soilLayerCount} lớp)`;
+            
+            // Hiện thông báo lỗi (giả định app-out.js cung cấp hàm này)
+            if (typeof displayError === 'function') {
+                displayError(errorMessage);
+            } else {
+                alert(errorMessage);
+            }
+            
+            // Tự động chuyển sang tab "Bản quyền"
+            if (licenseTabTrigger) {
+                licenseTabTrigger.show();
+            }
+            
+            // Dừng thực thi
+            return; 
         }
+        // =============================
+        
+        // (Đã xóa logic kiểm tra bản quyền cũ)
 
-        // 4. Thu thập dữ liệu (Nếu license hợp lệ)
+        // 4. Thu thập dữ liệu (Nếu license hợp lệ hoặc trong giới hạn)
         const inputData = gatherInputData();
         const inputJsonString = JSON.stringify(inputData);
 
         // 5. Gọi hàm WASM
-        // (Giả định hàm C++ được export tên là 'calculateSheetPile')
         const resultJsonString = wasmModule.calculateSheetPile(inputJsonString);
         
         // 6. Xử lý kết quả
         const result = JSON.parse(resultJsonString);
 
         if (result.status === 'error') {
-            // Lỗi tính toán từ C++
             throw new Error(result.message);
         } else {
-            // Thành công! Gửi kết quả cho app-out.js
-            displayResults(result); 
+            // Gửi kết quả cho app-out.js
+            if (typeof displayResults === 'function') displayResults(result); 
         }
 
     } catch (error) {
-        // Bắt mọi lỗi (License, Thu thập dữ liệu, Tính toán)
+        // Bắt mọi lỗi
         console.error("Analysis Error:", error);
-        // Gửi lỗi cho app-out.js
-        displayError(error.message || "Đã xảy ra lỗi không xác định.");
+        if (typeof displayError === 'function') {
+            displayError(error.message || "Đã xảy ra lỗi không xác định.");
+        }
     } finally {
         // 7. Tắt trạng thái "Đang tải"
-        showLoading(false);
+        if (typeof showLoading === 'function') showLoading(false);
     }
 }
 
@@ -181,23 +204,37 @@ async function runAnalysis() {
  * KHỞI TẠO: Chờ DOM tải xong
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Lấy nút Run Analysis
+    // Lấy nút Run Analysis (ID MỚI)
     const runButton = document.getElementById('btn-run-analysis');
+    // Lấy các phần tử trạng thái WASM (ID MỚI)
+    const wasmStatusDiv = document.getElementById('wasm-status');
+    const wasmStatusText = document.getElementById('wasm-status-text');
+    const wasmSpinner = document.getElementById('wasm-spinner');
+    
+    // Lấy trình kích hoạt tab "Bản quyền" để sử dụng sau
+    const licenseTabElement = document.getElementById('tab-license');
+    if (licenseTabElement) {
+        licenseTabTrigger = new bootstrap.Tab(licenseTabElement);
+    }
     
     // Vô hiệu hóa nút cho đến khi WASM tải xong
     runButton.disabled = true;
-    runButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải lõi...';
 
     // Khởi tạo module WASM
-    // (Giả định tên factory function là 'createSheetPileModule' 
-    // được tạo bởi file sheetpilefem.js)
     createSheetPileModule().then(Module => {
         wasmModule = Module;
         console.log("Sheet Pile FEM WASM Module Loaded.");
         
         // Kích hoạt nút Run
         runButton.disabled = false;
-        runButton.innerHTML = '<i class="fas fa-play"></i> Run Analysis';
+        // Cập nhật text nút (đã có icon)
+        const buttonText = runButton.querySelector('span:not(.spinner-border)');
+        if (buttonText) buttonText.textContent = ' Run Analysis';
+
+        // Cập nhật trạng thái WASM
+        if(wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
+        if(wasmSpinner) wasmSpinner.style.display = 'none';
+        if(wasmStatusText) wasmStatusText.textContent = 'Lõi tính toán đã sẵn sàng!';
         
         // Gán sự kiện click
         runButton.addEventListener('click', runAnalysis);
@@ -208,6 +245,15 @@ document.addEventListener('DOMContentLoaded', () => {
         runButton.textContent = "Lỗi tải WASM";
         runButton.classList.remove('btn-success');
         runButton.classList.add('btn-danger');
-        displayError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+
+        if(wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
+        if(wasmSpinner) wasmSpinner.style.display = 'none';
+        if(wasmStatusText) wasmStatusText.textContent = 'Lỗi tải lõi tính toán!';
+        
+        if (typeof displayError === 'function') {
+            displayError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+        } else {
+            alert('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+        }
     });
 });

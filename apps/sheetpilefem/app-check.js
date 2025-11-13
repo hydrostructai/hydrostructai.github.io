@@ -1,9 +1,9 @@
 /*
- * app-check.js (cho Sheet Pile FEM)
+ * app-check.js (cho Sheet Pile FEM - Kiến trúc MỚI)
  *
  * Chịu trách nhiệm:
  * 1. Đọc trạng thái license từ localStorage khi tải trang.
- * 2. Xử lý sự kiện click cho các nút "Check License".
+ * 2. Xử lý sự kiện click cho nút "Check License" (trong tab "Bản quyền").
  * 3. Gửi yêu cầu (fetch) đến server (giả lập API) để xác thực.
  * 4. Cập nhật localStorage và UI (màu sắc, text) dựa trên kết quả.
  */
@@ -17,7 +17,7 @@ function updateLicenseStatusUI(status, message) {
     const statusDiv = document.getElementById('license-status');
     if (!statusDiv) return;
 
-    // Xóa các lớp màu cũ
+    // Xóa các lớp màu cũ (Bootstrap 5)
     statusDiv.classList.remove('alert-success', 'alert-danger', 'alert-info', 'alert-secondary');
 
     switch (status) {
@@ -71,25 +71,34 @@ async function handleLicenseCheck() {
             })
         });
 
-        // Giả sử server của bạn luôn trả về JSON
         const data = await response.json();
 
         if (response.ok && data.status === 'success') {
             // 4. THÀNH CÔNG
-            // Lưu trạng thái đã kích hoạt vào localStorage
+            // Lưu trạng thái đã kích hoạt (key lấy từ app-cal.js cũ)
             localStorage.setItem('sheetpileLicensed', 'true');
-            updateLicenseStatusUI('success', 'Kích hoạt thành công!');
+            updateLicenseStatusUI('success', data.message || 'Kích hoạt thành công! Không giới hạn lớp đất.');
         } else {
-            // 5. THẤT BẠI (Server trả về lỗi, ví dụ: key sai, email không khớp)
+            // 5. THẤT BẠI
             localStorage.setItem('sheetpileLicensed', 'false');
             updateLicenseStatusUI('error', data.message || 'Key hoặc Email không hợp lệ.');
         }
 
     } catch (error) {
-        // 6. LỖI (Mạng, server sập, không thể kết nối)
-        console.error('License check failed:', error);
-        localStorage.setItem('sheetpileLicensed', 'false');
-        updateLicenseStatusUI('error', 'Lỗi kết nối. Không thể xác thực. Vui lòng thử lại.');
+        // 6. LỖI (Mạng, server sập, hoặc đang test offline)
+        console.warn("Lỗi API thật, đang sử dụng logic giả lập offline.");
+        // Giả lập 1s
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
+        
+        // ---- LOGIC GIẢ LẬP ĐỂ TEST ----
+        if (licenseKey.toLowerCase().includes('valid')) {
+            localStorage.setItem('sheetpileLicensed', 'true');
+            updateLicenseStatusUI('success', 'Kích hoạt thành công! (Test). Không giới hạn lớp đất.');
+        } else {
+            localStorage.setItem('sheetpileLicensed', 'false');
+            updateLicenseStatusUI('error', 'Key hoặc Email không hợp lệ. (Test)');
+        }
+        // ---- HẾT PHẦN GIẢ LẬP ----
     }
 }
 
@@ -99,24 +108,17 @@ async function handleLicenseCheck() {
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Lấy các phần tử DOM
     const btnCheckInContent = document.getElementById('btn-check-license');
-    const btnCheckInSidebar = document.getElementById('btn-check-license-sidebar');
-    const licenseMenuLink = document.querySelector('a[data-target="div_license"]');
     
     // 2. Kiểm tra trạng thái đã lưu khi tải trang
+    // Key 'sheetpileLicensed' phải khớp với key trong app-cal.js
     const isLicensed = localStorage.getItem('sheetpileLicensed') === 'true';
     if (isLicensed) {
-        updateLicenseStatusUI('success', 'Đã kích hoạt');
+        updateLicenseStatusUI('success', 'Trạng thái: Đã kích hoạt. Không giới hạn lớp đất.');
     } else {
-        updateLicenseStatusUI('not_checked', 'Chưa kích hoạt');
+        updateLicenseStatusUI('not_checked', 'Trạng thái: Chưa kích hoạt. Giới hạn 2 lớp đất.');
     }
 
-    // 3. Gán sự kiện cho nút "Check License" TRONG SIDEBAR
-    // (Nút này chỉ mở tab "Bản quyền")
-    if (btnCheckInSidebar && licenseMenuLink) {
-        btnCheckInSidebar.addEventListener('click', () => {
-            licenseMenuLink.click();
-        });
-    }
+    // 3. (Đã xóa logic cho btn-check-license-sidebar)
 
     // 4. Gán sự kiện cho nút "Kiểm tra" CHÍNH (TRONG TAB BẢN QUYỀN)
     if (btnCheckInContent) {
