@@ -1,7 +1,5 @@
 ---
-layout: post
 title: "Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro"
-permalink: /_posts/
 date: 2025-11-10 8:00:00 +0700
 image: /assets/images/posts/pilegroup-hero.png 
 
@@ -17,6 +15,7 @@ tags:
   - FEM
 author_profile: true
 author: "TS. Nguyễn Hải Hà"
+layout: single
 read_time: true
 toc: true
 toc_label: "Mục lục"
