@@ -35,7 +35,7 @@ jobs:
         uses: actions/configure-pages@v5
 
       - name: Build
-        run: bundle exec jekyll build # <-- Lệnh này bây giờ sẽ chạy được
+        run: bundle exec jekyll build --source ./ --destination ./_site
         env:
           JEKYLL_ENV: production
 
