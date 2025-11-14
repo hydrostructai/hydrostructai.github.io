@@ -1,7 +1,6 @@
 ---
-layout: post
+layout: single
 title: "Vẽ Trái Tim"
-permalink: /_posts/
 author_profile: true
 author_name: "Nguyễn Hải Hà"
 date: 2025-11-14 10:00:00 +0700

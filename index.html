@@ -8,7 +8,7 @@ author_profile: true
 header:
   overlay_color: "#CCFFCC"
   # SỬA: Làm sáng hơn (từ 0.8 xuống 0.5)
-  overlay_filter: "0.3"
+  overlay_filter: "0.2"
   # Bạn CẦN tạo file ảnh này và đặt vào /assets/images/
   overlay_image: "/assets/images/hero-engineering.jpg" 
   # SỬA: Thêm span với style inline để đổi màu
@@ -23,11 +23,6 @@ header:
 ---
 
 ## Các Ứng dụng Web cho Kỹ thuật Xây dựng
-
-<div class="feature__wrapper">
-<div class="feature__item--center"> <h3 class="archive__item-title">Móng cọc và Tường cừ</h3>
-</div>
-</div>
 
 <div class="feature__wrapper">
 {% assign apps = site.pages | where: "path", "apps.md" | first %}
@@ -67,7 +62,7 @@ header:
 
 ---
 
-## 🛠️ Other Tools (Các công cụ khác)
+## Other Tools (Các công cụ khác)
 
 <div class="page__content">
 <ul>
@@ -79,7 +74,7 @@ header:
 </div>
 
 ---
-## ✍️ Bài viết mới nhất
+## Bài viết mới nhất
 {% comment %} Thay thế post_grid.html không tồn tại bằng vòng lặp chuẩn của Minimal Mistakes {% endcomment %}
 {% assign posts = site.posts | limit: 10 %}
 {% for post in posts %}

@@ -1,9 +1,8 @@
 ---
 layout: posts
 title: "Về HydroStructAI"
-permalink: /about/
 author_profile: true
-author_name: "Nguyễn Hải Hà"
+
 ---
 
 ### Sứ mệnh của Chúng tôi
@@ -39,7 +38,7 @@ Chúng tôi xây dựng dự án này dựa trên triết lý "Freemium" một c
 
 Tôi là **Nguyễn Hải Hà**, Tiến sĩ kỹ thuật **Kỹ thuật xây dựng công trình thủy, chuyên gia về Công trình Thủy lợi/ Kỹ thuật bờ biển/ Kết cấu công trình/ Địa kỹ thuật]** với niềm đam mê sâu sắc về lập trình và ứng dụng công nghệ để giải quyết các bài toán kỹ thuật thực tế.
 
-HydroStructAI là nỗ lực của tôi nhằm kết nối hai thế giới: sự chính xác của Kỹ thuật Dân dụng và sự linh hoạt của Phát triển Web hiện đại.
+HydroStructAI là nỗ lực của tôi nhằm kết nối hai thế giới: sự chính xác của Kỹ thuật và sự linh hoạt của Phát triển Web hiện đại.
 
 ### Kết nối
 

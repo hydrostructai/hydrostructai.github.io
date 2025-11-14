@@ -1,9 +1,8 @@
 ---
-layout: post
+layout: single
 title: "Phân tích kháng chấn đập bê tông trọng lực theo phương pháp phổ phản ứng"
-permalink: /_posts/
 author_profile: true
-author_name: "Nguyễn Hải Hà"
+author_name: "TS. Nguyễn Hải Hà"
 date: 2025-10-26 10:00:00 +0700
 # Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
 #image: /assets/images/posts/hypocycloid-hero.png 

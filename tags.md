@@ -4,5 +4,5 @@ layout: archive
 permalink: /tags/
 title: "Bài viết theo Thẻ"
 author_profile: true
-author_name: "Nguyễn Hải Hà"
+
 ---

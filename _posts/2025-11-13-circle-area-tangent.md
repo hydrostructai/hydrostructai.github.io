@@ -1,14 +1,13 @@
 ---
-layout: post
+layout: single
 title: "Bài toán Hình tròn Tiếp tuyến (Apollonius Problem)"
-permalink: /_posts/
 author_profile: true
-author_name: "Nguyễn Hải Hà"
+author_name: "TS. Nguyễn Hải Hà"
 date: 2025-11-13 10:00:00 +0700
 categories: [Math, WebApp]
 tags: [Visualization, Geometry, JavaScript, p5js, numericjs, Giải tích]
 # Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
-image: /assets/images/posts/circleare-hero.png 
+#image: /assets/images/posts/circleare-hero.png 
 
 ---
 

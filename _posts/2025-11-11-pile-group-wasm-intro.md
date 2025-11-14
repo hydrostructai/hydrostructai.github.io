@@ -14,7 +14,7 @@ tags:
   - WebAssembly
   - FEM
 author_profile: true
-author: "TS. Nguyễn Hải Hà"
+author_name: "TS. Nguyễn Hải Hà"
 layout: single
 read_time: true
 toc: true
