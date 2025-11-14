@@ -1,10 +1,11 @@
 ---
-layout: single
 title: "Vẽ đường cong Hypocycloid (Spirograph)"
 author_profile: true
 author_name: "TS. Nguyễn Hải Hà"
 date: 2025-10-26 10:00:00 +0700
-categories: [Math, WebApp]
+layout: single
+categories: 
+    - Tools
 tags: [Visualization, Geometry, Đồ họa, JavaScript]
 # Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
 # image: /assets/images/posts/hypocycloid-hero.png 

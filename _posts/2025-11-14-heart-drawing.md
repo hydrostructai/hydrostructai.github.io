@@ -1,10 +1,11 @@
 ---
-layout: single
 title: "Vẽ Trái Tim"
 author_profile: true
-author_name: "Nguyễn Hải Hà"
+author_name: "TS. Nguyễn Hải Hà"
 date: 2025-11-14 10:00:00 +0700
-categories: [Math, WebApp]
+layout: single
+categories: 
+    - Tools
 tags: [Visualization, Parametric Equation, Đồ họa, JavaScript]
 # Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
 #image: /assets/images/posts/hypocycloid-hero.png 

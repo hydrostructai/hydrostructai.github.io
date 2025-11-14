@@ -3,7 +3,6 @@ title: "SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần 
 date: 2025-10-28 10:00:00 +0700
 categories: 
     - Sheet Pile Wall
-    - Geotechnical
 tags:
   - Nền móng
   - Tường cừ ván

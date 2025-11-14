@@ -1,10 +1,11 @@
 ---
-layout: single
 title: "Vẽ Chuỗi Taylor"
 author_profile: true
 author_name: "TS. Nguyễn Hải Hà"
 date: 2025-10-27 10:00:00 +0700
-categories: [Math, WebApp]
+layout: single
+categories: 
+    - Tools
 tags: [Visualization, Taylor Series, JavaScript, Giáo dục]
 # Gợi ý: Bạn nên tạo một ảnh xem trước cho bài viết này
 image: /assets/images/posts/taylor-series-hero.png 
