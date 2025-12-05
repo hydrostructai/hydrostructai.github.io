@@ -79,9 +79,9 @@ header:
 
 <div class="entries-list">
   {% assign blog_posts = site.posts
-  | where_exp: "post", "!(post.categories contains 'Web Apps')"
-  | where_exp: "post", "!(post.path contains 'tools/')"
-  | limit: 6 %}
+  | reject_exp: "post", "post.categories contains 'Web Apps'"
+  | reject_exp: "post", "post.path contains 'tools/'"
+  | slice: 0, 6 %}
   
   {% if blog_posts.size > 0 %}
     <ol class="blog-posts-list">
