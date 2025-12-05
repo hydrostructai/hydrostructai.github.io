@@ -78,7 +78,7 @@ header:
 ## 📝 Bài viết mới nhất
 
 <div class="entries-list">
-  {{% assign blog_posts = site.posts
+  {% assign blog_posts = site.posts 
   | where_exp: "post", "not post.categories contains 'Web Apps'"
   | where_exp: "post", "not post.path contains 'tools/'"
   | limit: 6 %}
