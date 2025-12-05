@@ -70,18 +70,24 @@ function gatherInputData() {
         inputData.soil_layers.push(layer);
     });
 
-    // 4. Anchors (Neo/Chống)
+    // 4. Anchors (Kết cấu neo) - NEW STRUCTURE with physical properties
     inputData.anchors = [];
     const anchorRows = document.querySelectorAll('#anchor-table tbody tr');
     anchorRows.forEach((row, index) => {
-        const inputs = row.querySelectorAll('input[type="number"]');
+        const inputs = row.querySelectorAll('input');
         const anchor = {
-            depth: parseFloat(inputs[0].value),
-            stiffness: parseFloat(inputs[1].value)
+            elevation: parseFloat(inputs[0].value),           // Cao trình neo (m)
+            angle: parseFloat(inputs[1].value),               // Góc nghiêng (deg)
+            area: parseFloat(inputs[2].value),                // Diện tích A (m²)
+            elastic_modulus: parseFloat(inputs[3].value),     // Mô đun E (kN/m²) - supports scientific notation
+            spacing: parseFloat(inputs[4].value)              // Khoảng cách L (m)
         };
-        if (isNaN(anchor.depth) || isNaN(anchor.stiffness)) {
-            throw new Error(`Dữ liệu không hợp lệ tại Neo ${index + 1}.`);
-        }
+        // Validate all properties
+        Object.entries(anchor).forEach(([key, val]) => {
+            if (isNaN(val)) {
+                throw new Error(`Dữ liệu không hợp lệ tại Neo ${index + 1}, trường ${key}.`);
+            }
+        });
         inputData.anchors.push(anchor);
     });
 
@@ -322,8 +328,22 @@ function newFile() {
             </td>
         </tr>`;
     
-    // Clear anchors (initialize with 0 rows as per requirement)
-    document.querySelector('#anchor-table tbody').innerHTML = '';
+    // Reset anchors (initialize with 1 default row as per new requirement)
+    const anchorTable = document.querySelector('#anchor-table tbody');
+    anchorTable.innerHTML = `
+        <tr>
+            <td class="text-center fw-bold">1</td>
+            <td><input type="number" class="form-control" value="1.0" step="0.1" required title="Elevation"></td>
+            <td><input type="number" class="form-control" value="0" step="1" required title="Angle"></td>
+            <td><input type="number" class="form-control" value="0.01" step="0.001" required title="Cross-sectional Area"></td>
+            <td><input type="text" class="form-control" value="210000000" required title="Elastic Modulus"></td>
+            <td><input type="number" class="form-control" value="3.0" step="0.5" required title="Anchor Spacing"></td>
+            <td class="text-center">
+                <button class="btn btn-outline-danger btn-sm" onclick="removeRow(this)" title="Xóa">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
     
     // Clear point loads
     document.querySelector('#load-table tbody').innerHTML = '';
