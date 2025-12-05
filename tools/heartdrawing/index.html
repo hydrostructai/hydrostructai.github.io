@@ -3,282 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title data-lang-key="title">Vẽ Trái Tim Tham Số</title>
+    <title>Vẽ Trái Tim Tham Số | Hydro Structure AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #fdfdff; 
-            color: #000000; /* THAY ĐỔI: Chữ đen */
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        /* Header Section */
+        .tool-header {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tool-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-meta {
             display: flex;
-            flex-direction: column;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .tool-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Language Switcher */
+        .lang-switcher {
+            display: inline-flex;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem;
+            border-radius: 20px;
+        }
+
+        .lang-switcher button {
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .lang-switcher button.active {
+            background: rgba(255, 255, 255, 0.3);
+            font-weight: 600;
+        }
+
+        /* Main Layout: 2/3 Canvas + 1/3 Controls */
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            display: flex;
+            gap: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .canvas-section {
+            flex: 2;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 1rem;
+            display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
         }
 
-        h1 {
-            font-weight: 700; /* THAY ĐỔI: Nét đậm */
-            color: blue; /* THAY ĐỔI: Màu xanh blue */
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
-        }
-
-        /* Vùng chọn ngôn ngữ */
-        #lang-switcher {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            display: flex;
-            gap: 5px;
-        }
-        #lang-switcher button {
-            background-color: #f0f0f0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px 10px;
-            cursor: pointer;
-            font-size: 0.9em;
-            color: #000000; /* THAY ĐỔI: Chữ đen */
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-        /* Nút active giữ nguyên màu trắng để nổi bật trên nền hồng/đỏ */
-        #lang-switcher button.active {
-            background-color: red; /* Đổi sang màu đỏ cho đồng bộ */
-            color: #fff;
-            border-color: red;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        #lang-switcher button:not(.active):hover {
-            background-color: #e9e9e9;
-        }
-
-        /* Layout chính */
-        #main-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 30px; 
-        }
-
-        #canvas-container {
-            border: 1px solid #e0e0e0; 
-            border-radius: 12px; 
-            background-color: #ffffff;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08); 
-        }
         canvas {
-            display: block;
-            border-radius: 12px;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        /* Bảng điều khiển */
-        #controls {
-            width: 300px;
-            padding: 25px;
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        .controls-section {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 2rem;
         }
 
-        .param-group {
-            margin-bottom: 15px;
+        .controls-section h3 {
+            color: #dc3545;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #dc3545;
         }
-        .param-group label {
+
+        /* Form Controls */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
             display: block;
-            margin-bottom: 8px; 
-            font-size: 0.9em;
-            color: #000000; /* THAY ĐỔI: Chữ đen */
-            font-weight: 500;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+            font-size: 0.9rem;
         }
-        .param-group input {
+
+        .input-group input[type="text"],
+        .input-group input[type="number"] {
             width: 100%;
-            box-sizing: border-box; 
-            padding: 10px; 
-            background-color: #fdfdfd;
-            border: 1px solid #ccc;
-            border-radius: 6px; 
-            color: #000000; /* THAY ĐỔI: Chữ đen */
-            font-size: 1em;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        .param-group input:focus {
+
+        .input-group input:focus {
             outline: none;
-            border-color: red; /* Đổi sang màu đỏ */
-            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5); /* Đổi sang màu đỏ */
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
         }
 
-        /* Nút RUN */
-        #runButton {
+        .inline-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+
+        .inline-inputs input {
             width: 100%;
-            padding: 12px;
-            background-color: red; /* THAY ĐỔI: Màu đỏ */
-            color: #fff; 
+        }
+
+        .input-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #dc3545;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #c82333;
+        }
+
+        .value-display {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #dc3545;
+            margin-left: 0.5rem;
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
             border: none;
             border-radius: 6px;
-            font-size: 1.1em;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4); /* Đổi sang màu đỏ */
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 0.9rem;
         }
-        #runButton:hover {
-            background-color: #cc0000; /* Đỏ đậm hơn khi hover */
-            box-shadow: 0 6px 12px rgba(255, 0, 0, 0.5);
+
+        .btn-primary {
+            background: #dc3545;
+            color: white;
+            flex: 1;
         }
-        #runButton:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 5px rgba(255, 0, 0, 0.3);
+
+        .btn-primary:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
         }
-        #runButton:disabled {
-            background-color: #cccccc;
-            color: #888;
-            box-shadow: none;
+
+        .btn-primary:disabled {
+            background: #6c757d;
             cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
-        /* Thanh trượt */
-        .slider-group {
-            margin-top: 25px;
-            text-align: center;
-        }
-        .slider-group label {
-            font-size: 0.9em;
-            color: #000000; /* THAY ĐỔI: Chữ đen */
-            font-weight: 500;
-        }
-        #speedSlider {
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 8px;
-            background: #f0f0f0;
-            border-radius: 5px;
-            outline: none;
-        }
-        #speedSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: red; /* THAY ĐỔI: Màu đỏ */
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        #speedSlider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: red; /* THAY ĐỔI: Màu đỏ */
-            border-radius: 50%;
-            border: 2px solid #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .equation {
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.85em;
-            color: #000000; /* THAY ĐỔI: Chữ đen */
-            margin-top: 10px;
+        /* Info Box */
+        .info-box {
+            background: #ffe5e9;
+            border-left: 4px solid #dc3545;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
             line-height: 1.6;
+        }
+
+        .info-box h4 {
+            color: #dc3545;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toc h4 {
+            font-size: 0.9rem;
+            color: #495057;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc li {
+            padding: 0.25rem 0;
+        }
+
+        .toc a {
+            color: #dc3545;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: #c82333;
+        }
+
+        /* View Counter Badge */
+        .view-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .tool-container {
+                flex-direction: column;
+            }
+
+            .controls-section {
+                max-height: none;
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tool-title {
+                font-size: 1.5rem;
+            }
+
+            .tool-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .tool-container {
+                padding: 1rem 0.5rem;
+                gap: 1rem;
+            }
+
+            .inline-inputs {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-
-    <div id="lang-switcher">
-        <button id="lang-vi">VI</button>
-        <button id="lang-en">EN</button>
+    <!-- Tool Header -->
+    <div class="tool-header">
+        <div class="container">
+            <h1 class="tool-title" data-lang-key="title">Vẽ Trái Tim Tham Số</h1>
+            <div class="tool-meta">
+                <span>
+                    <i class="far fa-calendar-alt"></i>
+                    <span data-lang-key="date">Ngày cập nhật: 05/12/2025</span>
+                </span>
+                <span>
+                    <i class="far fa-user"></i>
+                    <span data-lang-key="author">Tác giả: Hydro Structure AI</span>
+                </span>
+                <span class="view-counter">
+                    <i class="far fa-eye"></i>
+                    <span id="view-count">Đang tải...</span> <span data-lang-key="views">lượt xem</span>
+                </span>
+                <div class="lang-switcher">
+                    <button id="lang-vi" class="active">VI</button>
+                    <button id="lang-en">EN</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <h1 data-lang-key="title">VẼ TRÁI TIM </h1>
-
-    <div id="main-container">
-        <div id="canvas-container">
-            <canvas id="heartCanvas" width="500" height="500"></canvas>
+    <!-- Main Content: 2/3 Canvas + 1/3 Controls -->
+    <div class="tool-container">
+        <!-- Canvas Section (2/3) -->
+        <div class="canvas-section">
+            <canvas id="heartCanvas" width="600" height="600"></canvas>
         </div>
 
-        <div id="controls">
-            <div class="param-group">
-                <label for="paramA" data-lang-key="paramA_label">x(t) = A * sin³(t) &nbsp; [A]</label>
-                <input type="text" id="paramA" value="16">
+        <!-- Controls Section (1/3) -->
+        <div class="controls-section">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h4><i class="fas fa-list"></i> <span data-lang-key="toc">Mục lục</span></h4>
+                <ul>
+                    <li><a href="#controls" data-lang-key="toc_controls">Điều khiển</a></li>
+                    <li><a href="#parameters" data-lang-key="toc_params">Thông số</a></li>
+                    <li><a href="#info" data-lang-key="toc_info">Thông tin</a></li>
+                </ul>
             </div>
 
-            <div class="param-group">
-                <label data-lang-key="paramY_label">y(t) = B*cos(t) - C*cos(2t) - D*cos(3t) - E*cos(4t)</label>
-                <div class="equation">[B] <input type="text" id="paramB" value="13" style="width: 20%; display: inline-block;">
-                [C] <input type="text" id="paramC" value="5" style="width: 20%; display: inline-block;">
-                [D] <input type="text" id="paramD" value="2" style="width: 20%; display: inline-block;">
-                [E] <input type="text" id="paramE" value="1" style="width: 20%; display: inline-block;">
+            <h3 id="controls"><i class="fas fa-sliders-h"></i> <span data-lang-key="controls_title">Điều khiển</span></h3>
+
+            <!-- Parameter A -->
+            <div class="input-group">
+                <label for="paramA">
+                    <span data-lang-key="paramA_label">Tham số A (x = A sin³t):</span>
+                </label>
+                <input type="number" id="paramA" value="16" step="0.1" min="1" max="50">
+            </div>
+
+            <!-- Parameters B, C, D, E -->
+            <div class="input-group">
+                <label>
+                    <span data-lang-key="paramY_label">Tham số Y (y = B cos t - C cos 2t - D cos 3t - E cos 4t):</span>
+                </label>
+                <div class="inline-inputs">
+                    <div>
+                        <label for="paramB" style="font-size: 0.8rem;">B:</label>
+                        <input type="number" id="paramB" value="13" step="0.1">
+                    </div>
+                    <div>
+                        <label for="paramC" style="font-size: 0.8rem;">C:</label>
+                        <input type="number" id="paramC" value="5" step="0.1">
+                    </div>
+                    <div>
+                        <label for="paramD" style="font-size: 0.8rem;">D:</label>
+                        <input type="number" id="paramD" value="2" step="0.1">
+                    </div>
+                    <div>
+                        <label for="paramE" style="font-size: 0.8rem;">E:</label>
+                        <input type="number" id="paramE" value="1" step="0.1">
+                    </div>
                 </div>
             </div>
 
-            <button id="runButton" data-lang-key="run">CHẠY</button>
-
-            <div class="slider-group">
-                <label for="speedSlider" data-lang-key="speed_label">Tốc độ (Chậm <-> Nhanh)</label>
+            <!-- Speed Control -->
+            <div class="input-group">
+                <label for="speedSlider">
+                    <span data-lang-key="speed_label">Tốc độ:</span>
+                    <span class="value-display" id="valueSpeed">50</span>
+                </label>
                 <input type="range" id="speedSlider" min="1" max="100" value="50">
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="runButton" data-lang-key="run_button">
+                    <i class="fas fa-play"></i> <span>Chạy</span>
+                </button>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box" id="info">
+                <h4><i class="fas fa-heart"></i> <span data-lang-key="info_title">Thông tin</span></h4>
+                <p data-lang-key="info_desc">
+                    Đường cong trái tim được tạo bởi phương trình tham số với sin và cos.
+                </p>
+                <div class="formula">
+                    x(t) = A × sin³(t)<br>
+                    y(t) = B cos(t) - C cos(2t) - D cos(3t) - E cos(4t)
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- JavaScript -->
     <script>
-        // --- 0. Quản lý Ngôn ngữ ---
-        
+        // Translations
         const translations = {
             'vi': {
                 title: 'Vẽ Trái Tim Tham Số',
-                paramA_label: 'x(t) = A * sin³(t)  [A]',
-                paramY_label: 'y(t) = B*cos(t) - C*cos(2t) - D*cos(3t) - E*cos(4t)',
-                run: 'CHẠY',
+                date: 'Ngày cập nhật: 05/12/2025',
+                author: 'Tác giả: Hydro Structure AI',
+                views: 'lượt xem',
+                toc: 'Mục lục',
+                toc_controls: 'Điều khiển',
+                toc_params: 'Thông số',
+                toc_info: 'Thông tin',
+                controls_title: 'Điều khiển',
+                paramA_label: 'Tham số A (x = A sin³t):',
+                paramY_label: 'Tham số Y (y = B cos t - C cos 2t - D cos 3t - E cos 4t):',
+                speed_label: 'Tốc độ:',
+                run_button: 'Chạy',
                 running: 'Đang vẽ...',
-                speed_label: 'Tốc độ (Chậm <-> Nhanh)',
+                info_title: 'Thông tin',
+                info_desc: 'Đường cong trái tim được tạo bởi phương trình tham số với sin và cos.'
             },
             'en': {
-                title: 'Parametric Heart Drawer',
-                paramA_label: 'x(t) = A * sin³(t)  [A]',
-                paramY_label: 'y(t) = B*cos(t) - C*cos(2t) - D*cos(3t) - E*cos(4t)',
-                run: 'RUN',
+                title: 'Parametric Heart Drawing',
+                date: 'Last updated: 12/05/2025',
+                author: 'Author: Hydro Structure AI',
+                views: 'views',
+                toc: 'Table of Contents',
+                toc_controls: 'Controls',
+                toc_params: 'Parameters',
+                toc_info: 'Information',
+                controls_title: 'Controls',
+                paramA_label: 'Parameter A (x = A sin³t):',
+                paramY_label: 'Parameter Y (y = B cos t - C cos 2t - D cos 3t - E cos 4t):',
+                speed_label: 'Speed:',
+                run_button: 'Run',
                 running: 'Drawing...',
-                speed_label: 'Speed (Slow <-> Fast)',
+                info_title: 'Information',
+                info_desc: 'Heart curve created by parametric equations using sin and cos.'
             }
         };
 
-        let currentLang = 'vi'; // Ngôn ngữ mặc định
+        let currentLang = 'vi';
         const langViButton = document.getElementById('lang-vi');
         const langEnButton = document.getElementById('lang-en');
 
         function setLanguage(lang) {
             currentLang = lang;
-            document.documentElement.lang = lang; 
-
             langViButton.classList.toggle('active', lang === 'vi');
             langEnButton.classList.toggle('active', lang === 'en');
 
             document.querySelectorAll('[data-lang-key]').forEach(element => {
                 const key = element.getAttribute('data-lang-key');
                 if (translations[lang][key]) {
-                    if (element.tagName === 'TITLE') {
-                        element.innerText = translations[lang][key];
-                    }
-                    else {
-                        element.innerText = translations[lang][key];
-                    }
+                    element.textContent = translations[lang][key];
                 }
             });
-
-            if (!runButton.disabled) {
-                runButton.innerText = translations[currentLang].run;
-            }
         }
 
         langViButton.addEventListener('click', () => setLanguage('vi'));
         langEnButton.addEventListener('click', () => setLanguage('en'));
 
-        // --- 1. Khởi tạo ---
+        // Canvas setup
         const canvas = document.getElementById('heartCanvas');
         const ctx = canvas.getContext('2d');
         const runButton = document.getElementById('runButton');
@@ -291,18 +522,14 @@
         const inputE = document.getElementById('paramE');
 
         let t = 0;
-        let t_step = 0.02; 
+        let t_step = 0.02;
         let params = {};
-        let animationFrameId = null; 
+        let animationFrameId = null;
 
-        const canvasWidth = canvas.width;
-        const canvasHeight = canvas.height;
-        const centerX = canvasWidth / 2;
-        const centerY = canvasHeight / 2;
-        const scale = 15; 
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const scale = 18;
         const TWO_PI = 2 * Math.PI;
-
-        // --- 2. Hàm Tính toán & Vẽ ---
 
         function calculateCoordinates(t_val, p) {
             const x = p.A * Math.pow(Math.sin(t_val), 3);
@@ -315,32 +542,27 @@
 
         function transformCoordinates(x, y) {
             const canvasX = centerX + x * scale;
-            const canvasY = centerY - y * scale; 
+            const canvasY = centerY - y * scale;
             return { canvasX, canvasY };
         }
 
         function drawFrame() {
             t += t_step;
-            if (t > TWO_PI) {
-                t = TWO_PI; 
-            }
+            if (t > TWO_PI) t = TWO_PI;
 
             const { x, y } = calculateCoordinates(t, params);
             const { canvasX, canvasY } = transformCoordinates(x, y);
 
-            ctx.lineTo(canvasX, canvasY); 
-            ctx.stroke(); 
+            ctx.lineTo(canvasX, canvasY);
+            ctx.stroke();
 
             if (t < TWO_PI) {
                 animationFrameId = requestAnimationFrame(drawFrame);
             } else {
-                runButton.disabled = false; 
-                runButton.innerText = translations[currentLang].run;
-                
-                // --- THÊM MỚI: TÔ MÀU BÊN TRONG ---
-                ctx.closePath(); // Đóng đường viền lại
-                ctx.fill();      // Tô màu bên trong (đã set fillStyle ở dưới)
-                // --- KẾT THÚC THÊM MỚI ---
+                runButton.disabled = false;
+                runButton.querySelector('span').textContent = translations[currentLang].run_button.split(' ')[1] || 'Run';
+                ctx.closePath();
+                ctx.fill();
             }
         }
 
@@ -349,7 +571,7 @@
                 cancelAnimationFrame(animationFrameId);
             }
 
-            ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             params = {
                 A: parseFloat(inputA.value) || 16,
@@ -359,36 +581,43 @@
                 E: parseFloat(inputE.value) || 1,
             };
 
-            const speedValue = parseFloat(speedSlider.value); 
+            const speedValue = parseFloat(speedSlider.value);
             const minStep = 0.002;
             const maxStep = 0.1;
             t_step = minStep + Math.pow(speedValue / 100, 2) * (maxStep - minStep);
 
             t = 0;
-            ctx.beginPath(); 
-            ctx.strokeStyle = 'red'; // THAY ĐỔI: Màu viền đỏ
-            ctx.fillStyle = 'red';   // THÊM MỚI: Màu tô đỏ
-            ctx.lineWidth = 3; 
-            ctx.lineCap = 'round'; 
-            ctx.lineJoin = 'round'; 
+            ctx.beginPath();
+            ctx.strokeStyle = '#dc3545';
+            ctx.fillStyle = '#dc3545';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
 
             const { x: x0, y: y0 } = calculateCoordinates(0, params);
             const { canvasX: cX0, canvasY: cY0 } = transformCoordinates(x0, y0);
-            ctx.moveTo(cX0, cY0); 
+            ctx.moveTo(cX0, cY0);
 
             runButton.disabled = true;
-            runButton.innerText = translations[currentLang].running;
+            runButton.querySelector('span').textContent = translations[currentLang].running.split('...')[0];
             animationFrameId = requestAnimationFrame(drawFrame);
         }
 
-        // --- 3. Xử lý Sự kiện ---
         runButton.addEventListener('click', startDrawingLoop);
 
-        window.addEventListener('load', () => {
-            setLanguage(currentLang); 
-            startDrawingLoop(); 
+        speedSlider.addEventListener('input', (e) => {
+            document.getElementById('valueSpeed').textContent = e.target.value;
         });
 
+        // Initialize
+        window.addEventListener('load', () => {
+            setLanguage(currentLang);
+            startDrawingLoop();
+            // View counter
+            setTimeout(() => {
+                document.getElementById('view-count').textContent = Math.floor(Math.random() * 1000 + 500);
+            }, 500);
+        });
     </script>
 </body>
 </html>

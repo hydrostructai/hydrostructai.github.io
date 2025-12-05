@@ -9,7 +9,7 @@ author_profile: true
 
 **HydroStructAI** nghĩa là kết hợp của Hydro + Structure + AI, kết hợp của Công trình thủy + Kết cấu xây dựng + Trí tuệ nhân tạo.
 
-Sứ mệnh của chúng tôi là **dân chủ hóa các công cụ phân tích kỹ thuật phức tạp**. Chúng tôi tin rằng mọi kỹ sư, nhà nghiên cứu và sinh viên đều xứng đáng có quyền truy cập vào các phần mềm mô phỏng mạnh mẽ mà không bị rào cản bởi chi phí bản quyền đắt đỏ hay yêu cầu phần cứng nặng nề.
+Sứ mệnh của chúng tôi là **đơn giản hóa các công cụ phân tích kỹ thuật phức tạp**. Chúng tôi tin rằng mọi kỹ sư, nhà nghiên cứu và sinh viên đều xứng đáng có quyền truy cập vào các phần mềm mô phỏng mạnh mẽ mà không bị rào cản bởi chi phí bản quyền đắt đỏ hay yêu cầu phần cứng nặng nề.
 
 Chúng tôi tập trung vào ba trụ cột chính của ngành: **`Hydro`** (Thủy lực, Tài nguyên nước), **`Struct`** (Kết cấu, Địa kỹ thuật), và **`AI`** (Trí tuệ Nhân tạo ứng dụng).
 

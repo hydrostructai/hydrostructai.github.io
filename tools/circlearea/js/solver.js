@@ -54,33 +54,70 @@ function objectiveFunction(X) {
 
 /**
  * Hàm chính để chạy thuật toán giải
- * @returns {object} Một đối tượng chứa các giá trị đã giải: {xc, yc, R, xf, xg, xh}
+ * @returns {object|null} Đối tượng kết quả hoặc null nếu thất bại
  */
 function solveForCircle() {
     console.log("Bắt đầu giải hệ phương trình...");
     console.log("Giá trị ước lượng ban đầu:", INITIAL_GUESS);
 
-    // Gọi hàm `uncmin` (Unconstrained Minimization) của numeric.js
-    // Nó nhận hàm mục tiêu và giá trị ước lượng ban đầu.
-    // Tùy chọn {tol: 1e-10, maxiter: 2000} để tăng độ chính xác và số lần lặp
-    const solution = numeric.uncmin(objectiveFunction, INITIAL_GUESS, 1e-10, null, 2000);
+    try {
+        // Gọi hàm `uncmin` (Unconstrained Minimization) của numeric.js
+        const solution = numeric.uncmin(objectiveFunction, INITIAL_GUESS, 1e-10, null, 2000);
 
-    // `solution.solution` là vector 6 phần tử kết quả
-    const [xc, yc, R, xf, xg, xh] = solution.solution;
+        // Validate solution
+        if (!solution || !solution.solution) {
+            throw new Error("Thuật toán không trả về kết quả.");
+        }
 
-    console.log("Đã tìm thấy nghiệm:", solution.solution);
-    console.log("Giá trị hàm lỗi cuối cùng:", solution.f); // Phải rất gần 0
+        const [xc, yc, R, xf, xg, xh] = solution.solution;
 
-    // Trả về một đối tượng có tên rõ ràng
-    return {
-        xc: xc,
-        yc: yc,
-        R: R,
-        area: Math.PI * Math.pow(R, 2),
-        touchPoints: {
-            f: { x: xf, y: f(xf) },
-            g: { x: xg, y: g(xg) },
-            h: { x: xh, y: h(xh) },
-        },
-    };
+        // Check for NaN values
+        if (isNaN(xc) || isNaN(yc) || isNaN(R) || isNaN(xf) || isNaN(xg) || isNaN(xh)) {
+            throw new Error("Kết quả chứa giá trị không hợp lệ (NaN). Thuật toán không hội tụ.");
+        }
+
+        // Check for invalid radius
+        if (R <= 0 || R > 100) {
+            throw new Error(`Bán kính không hợp lệ: R = ${R.toFixed(4)}. Có thể không tồn tại nghiệm.`);
+        }
+
+        // Check convergence (error function should be very small)
+        const finalError = solution.f;
+        console.log("Đã tìm thấy nghiệm:", solution.solution);
+        console.log("Giá trị hàm lỗi cuối cùng:", finalError);
+
+        if (finalError > 1e-6) {
+            console.warn("⚠️ Cảnh báo: Sai số còn lớn (", finalError.toFixed(8), "). Nghiệm có thể không chính xác.");
+        }
+
+        // Calculate area
+        const area = Math.PI * Math.pow(R, 2);
+        
+        // Validate area
+        if (isNaN(area) || area <= 0) {
+            throw new Error("Diện tích tính được không hợp lệ.");
+        }
+
+        // Return validated result
+        return {
+            xc: xc,
+            yc: yc,
+            R: R,
+            area: area,
+            error: finalError,
+            converged: finalError < 1e-6,
+            touchPoints: {
+                f: { x: xf, y: f(xf) },
+                g: { x: xg, y: g(xg) },
+                h: { x: xh, y: h(xh) },
+            },
+        };
+
+    } catch (error) {
+        console.error("❌ Lỗi khi giải hệ phương trình:", error);
+        return {
+            error: true,
+            message: error.message || "Thuật toán thất bại. Vui lòng thử lại hoặc điều chỉnh đường cong."
+        };
+    }
 }

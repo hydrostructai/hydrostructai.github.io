@@ -284,6 +284,223 @@ async function runAnalysis() {
 }
 
 /**
+ * FILE MANAGEMENT FUNCTIONS
+ */
+
+/**
+ * New File: Clear all inputs and reset to defaults
+ */
+function newFile() {
+    if (!confirm("Tạo file mới? Dữ liệu hiện tại sẽ bị xóa.")) return;
+    
+    // Reset general inputs
+    document.getElementById('general-E').value = '210000000';
+    document.getElementById('general-I').value = '0.00032';
+    document.getElementById('general-EI').value = '67200';
+    document.getElementById('general-L').value = '15';
+    document.getElementById('general-H').value = '5';
+    
+    // Reset water levels
+    document.getElementById('water-hw1').value = '5';
+    document.getElementById('water-hw2').value = '1';
+    
+    // Reset soil layers (keep first row only)
+    const soilTable = document.querySelector('#soil-layer-table tbody');
+    soilTable.innerHTML = `
+        <tr>
+            <td class="text-center fw-bold">1</td>
+            <td><input type="number" class="form-control" value="5" step="0.5" required></td>
+            <td><input type="number" class="form-control" value="18" step="0.1" required></td>
+            <td><input type="number" class="form-control" value="8" step="0.1" required></td>
+            <td><input type="number" class="form-control" value="30" step="1" required></td>
+            <td><input type="number" class="form-control" value="0" step="1" required></td>
+            <td><input type="number" class="form-control" value="10000" step="1000" required></td>
+            <td class="text-center">
+                <button class="btn btn-outline-danger btn-sm" onclick="removeRow(this)" title="Xóa lớp">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        </tr>`;
+    
+    // Clear anchors (initialize with 0 rows as per requirement)
+    document.querySelector('#anchor-table tbody').innerHTML = '';
+    
+    // Clear point loads
+    document.querySelector('#load-table tbody').innerHTML = '';
+    
+    // Reset surcharge (keep first row)
+    const surchargeTable = document.querySelector('#surcharge-table tbody');
+    surchargeTable.innerHTML = `
+        <tr>
+            <td>1</td>
+            <td><input type="number" class="form-control" value="0"></td>
+            <td><input type="number" class="form-control" value="5"></td>
+            <td><input type="number" class="form-control" value="10"></td>
+            <td><button class="btn btn-danger btn-sm" onclick="removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        </tr>`;
+    
+    alert("✅ File mới đã được tạo!");
+}
+
+/**
+ * Open File: Parse CSV or INP file and populate form
+ */
+function openFile() {
+    const fileInput = document.getElementById('hidden-file-input');
+    fileInput.value = ''; // Reset input
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const content = event.target.result;
+                const extension = file.name.split('.').pop().toLowerCase();
+                
+                if (extension === 'csv') {
+                    parseCSV(content);
+                } else if (extension === 'inp') {
+                    parseINP(content);
+                } else {
+                    alert("❌ Định dạng file không hỗ trợ. Chỉ chấp nhận .csv hoặc .inp");
+                }
+            } catch (error) {
+                alert(`❌ Lỗi đọc file: ${error.message}`);
+            }
+        };
+        reader.readAsText(file);
+    };
+    fileInput.click();
+}
+
+/**
+ * Parse CSV format
+ */
+function parseCSV(content) {
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+    const data = {};
+    
+    lines.forEach(line => {
+        const [key, ...values] = line.split(',');
+        data[key.trim()] = values.map(v => v.trim());
+    });
+    
+    // Populate general inputs
+    if (data.E) document.getElementById('general-E').value = data.E[0];
+    if (data.I) document.getElementById('general-I').value = data.I[0];
+    if (data.L) document.getElementById('general-L').value = data.L[0];
+    if (data.H) document.getElementById('general-H').value = data.H[0];
+    if (data.Hw1) document.getElementById('water-hw1').value = data.Hw1[0];
+    if (data.Hw2) document.getElementById('water-hw2').value = data.Hw2[0];
+    
+    alert("✅ File CSV đã được tải!");
+}
+
+/**
+ * Parse INP format (custom text format)
+ */
+function parseINP(content) {
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
+    
+    // Simple key=value parsing
+    lines.forEach(line => {
+        const [key, value] = line.split('=').map(s => s.trim());
+        const input = document.getElementById(`general-${key}`) || document.getElementById(`water-${key.toLowerCase()}`);
+        if (input) input.value = value;
+    });
+    
+    alert("✅ File INP đã được tải!");
+}
+
+/**
+ * Save File: Export form data to CSV or INP
+ */
+function saveFile() {
+    const format = prompt("Chọn định dạng file:\n1 - CSV\n2 - INP\n\nNhập 1 hoặc 2:", "1");
+    
+    if (format === '1') {
+        saveAsCSV();
+    } else if (format === '2') {
+        saveAsINP();
+    } else if (format !== null) {
+        alert("❌ Lựa chọn không hợp lệ.");
+    }
+}
+
+/**
+ * Save as CSV format
+ */
+function saveAsCSV() {
+    try {
+        const inputData = gatherInputData();
+        let csv = "# Sheet Pile FEM - Input Data (CSV)\n";
+        
+        csv += `E,${inputData.general.E}\n`;
+        csv += `I,${inputData.general.I}\n`;
+        csv += `L,${inputData.general.L}\n`;
+        csv += `H,${inputData.general.H}\n`;
+        csv += `Hw1,${inputData.water.Hw1}\n`;
+        csv += `Hw2,${inputData.water.Hw2}\n`;
+        
+        // Add soil layers
+        csv += "\n# Soil Layers (depth,gamma,gamma_sat,phi,c_prime,k_modul)\n";
+        inputData.soil_layers.forEach((layer, i) => {
+            csv += `SOIL_${i+1},${layer.depth},${layer.gamma},${layer.gamma_sat},${layer.phi},${layer.c_prime},${layer.k_modul}\n`;
+        });
+        
+        downloadFile(csv, 'sheetpile_input.csv', 'text/csv');
+    } catch (error) {
+        alert(`❌ Lỗi lưu file: ${error.message}`);
+    }
+}
+
+/**
+ * Save as INP format (custom text)
+ */
+function saveAsINP() {
+    try {
+        const inputData = gatherInputData();
+        let inp = "# Sheet Pile FEM - Input File (INP Format)\n\n";
+        
+        inp += "[GENERAL]\n";
+        inp += `E = ${inputData.general.E}\n`;
+        inp += `I = ${inputData.general.I}\n`;
+        inp += `L = ${inputData.general.L}\n`;
+        inp += `H = ${inputData.general.H}\n\n`;
+        
+        inp += "[WATER]\n";
+        inp += `Hw1 = ${inputData.water.Hw1}\n`;
+        inp += `Hw2 = ${inputData.water.Hw2}\n\n`;
+        
+        inp += "[SOIL_LAYERS]\n";
+        inputData.soil_layers.forEach((layer, i) => {
+            inp += `Layer_${i+1} = ${layer.depth}, ${layer.gamma}, ${layer.gamma_sat}, ${layer.phi}, ${layer.c_prime}, ${layer.k_modul}\n`;
+        });
+        
+        downloadFile(inp, 'sheetpile_input.inp', 'text/plain');
+    } catch (error) {
+        alert(`❌ Lỗi lưu file: ${error.message}`);
+    }
+}
+
+/**
+ * Helper: Trigger file download
+ */
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert(`✅ File đã được lưu: ${filename}`);
+}
+
+/**
  * Initialize Application
  */
 document.addEventListener('DOMContentLoaded', () => {
@@ -291,6 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wasmStatusDiv = document.getElementById('wasm-status');
     const wasmStatusText = document.getElementById('wasm-status-text');
     const wasmSpinner = document.getElementById('wasm-spinner');
+    const loadingOverlay = document.getElementById('loading-overlay');
     
     // Get license tab reference
     const licenseTabElement = document.getElementById('tab-license');
@@ -300,25 +518,49 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Disable button until WASM loads
     if (runButton) runButton.disabled = true;
+    
+    // Show loading overlay
+    if (loadingOverlay) loadingOverlay.style.display = 'flex';
 
-    // Load WASM Module
-    createSheetPileModule().then(Module => {
-        wasmModule = Module;
-        console.log("✅ Sheet Pile FEM WASM Module Loaded");
-        
-        // Enable Run button
-        if (runButton) {
-            runButton.disabled = false;
-            runButton.addEventListener('click', runAnalysis);
+    // Load WASM Module with cache-busting and proper async initialization
+    const wasmVersion = '1.0.0'; // Update this when you update WASM
+    SheetPileFEM_Module({
+        locateFile: (path) => {
+            if (path.endsWith('.wasm')) {
+                return `${path}?v=${wasmVersion}`; // Cache-busting
+            }
+            return path;
+        },
+        onRuntimeInitialized: function() {
+            wasmModule = this;
+            console.log("✅ Sheet Pile FEM WASM Module Fully Initialized");
+            
+            // Hide loading overlay
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 300);
+            }
+            
+            // Enable Run button
+            if (runButton) {
+                runButton.disabled = false;
+                runButton.addEventListener('click', runAnalysis);
+            }
+
+            // Update WASM status UI
+            if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
+            if (wasmSpinner) wasmSpinner.style.display = 'none';
+            if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
         }
-
-        // Update WASM status UI
-        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
-        if (wasmSpinner) wasmSpinner.style.display = 'none';
-        if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
-        
     }).catch(e => {
         console.error("❌ Error loading WASM module:", e);
+        
+        // Hide loading overlay
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
         
         if (runButton) {
             runButton.textContent = "❌ Lỗi WASM";
@@ -333,4 +575,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         showError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
     });
+    
+    // File Management Button Listeners
+    const btnNew = document.getElementById('btn-new-file');
+    const btnOpen = document.getElementById('btn-open-file');
+    const btnSave = document.getElementById('btn-save-file');
+    
+    if (btnNew) btnNew.addEventListener('click', newFile);
+    if (btnOpen) btnOpen.addEventListener('click', openFile);
+    if (btnSave) btnSave.addEventListener('click', saveFile);
 });

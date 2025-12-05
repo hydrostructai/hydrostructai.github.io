@@ -3,337 +3,502 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quỹ Đạo Hypocycloid</title>
+    <title>Quỹ Đạo Hypocycloid | Hydro Structure AI</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #212529; /* Đen nhạt */
-            --primary-color: #007bff; /* Xanh dương */
-            --secondary-color: #6c757d; /* Xám */
-            --danger-color: #D0021B;  /* Đỏ cho quỹ đạo */
-            --border-color: #dee2e6;  /* Xám nhạt cho viền */
-            --control-bg: rgba(255, 255, 255, 0.85); /* Nền trắng mờ */
-            --border-radius: 8px;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        /* Header Section */
+        .tool-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tool-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-meta {
             display: flex;
-            flex-direction: row; /* Mặc định là side-by-side */
-            height: 100vh;
-            overflow: hidden;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .tool-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Main Layout: 2/3 Canvas + 1/3 Controls */
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            display: flex;
+            gap: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .canvas-section {
+            flex: 2;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
         }
 
         canvas {
-            display: block;
-            flex-grow: 1; /* Canvas lấp đầy không gian còn lại */
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 4px;
         }
 
-        #controls-panel {
-            background-color: #f8f9fa; 
-            border-left: 1px solid var(--border-color); 
-            border-radius: 0; 
-            box-shadow: var(--box-shadow);
-            
-            padding: 20px;
-            box-sizing: border-box;
-            
-            display: flex;
-            flex-direction: column; 
-            gap: 20px;
-            
-            /* --- SỬA LOGIC KÍCH THƯỚC --- */
-            width: 20vw;      /* Mở rộng 20% khung nhìn */
-            min-width: 300px; /* Thêm: Đảm bảo không quá hẹp */
-            max-width: 500px; /* Thêm: Đảm bảo không quá rộng trên màn hình ultrawide */
-            /* --- KẾT THÚC SỬA --- */
-
-            flex-shrink: 0; 
-            height: 100vh; 
-            overflow-y: auto; 
+        .controls-section {
+            flex: 1;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 2rem;
         }
 
+        .controls-section h3 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #667eea;
+        }
+
+        /* Form Controls */
         .input-group {
-            display: flex;
-            flex-direction: column; 
-            gap: 15px;
+            margin-bottom: 1.5rem;
         }
 
-        .input-item {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
+        .input-group label {
+            display: block;
             font-weight: 600;
-            font-size: 0.85rem;
-            color: var(--secondary-color);
+            margin-bottom: 0.5rem;
+            color: #495057;
+            font-size: 0.9rem;
         }
 
-        input[type="number"] {
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            width: 100%; 
-            box-sizing: border-box; 
-        }
-
-        input[type="color"] {
+        .input-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #dee2e6;
+            outline: none;
             -webkit-appearance: none;
-            -moz-appearance: none;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
             appearance: none;
-            width: 100%; 
-            height: 38px;
-            padding: 0;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #667eea;
             cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .color-input-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .button-group {
-            display: flex;
-            flex-direction: column; 
-            gap: 10px;
+        .input-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #5a67d8;
         }
 
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
+        .value-display {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
             font-weight: 600;
-            color: #fff;
-            background-color: var(--primary-color);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            color: #667eea;
+            margin-left: 0.5rem;
         }
 
-        button:hover {
-            background-color: #0056b3;
+        .control-buttons {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .info-box h4 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toc h4 {
+            font-size: 0.9rem;
+            color: #495057;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc li {
+            padding: 0.25rem 0;
+        }
+
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: #5a67d8;
+        }
+
+        /* View Counter Badge */
+        .view-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .tool-container {
+                flex-direction: column;
+            }
+
+            .controls-section {
+                max-height: none;
+                position: static;
+            }
+
+            canvas {
+                max-height: 500px;
+            }
         }
 
         @media (max-width: 768px) {
-            body {
-                flex-direction: column; /* Xếp chồng: canvas trên, controls dưới */
+            .tool-title {
+                font-size: 1.5rem;
             }
 
-            #controls-panel {
-                width: 100%; /* Chiếm 100% chiều rộng */
-                height: auto; 
-                flex-shrink: 1;
-                flex-direction: column; 
-                border-left: none; 
-                border-top: 1px solid var(--border-color); 
-                /* Gỡ bỏ min/max-width trên mobile */
-                min-width: unset; 
-                max-width: unset;
+            .tool-meta {
+                flex-direction: column;
+                gap: 0.5rem;
             }
 
-            .input-group {
-                flex-direction: row; 
-                justify-content: space-around;
-            }
-
-            .color-input-grid {
-                grid-template-columns: 1fr 1fr 1fr 1fr; /* Dàn 4 màu ra */
-            }
-
-            .button-group {
-                flex-direction: row; 
+            .tool-container {
+                padding: 1rem 0.5rem;
+                gap: 1rem;
             }
         }
     </style>
 </head>
 <body>
-    <canvas id="hypocycloidCanvas"></canvas>
-
-    <div id="controls-panel">
-        
-        <div class="input-group">
-            <div class="input-item">
-                <label for="largeRadius">Bán kính lớn (R)</label>
-                <input type="number" id="largeRadius" value="200" step="10">
+    <!-- Tool Header -->
+    <div class="tool-header">
+        <div class="container">
+            <h1 class="tool-title">Quỹ Đạo Hypocycloid</h1>
+            <div class="tool-meta">
+                <span>
+                    <i class="far fa-calendar-alt"></i>
+                    Ngày cập nhật: 05/12/2025
+                </span>
+                <span>
+                    <i class="far fa-user"></i>
+                    Tác giả: Hydro Structure AI
+                </span>
+                <span class="view-counter">
+                    <i class="far fa-eye"></i>
+                    <span id="view-count">Đang tải...</span> lượt xem
+                </span>
             </div>
-            <div class="input-item">
-                <label for="smallRadius">Bán kính nhỏ (r)</label>
-                <input type="number" id="smallRadius" value="40" step="5">
-            </div>
-            <div class="input-item">
-                <label for="speed">Tốc độ (speed)</label>
-                <input type="number" id="speed" value="0.05" step="0.01">
-            </div>
-        </div>
-        
-        <div class="input-group">
-            <label>Màu sắc</label>
-            <div class="color-input-grid">
-                <div class="input-item">
-                    <label for="bgColor">Nền</label>
-                    <input type="color" id="bgColor" value="#ffffff">
-                </div>
-                <div class="input-item">
-                    <label for="largeCircleColor">Vòng lớn</label>
-                    <input type="color" id="largeCircleColor" value="#4A90E2">
-                </div>
-                <div class="input-item">
-                    <label for="smallCircleColor">Vòng nhỏ</label>
-                    <input type="color" id="smallCircleColor" value="#333333">
-                </div>
-                <div class="input-item">
-                    <label for="pathColor">Quỹ đạo</label>
-                    <input type="color" id="pathColor" value="#D0021B">
-                </div>
-            </div>
-        </div>
-
-        <div class="button-group">
-            <button id="runBtn">Vẽ Quỹ Đạo</button>
-            <button id="resetBtn">Đặt Lại</button>
         </div>
     </div>
 
+    <!-- Main Content: 2/3 Canvas + 1/3 Controls -->
+    <div class="tool-container">
+        <!-- Canvas Section (2/3) -->
+        <div class="canvas-section">
+            <div id="canvas-container"></div>
+        </div>
+
+        <!-- Controls Section (1/3) -->
+        <div class="controls-section">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h4><i class="fas fa-list"></i> Mục lục</h4>
+                <ul>
+                    <li><a href="#controls">Điều khiển</a></li>
+                    <li><a href="#parameters">Thông số</a></li>
+                    <li><a href="#info">Thông tin</a></li>
+                </ul>
+            </div>
+
+            <h3 id="controls"><i class="fas fa-sliders-h"></i> Điều khiển</h3>
+
+            <!-- R (Radius of fixed circle) -->
+            <div class="input-group">
+                <label for="sliderR">
+                    Bán kính vòng cố định (R):
+                    <span class="value-display" id="valueR">5</span>
+                </label>
+                <input type="range" id="sliderR" min="1" max="10" step="0.1" value="5">
+            </div>
+
+            <!-- r (Radius of rolling circle) -->
+            <div class="input-group">
+                <label for="sliderr">
+                    Bán kính vòng lăn (r):
+                    <span class="value-display" id="valuer">2</span>
+                </label>
+                <input type="range" id="sliderr" min="0.5" max="5" step="0.1" value="2">
+            </div>
+
+            <!-- d (Distance from center) -->
+            <div class="input-group">
+                <label for="sliderd">
+                    Khoảng cách từ tâm (d):
+                    <span class="value-display" id="valued">1</span>
+                </label>
+                <input type="range" id="sliderd" min="0.1" max="5" step="0.1" value="1">
+            </div>
+
+            <!-- Speed Control -->
+            <div class="input-group">
+                <label for="sliderSpeed">
+                    Tốc độ:
+                    <span class="value-display" id="valueSpeed">1</span>
+                </label>
+                <input type="range" id="sliderSpeed" min="0.1" max="3" step="0.1" value="1">
+            </div>
+
+            <!-- Control Buttons -->
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </button>
+                <button class="btn btn-secondary" id="pauseBtn">
+                    <i class="fas fa-pause"></i> Tạm dừng
+                </button>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box" id="info">
+                <h4><i class="fas fa-info-circle"></i> Thông tin</h4>
+                <p>
+                    <strong>Hypocycloid</strong> là đường cong được tạo ra khi một vòng tròn nhỏ lăn bên trong một vòng tròn lớn cố định.
+                </p>
+                <p style="margin-top: 0.5rem;">
+                    <strong>Công thức:</strong><br>
+                    x = (R - r) × cos(t) + d × cos((R - r) × t / r)<br>
+                    y = (R - r) × sin(t) - d × sin((R - r) × t / r)
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- P5.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    
+    <!-- Hypocycloid Logic -->
     <script>
-        const canvas = document.getElementById('hypocycloidCanvas');
-        const ctx = canvas.getContext('2d');
-        const largeRadiusInput = document.getElementById('largeRadius');
-        const smallRadiusInput = document.getElementById('smallRadius');
-        const speedInput = document.getElementById('speed');
-        const runBtn = document.getElementById('runBtn');
-        const resetBtn = document.getElementById('resetBtn');
+        let R = 5, r = 2, d = 1;
+        let angle = 0;
+        let speed = 1;
+        let path = [];
+        let isPaused = false;
 
-        const bgColorInput = document.getElementById('bgColor');
-        const largeCircleColorInput = document.getElementById('largeCircleColor');
-        const smallCircleColorInput = document.getElementById('smallCircleColor');
-        const pathColorInput = document.getElementById('pathColor');
-
-        let R, r, speed, path = [], angle = 0, isRunning = false, animationFrameId;
-
-        function setCanvasSize() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-            ctx.translate(canvas.width / 2, canvas.height / 2);
+        function setup() {
+            let canvas = createCanvas(windowWidth * 0.6, windowHeight * 0.7);
+            canvas.parent('canvas-container');
+            background(255);
         }
 
-        window.addEventListener('resize', reset);
-
-        function drawStaticElements() {
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = bgColorInput.value;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            if (R) {
-                ctx.beginPath();
-                ctx.strokeStyle = largeCircleColorInput.value;
-                ctx.lineWidth = 2;
-                ctx.arc(0, 0, R, 0, 2 * Math.PI);
-                ctx.stroke();
+        function draw() {
+            background(255);
+            translate(width / 2, height / 2);
+            
+            let scale = min(width, height) / (2 * (R + r + d)) * 0.8;
+            
+            // Draw fixed circle
+            stroke(200);
+            strokeWeight(2);
+            noFill();
+            circle(0, 0, 2 * R * scale);
+            
+            // Calculate rolling circle center
+            let cx = (R - r) * cos(angle) * scale;
+            let cy = (R - r) * sin(angle) * scale;
+            
+            // Draw rolling circle
+            stroke(150);
+            strokeWeight(1);
+            circle(cx, cy, 2 * r * scale);
+            
+            // Calculate point position
+            let x = ((R - r) * cos(angle) + d * cos((R - r) * angle / r)) * scale;
+            let y = ((R - r) * sin(angle) - d * sin((R - r) * angle / r)) * scale;
+            
+            // Add to path
+            if (!isPaused) {
+                path.push({ x, y });
+                if (path.length > 1000) path.shift();
+                angle += 0.02 * speed;
             }
+            
+            // Draw path
+            stroke(220, 53, 69);
+            strokeWeight(3);
+            noFill();
+            beginShape();
+            for (let p of path) {
+                vertex(p.x, p.y);
+            }
+            endShape();
+            
+            // Draw current point
+            fill(220, 53, 69);
+            noStroke();
+            circle(x, y, 8);
+            
+            // Draw line from rolling circle center to point
+            stroke(100);
+            strokeWeight(1);
+            line(cx, cy, x, y);
         }
 
-        function animate() {
-            if (!isRunning) return;
-
-            drawStaticElements();
-
-            const Cx = (R - r) * Math.cos(angle);
-            const Cy = (R - r) * Math.sin(angle);
-            
-            const x = (R - r) * Math.cos(angle) + r * Math.cos(((R - r) / r) * angle);
-            const y = (R - r) * Math.sin(angle) - r * Math.sin(((R - r) / r) * angle);
-
-            path.push({x, y});
-
-            ctx.beginPath();
-            ctx.strokeStyle = smallCircleColorInput.value;
-            ctx.lineWidth = 2;
-            ctx.arc(Cx, Cy, r, 0, 2 * Math.PI);
-            ctx.stroke();
-            
-            ctx.beginPath();
-            ctx.fillStyle = pathColorInput.value;
-            ctx.arc(x, y, 4, 0, 2 * Math.PI);
-            ctx.fill();
-            
-            ctx.beginPath();
-            ctx.strokeStyle = smallCircleColorInput.value;
-            ctx.lineWidth = 1;
-            ctx.moveTo(Cx, Cy);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.strokeStyle = pathColorInput.value;
-            ctx.lineWidth = 2;
-            for (let i = 0; i < path.length; i++) {
-                (i === 0) ? ctx.moveTo(path[i].x, path[i].y) : ctx.lineTo(path[i].x, path[i].y);
-            }
-            ctx.stroke();
-            
-            angle += speed;
-
-            const totalRevolutions = R / r;
-            if (angle < totalRevolutions * 2 * Math.PI + speed) {
-                animationFrameId = requestAnimationFrame(animate);
-            } else {
-                isRunning = false;
-                runBtn.textContent = 'Vẽ Lại';
-            }
+        function windowResized() {
+            resizeCanvas(windowWidth * 0.6, windowHeight * 0.7);
         }
 
-        function runAnimation() {
-            if (isRunning) {
-                reset();
-            }
-
-            R = parseFloat(largeRadiusInput.value);
-            r = parseFloat(smallRadiusInput.value);
-            speed = parseFloat(speedInput.value);
+        // Controls
+        document.getElementById('sliderR').addEventListener('input', (e) => {
+            R = parseFloat(e.target.value);
+            document.getElementById('valueR').textContent = R.toFixed(1);
             path = [];
             angle = 0;
-            isRunning = true;
-            runBtn.textContent = 'Đang vẽ...';
-            
-            setCanvasSize();
-            drawStaticElements(); 
-            
-            animationFrameId = requestAnimationFrame(animate);
-        }
+        });
 
-        function reset() {
-            cancelAnimationFrame(animationFrameId);
-            isRunning = false;
-            runBtn.textContent = 'Vẽ Quỹ Đạo';
+        document.getElementById('sliderr').addEventListener('input', (e) => {
+            r = parseFloat(e.target.value);
+            document.getElementById('valuer').textContent = r.toFixed(1);
             path = [];
             angle = 0;
-            
-            R = parseFloat(largeRadiusInput.value); 
-            
-            setCanvasSize();
-            drawStaticElements(); 
-        }
+        });
 
-        runBtn.addEventListener('click', runAnimation);
-        resetBtn.addEventListener('click', reset);
-        
-        R = parseFloat(largeRadiusInput.value); 
-        setCanvasSize();
-        drawStaticElements();
+        document.getElementById('sliderd').addEventListener('input', (e) => {
+            d = parseFloat(e.target.value);
+            document.getElementById('valued').textContent = d.toFixed(1);
+            path = [];
+            angle = 0;
+        });
+
+        document.getElementById('sliderSpeed').addEventListener('input', (e) => {
+            speed = parseFloat(e.target.value);
+            document.getElementById('valueSpeed').textContent = speed.toFixed(1);
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            path = [];
+            angle = 0;
+        });
+
+        document.getElementById('pauseBtn').addEventListener('click', (e) => {
+            isPaused = !isPaused;
+            e.target.innerHTML = isPaused ? '<i class="fas fa-play"></i> Tiếp tục' : '<i class="fas fa-pause"></i> Tạm dừng';
+        });
+
+        // View counter (mock)
+        setTimeout(() => {
+            document.getElementById('view-count').textContent = Math.floor(Math.random() * 1000 + 500);
+        }, 500);
     </script>
 </body>
 </html>

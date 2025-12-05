@@ -68,22 +68,77 @@ function handleCalculation() {
 
     // Dùng setTimeout để cho phép trình duyệt cập nhật DOM
     setTimeout(() => {
-        // 3. Giải hệ phương trình (CHỈ KHI ĐƯỢC GỌI)
-        solution = solveForCircle();
-        
-        // Ngừng bộ đếm ngay khi có kết quả
-        clearInterval(timerInterval);
-        timerDisplay.style('display', 'none');
+        try {
+            // 3. Giải hệ phương trình (CHỈ KHI ĐƯỢC GỌI)
+            const result = solveForCircle();
+            
+            // Ngừng bộ đếm ngay khi có kết quả
+            clearInterval(timerInterval);
+            timerDisplay.style('display', 'none');
 
-        // 4. Hiển thị Kết quả lên HTML
-        displayResults(solution);
+            // 4. Kiểm tra xem có lỗi không
+            if (result && result.error) {
+                // Hiển thị thông báo lỗi
+                select('#results').html(
+                    `<h3>Tính toán Thất bại</h3>
+                     <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <p><strong>Lỗi:</strong> ${result.message}</p>
+                        <p>Thuật toán không tìm được nghiệm hợp lệ. Vui lòng:</p>
+                        <ul>
+                            <li>Kiểm tra lại các đường cong có giao nhau không</li>
+                            <li>Thử điều chỉnh phạm vi vẽ</li>
+                            <li>Tải lại trang và thử lại</li>
+                        </ul>
+                     </div>`
+                );
+                
+                select('#area-display').html('<h3>Diện tích: <span class="text-danger">Không tính được</span></h3>');
+                
+                // Không vẽ hình tròn
+                solution = null;
+                
+                // Hiển thị alert cho người dùng
+                alert("⚠️ Tính toán thất bại!\n\n" + result.message + "\n\nVui lòng thử lại hoặc điều chỉnh đường cong.");
+                
+            } else if (result) {
+                // Gán solution cho biến toàn cục
+                solution = result;
+                
+                // 5. Hiển thị Kết quả lên HTML (nếu thành công)
+                displayResults(solution);
 
-        // 5. Vẽ lại canvas để thêm hình tròn
-        redraw(); // Gọi lại hàm draw() một lần nữa
+                // 6. Vẽ lại canvas để thêm hình tròn
+                redraw(); // Gọi lại hàm draw() một lần nữa
+                
+                // Hiển thị cảnh báo nếu sai số lớn
+                if (!solution.converged) {
+                    console.warn("⚠️ Cảnh báo: Sai số lớn. Kết quả có thể không chính xác.");
+                    alert("⚠️ Cảnh báo: Thuật toán hội tụ nhưng sai số còn lớn.\n\nKết quả có thể không chính xác. Vui lòng kiểm tra kỹ.");
+                }
+            }
 
-        // Reset nút
-        calcButton.html('Tính toán Diện tích');
-        calcButton.removeAttribute('disabled');
+        } catch (error) {
+            // Xử lý lỗi không mong muốn
+            console.error("❌ Lỗi nghiêm trọng:", error);
+            
+            clearInterval(timerInterval);
+            timerDisplay.style('display', 'none');
+            
+            select('#results').html(
+                `<h3>Lỗi Nghiêm trọng</h3>
+                 <div class="alert alert-danger">
+                    <p><strong>Lỗi:</strong> ${error.message}</p>
+                    <p>Vui lòng tải lại trang và thử lại.</p>
+                 </div>`
+            );
+            
+            alert("❌ Lỗi nghiêm trọng!\n\n" + error.message + "\n\nVui lòng tải lại trang.");
+        } finally {
+            // Reset nút trong mọi trường hợp
+            calcButton.html('Tính toán Diện tích');
+            calcButton.removeAttribute('disabled');
+        }
     }, 50); 
 }
 
@@ -116,24 +171,59 @@ function draw() {
 
 /**
  * Hiển thị kết quả ra các vùng HTML
+ * @param {object} sol - Solution object
  */
 function displayResults(sol) {
-    const format = (num) => num.toFixed(4);
+    // Validate solution
+    if (!sol || sol.error) {
+        console.error("Cannot display invalid solution");
+        return;
+    }
+
+    const format = (num) => {
+        if (isNaN(num)) return "N/A";
+        return num.toFixed(4);
+    };
+    
+    // Validate all values before displaying
+    const values = [sol.xc, sol.yc, sol.R, sol.area];
+    const hasInvalidValues = values.some(v => isNaN(v) || v === undefined || v === null);
+    
+    if (hasInvalidValues) {
+        console.error("❌ Solution contains invalid values");
+        alert("❌ Kết quả chứa giá trị không hợp lệ (NaN).\n\nThuật toán không hội tụ. Vui lòng thử lại.");
+        return;
+    }
     
     // 1. Hiển thị Diện tích (dưới biểu đồ)
     const areaDiv = select('#area-display');
-    areaDiv.html(`<h3>Diện tích (πR²): <span>${format(sol.area)}</span></h3>`, false); 
+    const convergenceIcon = sol.converged ? 
+        '<i class="bi bi-check-circle-fill text-success"></i>' : 
+        '<i class="bi bi-exclamation-triangle-fill text-warning"></i>';
+    
+    areaDiv.html(
+        `<h3>Diện tích (πR²): ${convergenceIcon} <span class="${sol.converged ? 'text-success' : 'text-warning'}">${format(sol.area)}</span></h3>`, 
+        false
+    ); 
 
     // 2. Hiển thị Kết quả Chi tiết (bên cạnh)
     const resultsDiv = select('#results');
+    const errorInfo = sol.converged ? 
+        `<p class="text-success"><i class="bi bi-check-circle"></i> <strong>Thuật toán hội tụ thành công</strong></p>` :
+        `<p class="text-warning"><i class="bi bi-exclamation-triangle"></i> <strong>Cảnh báo:</strong> Sai số lớn (${format(sol.error)})</p>`;
+    
     resultsDiv.html(
         `<h3>Kết quả Chi tiết</h3>
-         <p>Tâm (xc, yc): <br><span>(${format(sol.xc)}, ${format(sol.yc)})</span></p>
-         <p>Bán kính (R): <br><span>${format(sol.R)}</span></p>
+         ${errorInfo}
          <hr>
-         <p>Tiếp điểm f(x): <br><span>(${format(sol.touchPoints.f.x)}, ${format(sol.touchPoints.f.y)})</span></p>
-         <p>Tiếp điểm g(x): <br><span>(${format(sol.touchPoints.g.x)}, ${format(sol.touchPoints.g.y)})</span></p>
-         <p>Tiếp điểm h(x): <br><span>(${format(sol.touchPoints.h.x)}, ${format(sol.touchPoints.h.y)})</span></p>
+         <p><strong>Tâm hình tròn (xc, yc):</strong> <br><span class="result-value">(${format(sol.xc)}, ${format(sol.yc)})</span></p>
+         <p><strong>Bán kính (R):</strong> <br><span class="result-value">${format(sol.R)}</span></p>
+         <p><strong>Diện tích (πR²):</strong> <br><span class="result-value">${format(sol.area)}</span></p>
+         <hr>
+         <h4>Các điểm tiếp xúc:</h4>
+         <p>• Tiếp điểm f(x): <br><span class="result-value">(${format(sol.touchPoints.f.x)}, ${format(sol.touchPoints.f.y)})</span></p>
+         <p>• Tiếp điểm g(x): <br><span class="result-value">(${format(sol.touchPoints.g.x)}, ${format(sol.touchPoints.g.y)})</span></p>
+         <p>• Tiếp điểm h(x): <br><span class="result-value">(${format(sol.touchPoints.h.x)}, ${format(sol.touchPoints.h.y)})</span></p>
         `,
         true // Cho phép chèn HTML
     );

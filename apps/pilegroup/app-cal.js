@@ -289,6 +289,243 @@ async function runAnalysis() {
 }
 
 /**
+ * FILE MANAGEMENT FUNCTIONS
+ */
+
+/**
+ * New File: Clear all inputs and reset to defaults
+ */
+function newFile() {
+    if (!confirm("Tạo file mới? Dữ liệu hiện tại sẽ bị xóa.")) return;
+    
+    // Reset material inputs
+    document.getElementById('input-E').value = '2800000';
+    document.getElementById('input-F').value = '0.1225';
+    document.getElementById('input-Icoc').value = '0.00125';
+    document.getElementById('input-D').value = '0.35';
+    document.getElementById('input-Lcoc').value = '12.0';
+    document.getElementById('input-L0').value = '2.0';
+    
+    // Reset cap dimensions
+    document.getElementById('input-Bx').value = '7';
+    document.getElementById('input-By').value = '9';
+    
+    // Reset soil inputs
+    document.getElementById('input-m').value = '600';
+    document.getElementById('input-mchan').value = '800';
+    document.getElementById('input-Rdat').value = '680';
+    document.getElementById('select-dieu-kien-mui').value = 'K';
+    
+    // Clear soil layers
+    document.getElementById('soil-layer-body').innerHTML = '';
+    
+    // Reset loads
+    document.getElementById('input-Hx').value = '20.2';
+    document.getElementById('input-Hy').value = '72.0';
+    document.getElementById('input-Pz').value = '1250.06';
+    document.getElementById('input-Mx').value = '934.4';
+    document.getElementById('input-My').value = '361.9';
+    document.getElementById('input-Mz').value = '0.0';
+    
+    // Clear pile table
+    document.getElementById('pile-table-body').innerHTML = '';
+    updatePileCount();
+    
+    alert("✅ File mới đã được tạo!");
+}
+
+/**
+ * Open File: Parse CSV or INP file and populate form
+ */
+function openFile() {
+    const fileInput = document.getElementById('hidden-file-input');
+    fileInput.value = ''; // Reset input
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const content = event.target.result;
+                const extension = file.name.split('.').pop().toLowerCase();
+                
+                if (extension === 'csv') {
+                    parsePileGroupCSV(content);
+                } else if (extension === 'inp') {
+                    parsePileGroupINP(content);
+                } else {
+                    alert("❌ Định dạng file không hỗ trợ. Chỉ chấp nhận .csv hoặc .inp");
+                }
+            } catch (error) {
+                alert(`❌ Lỗi đọc file: ${error.message}`);
+            }
+        };
+        reader.readAsText(file);
+    };
+    fileInput.click();
+}
+
+/**
+ * Parse CSV format for Pile Group
+ */
+function parsePileGroupCSV(content) {
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
+    
+    lines.forEach(line => {
+        const parts = line.split(',').map(s => s.trim());
+        const key = parts[0];
+        
+        // Parse pile data
+        if (key.startsWith('PILE_')) {
+            const pileTableBody = document.getElementById('pile-table-body');
+            const rowCount = pileTableBody.rows.length + 1;
+            const newRow = pileTableBody.insertRow();
+            newRow.innerHTML = `
+                <td class="text-center fw-bold">${rowCount}</td>
+                <td><input type="number" class="form-control" value="${parts[1] || 0}" step="0.1"></td>
+                <td><input type="number" class="form-control" value="${parts[2] || 0}" step="0.1"></td>
+                <td><input type="number" class="form-control" value="${parts[3] || 0}" step="0.01"></td>
+                <td><input type="number" class="form-control" value="${parts[4] || 0}" step="0.01"></td>`;
+        }
+        // Parse other inputs
+        else {
+            const input = document.getElementById(`input-${key}`);
+            if (input && parts[1]) input.value = parts[1];
+        }
+    });
+    
+    updatePileCount();
+    alert("✅ File CSV đã được tải!");
+}
+
+/**
+ * Parse INP format for Pile Group
+ */
+function parsePileGroupINP(content) {
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
+    
+    lines.forEach(line => {
+        if (line.includes('=')) {
+            const [key, value] = line.split('=').map(s => s.trim());
+            const input = document.getElementById(`input-${key}`);
+            if (input) input.value = value;
+        }
+    });
+    
+    alert("✅ File INP đã được tải!");
+}
+
+/**
+ * Save File: Export form data to CSV or INP
+ */
+function saveFile() {
+    const format = prompt("Chọn định dạng file:\n1 - CSV\n2 - INP\n\nNhập 1 hoặc 2:", "1");
+    
+    if (format === '1') {
+        savePileGroupAsCSV();
+    } else if (format === '2') {
+        savePileGroupAsINP();
+    } else if (format !== null) {
+        alert("❌ Lựa chọn không hợp lệ.");
+    }
+}
+
+/**
+ * Save as CSV format for Pile Group
+ */
+function savePileGroupAsCSV() {
+    try {
+        const inputData = gatherInputData();
+        let csv = "# Pile Group 3D - Input Data (CSV)\n\n";
+        
+        csv += "# Material Properties\n";
+        csv += `E,${inputData.vat_lieu.E}\n`;
+        csv += `Icoc,${inputData.vat_lieu.Icoc}\n`;
+        csv += `D,${inputData.vat_lieu.D}\n`;
+        csv += `F,${inputData.vat_lieu.F}\n`;
+        csv += `Lcoc,${inputData.vat_lieu.Lcoc}\n`;
+        csv += `L0,${inputData.vat_lieu.L0}\n\n`;
+        
+        csv += "# Cap Dimensions\n";
+        csv += `Bx,${inputData.be_coc.Bx}\n`;
+        csv += `By,${inputData.be_coc.By}\n\n`;
+        
+        csv += "# Loads\n";
+        csv += `Hx,${inputData.tai_trong.Hx}\n`;
+        csv += `Hy,${inputData.tai_trong.Hy}\n`;
+        csv += `Pz,${inputData.tai_trong.Pz}\n`;
+        csv += `Mx,${inputData.tai_trong.Mx}\n`;
+        csv += `My,${inputData.tai_trong.My}\n`;
+        csv += `Mz,${inputData.tai_trong.Mz}\n\n`;
+        
+        csv += "# Piles (X,Y,Fi,Psi)\n";
+        inputData.coc.forEach((pile, i) => {
+            csv += `PILE_${i+1},${pile.x},${pile.y},${pile.fi},${pile.psi}\n`;
+        });
+        
+        downloadFile(csv, 'pilegroup_input.csv', 'text/csv');
+    } catch (error) {
+        alert(`❌ Lỗi lưu file: ${error.message}`);
+    }
+}
+
+/**
+ * Save as INP format for Pile Group
+ */
+function savePileGroupAsINP() {
+    try {
+        const inputData = gatherInputData();
+        let inp = "# Pile Group 3D - Input File (INP Format)\n\n";
+        
+        inp += "[MATERIAL]\n";
+        inp += `E = ${inputData.vat_lieu.E}\n`;
+        inp += `Icoc = ${inputData.vat_lieu.Icoc}\n`;
+        inp += `D = ${inputData.vat_lieu.D}\n`;
+        inp += `F = ${inputData.vat_lieu.F}\n`;
+        inp += `Lcoc = ${inputData.vat_lieu.Lcoc}\n`;
+        inp += `L0 = ${inputData.vat_lieu.L0}\n\n`;
+        
+        inp += "[CAP_DIMENSIONS]\n";
+        inp += `Bx = ${inputData.be_coc.Bx}\n`;
+        inp += `By = ${inputData.be_coc.By}\n\n`;
+        
+        inp += "[LOADS]\n";
+        inp += `Hx = ${inputData.tai_trong.Hx}\n`;
+        inp += `Hy = ${inputData.tai_trong.Hy}\n`;
+        inp += `Pz = ${inputData.tai_trong.Pz}\n`;
+        inp += `Mx = ${inputData.tai_trong.Mx}\n`;
+        inp += `My = ${inputData.tai_trong.My}\n`;
+        inp += `Mz = ${inputData.tai_trong.Mz}\n\n`;
+        
+        inp += "[PILES]\n";
+        inputData.coc.forEach((pile, i) => {
+            inp += `Pile_${i+1} = ${pile.x}, ${pile.y}, ${pile.fi}, ${pile.psi}\n`;
+        });
+        
+        downloadFile(inp, 'pilegroup_input.inp', 'text/plain');
+    } catch (error) {
+        alert(`❌ Lỗi lưu file: ${error.message}`);
+    }
+}
+
+/**
+ * Helper: Trigger file download
+ */
+function downloadFile(content, filename, mimeType) {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert(`✅ File đã được lưu: ${filename}`);
+}
+
+/**
  * Initialize Application
  */
 document.addEventListener('DOMContentLoaded', () => {
@@ -296,6 +533,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wasmStatusDiv = document.getElementById('wasm-status');
     const wasmStatusText = document.getElementById('wasm-status-text');
     const wasmSpinner = document.getElementById('wasm-spinner');
+    const loadingOverlay = document.getElementById('loading-overlay');
     
     // Get license tab reference
     const licenseTabElement = document.getElementById('tab-license');
@@ -305,6 +543,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Disable button until WASM loads
     if (runButton) runButton.disabled = true;
+    
+    // Show loading overlay
+    if (loadingOverlay) loadingOverlay.style.display = 'flex';
 
     // Initialize pile count display
     updatePileCount();
@@ -316,24 +557,45 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(pileTableBody, { childList: true });
     }
 
-    // Load WASM Module
-    createPileGroupModule().then(Module => {
-        wasmModule = Module;
-        console.log("✅ Pile Group WASM Module Loaded");
-        
-        // Enable Run button
-        if (runButton) {
-            runButton.disabled = false;
-            runButton.addEventListener('click', runAnalysis);
-        }
+    // Load WASM Module with cache-busting and proper async initialization
+    const wasmVersion = '1.0.0'; // Update this when you update WASM
+    createPileGroupModule({
+        locateFile: (path) => {
+            if (path.endsWith('.wasm')) {
+                return `${path}?v=${wasmVersion}`; // Cache-busting
+            }
+            return path;
+        },
+        onRuntimeInitialized: function() {
+            wasmModule = this;
+            console.log("✅ Pile Group WASM Module Fully Initialized");
+            
+            // Hide loading overlay
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 300);
+            }
+            
+            // Enable Run button
+            if (runButton) {
+                runButton.disabled = false;
+                runButton.addEventListener('click', runAnalysis);
+            }
 
-        // Update WASM status UI
-        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
-        if (wasmSpinner) wasmSpinner.style.display = 'none';
-        if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
-        
+            // Update WASM status UI
+            if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
+            if (wasmSpinner) wasmSpinner.style.display = 'none';
+            if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
+        }
     }).catch(e => {
         console.error("❌ Error loading WASM module:", e);
+        
+        // Hide loading overlay
+        if (loadingOverlay) {
+            loadingOverlay.style.display = 'none';
+        }
         
         if (runButton) {
             runButton.textContent = "❌ Lỗi WASM";
@@ -348,4 +610,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         showError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
     });
+    
+    // File Management Button Listeners
+    const btnNew = document.getElementById('btn-new-file');
+    const btnOpen = document.getElementById('btn-open-file');
+    const btnSave = document.getElementById('btn-save-file');
+    
+    if (btnNew) btnNew.addEventListener('click', newFile);
+    if (btnOpen) btnOpen.addEventListener('click', openFile);
+    if (btnSave) btnSave.addEventListener('click', saveFile);
 });

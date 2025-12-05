@@ -3,423 +3,506 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trực quan hóa chuỗi Taylor cho sin(x)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Trực quan hóa Chuỗi Taylor | Hydro Structure AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* === BẮT ĐẦU SỬA ĐỔI CSS === */
-        :root {
-            --background-color: #ffffff; /* Nền trắng */
-            --text-color: #212529;       /* Chữ đen đậm */
-            --axis-color: #adb5bd;       /* Trục tọa độ màu xám nhạt */
-            --primary-color: #0d6efd;   /* Taylor Series (Xanh dương) */
-            --secondary-color: #6c757d; /* sin(x) (Xám) */
-            --control-bg: rgba(255, 255, 255, 0.85); /* Nền điều khiển bán trong suốt */
-            --border-color: #dee2e6;
-        }
-        /* === KẾT THÚC SỬA ĐỔI CSS === */
-
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background-color: var(--background-color);
-            font-family: 'Poppins', sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #212529;
+        }
+
+        /* Header Section */
+        .tool-header {
+            background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+            color: white;
+            padding: 2rem 1rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-header .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .tool-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-meta {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .tool-meta span {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Main Layout: 2/3 Canvas + 1/3 Controls */
+        .tool-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            display: flex;
+            gap: 2rem;
+            min-height: calc(100vh - 200px);
+        }
+
+        .canvas-section {
+            flex: 2;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
         }
 
         canvas {
-            display: block;
+            width: 100% !important;
+            height: auto !important;
+            border-radius: 4px;
         }
 
-        #controls {
-            position: absolute;
-            bottom: 20px; /* Mặc định cho desktop */
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: var(--control-bg);
-            border: 1px solid var(--border-color);
+        .controls-section {
+            flex: 1;
+            background: white;
             border-radius: 8px;
-            padding: 10px 20px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .controls-section h3 {
+            color: #0d6efd;
+            margin-bottom: 1.5rem;
+            font-size: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #0d6efd;
+        }
+
+        /* Form Controls */
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .input-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #dee2e6;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0d6efd;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .input-group input[type="range"]::-webkit-slider-thumb:hover {
+            background: #0b5ed7;
+        }
+
+        .value-display {
+            display: inline-block;
+            background: #f8f9fa;
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #0d6efd;
+            margin-left: 0.5rem;
+        }
+
+        .control-buttons {
             display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background: #0d6efd;
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #0b5ed7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #0d6efd;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        .info-box h4 {
+            color: #0d6efd;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1.5rem;
+        }
+
+        .toc h4 {
+            font-size: 0.9rem;
+            color: #495057;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc li {
+            padding: 0.25rem 0;
+        }
+
+        .toc a {
+            color: #0d6efd;
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: color 0.2s;
+        }
+
+        .toc a:hover {
+            color: #0b5ed7;
+        }
+
+        /* View Counter Badge */
+        .view-counter {
+            display: inline-flex;
             align-items: center;
-            gap: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(5px); /* Hiệu ứng mờ nền */
-        }
-        
-        #controls button, #controls label, #controls span {
-            color: var(--text-color);
-            font-size: 14px;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
         }
 
-        #controls button {
-            background-color: #f8f9fa; /* Nền nút nhạt */
-            color: #000;
-            border: 1px solid #dee2e6;
-            border-radius: 5px;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-weight: 600; /* Đậm hơn một chút */
-            transition: background-color 0.2s, color 0.2s;
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .tool-container {
+                flex-direction: column;
+            }
+
+            .controls-section {
+                max-height: none;
+                position: static;
+            }
+
+            canvas {
+                max-height: 500px;
+            }
         }
 
-        #controls button:hover {
-            background-color: #e9ecef;
-        }
-
-        /* Nút Play/Pause có màu chính */
-        #playPauseBtn {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            color: #ffffff;
-        }
-        #playPauseBtn:hover {
-            background-color: #0b5ed7;
-        }
-
-
-        #controls input[type="range"] {
-            cursor: pointer;
-            width: 200px;
-        }
-
-        /* === BẮT ĐẦU CSS RESPONSIVE === */
         @media (max-width: 768px) {
-            #controls {
-                /* Di chuyển lên trên cùng cho di động */
-                top: 20px; 
-                bottom: auto;
-                left: 15px;
-                right: 15px;
-                transform: none;
-                flex-direction: column; /* Xếp chồng theo chiều dọc */
-                padding: 15px;
-                gap: 10px;
-                align-items: stretch; /* Căn chỉnh các phần tử */
+            .tool-title {
+                font-size: 1.5rem;
             }
 
-            #controls input[type="range"] {
-                width: 100%; /* Thanh trượt chiếm 100% chiều rộng */
+            .tool-meta {
+                flex-direction: column;
+                gap: 0.5rem;
             }
 
-            #controls .control-group {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+            .tool-container {
+                padding: 1rem 0.5rem;
+                gap: 1rem;
             }
         }
-        /* === KẾT THÚC CSS RESPONSIVE === */
-
     </style>
 </head>
 <body>
-    <canvas id="taylorCanvas"></canvas>
-    <div id="controls">
-        <div class="control-group">
-            <button id="playPauseBtn">Play</button>
-            <button id="resetBtn">Reset</button>
+    <!-- Tool Header -->
+    <div class="tool-header">
+        <div class="container">
+            <h1 class="tool-title">Trực quan hóa Chuỗi Taylor cho sin(x)</h1>
+            <div class="tool-meta">
+                <span>
+                    <i class="far fa-calendar-alt"></i>
+                    Ngày cập nhật: 05/12/2025
+                </span>
+                <span>
+                    <i class="far fa-user"></i>
+                    Tác giả: Hydro Structure AI
+                </span>
+                <span class="view-counter">
+                    <i class="far fa-eye"></i>
+                    <span id="view-count">Đang tải...</span> lượt xem
+                </span>
+            </div>
         </div>
-        <div class="control-group">
-            <label for="degreeSlider">Số hạng (n):</label>
-            <span id="degreeLabel">0</span>
-        </div>
-        <input type="range" id="degreeSlider" min="0" max="15" value="0">
     </div>
 
-<script>
-    (() => {
-        // --- DOM Elements ---
-        const canvasEl = document.getElementById('taylorCanvas');
-        const ctx = canvasEl.getContext('2d');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const resetBtn = document.getElementById('resetBtn');
-        const degreeSlider = document.getElementById('degreeSlider');
-        const degreeLabel = document.getElementById('degreeLabel');
-        
-        // Đọc các biến CSS để dùng trong Canvas
-        const style = getComputedStyle(document.documentElement);
-        const Colors = {
-            Background: style.getPropertyValue('--background-color'),
-            Text: style.getPropertyValue('--text-color'),
-            Axis: style.getPropertyValue('--axis-color'),
-            Primary: style.getPropertyValue('--primary-color'),
-            Secondary: style.getPropertyValue('--secondary-color'),
-            ControlBg: style.getPropertyValue('--control-bg'),
-            Border: style.getPropertyValue('--border-color')
-        };
-        
-        // --- Application State ---
-        const State = {
-            degree: 0,
-            maxDegree: 15,
-            isPaused: true,
-            animationTimer: null,
-            animationInterval: 1500, // ms
-            mouse: { x: 0, y: 0 },
-            scale: 50, // Sẽ được cập nhật trong setup()
-        };
+    <!-- Main Content: 2/3 Canvas + 1/3 Controls -->
+    <div class="tool-container">
+        <!-- Canvas Section (2/3) -->
+        <div class="canvas-section">
+            <div id="canvas-container"></div>
+        </div>
 
-        // --- Canvas & Coordinate Management ---
-        const Canvas = {
-            width: 0,
-            height: 0,
-            origin: { x: 0, y: 0 },
+        <!-- Controls Section (1/3) -->
+        <div class="controls-section">
+            <!-- Table of Contents -->
+            <div class="toc">
+                <h4><i class="fas fa-list"></i> Mục lục</h4>
+                <ul>
+                    <li><a href="#controls">Điều khiển</a></li>
+                    <li><a href="#parameters">Thông số</a></li>
+                    <li><a href="#formula">Công thức</a></li>
+                </ul>
+            </div>
 
-            setup() {
-                this.width = canvasEl.width = window.innerWidth;
-                this.height = canvasEl.height = window.innerHeight;
-                this.origin.x = this.width / 2;
-                this.origin.y = this.height / 2;
-                degreeSlider.max = State.maxDegree;
-                
-                // Cập nhật tỷ lệ (scale) cho responsive
-                State.scale = (this.width < 768) ? 35 : 50;
-            },
-            clear() {
-                // Sửa: Dùng biến CSS
-                ctx.fillStyle = Colors.Background;
-                ctx.fillRect(0, 0, this.width, this.height);
-            },
-            mapToPixels(mathX, mathY) {
-                const pixelX = this.origin.x + mathX * State.scale;
-                const pixelY = this.origin.y - mathY * State.scale; // Y is inverted
-                return { x: pixelX, y: pixelY };
-            },
-            mapToMath(pixelX, pixelY) {
-                const mathX = (pixelX - this.origin.x) / State.scale;
-                const mathY = (this.origin.y - pixelY) / State.scale;
-                return { x: mathX, y: mathY };
-            }
-        };
+            <h3 id="controls"><i class="fas fa-sliders-h"></i> Điều khiển</h3>
 
-        // --- Mathematical Functions (Không đổi) ---
-        const MathFuncs = {
-            factorialCache: [1],
-            factorial(n) {
-                if (n < 0) return NaN;
-                if (n < this.factorialCache.length) return this.factorialCache[n];
-                let result = this.factorialCache[this.factorialCache.length - 1];
-                for (let i = this.factorialCache.length; i <= n; i++) {
-                    result *= i;
-                    this.factorialCache.push(result);
-                }
-                return result;
-            },
-            taylorPolynomial(x, n) { // sin(x)
-                let sum = 0;
-                for (let i = 0; i < n; i++) { // n là số lượng số hạng
-                    let term = (Math.pow(-1, i) / this.factorial(2 * i + 1)) * Math.pow(x, 2 * i + 1);
-                    sum += term;
-                }
-                return sum;
-            }
-        };
+            <!-- Number of Terms -->
+            <div class="input-group">
+                <label for="sliderTerms">
+                    Số hạng chuỗi Taylor (n):
+                    <span class="value-display" id="valueTerms">5</span>
+                </label>
+                <input type="range" id="sliderTerms" min="1" max="20" step="1" value="5">
+            </div>
 
-        // --- Drawing & UI Rendering ---
-        const Graph = {
-            drawAxes() {
-                // Sửa: Dùng biến CSS
-                ctx.strokeStyle = Colors.Axis;
-                ctx.fillStyle = Colors.Axis;
-                ctx.lineWidth = 1;
-                ctx.font = '12px "Poppins", sans-serif';
-                
-                const tickSize = 5;
-                const xMin = -Canvas.origin.x / State.scale;
-                const xMax = (Canvas.width - Canvas.origin.x) / State.scale;
-                const yMin = -(Canvas.height - Canvas.origin.y) / State.scale;
-                const yMax = Canvas.origin.y / State.scale;
+            <!-- X Value -->
+            <div class="input-group">
+                <label for="sliderX">
+                    Giá trị x (điểm tính toán):
+                    <span class="value-display" id="valueX">0.0</span>
+                </label>
+                <input type="range" id="sliderX" min="-6.28" max="6.28" step="0.1" value="0">
+            </div>
 
-                // Axes
-                ctx.beginPath();
-                ctx.moveTo(0, Canvas.origin.y); ctx.lineTo(Canvas.width, Canvas.origin.y);
-                ctx.moveTo(Canvas.origin.x, 0); ctx.lineTo(Canvas.origin.x, Canvas.height);
-                ctx.stroke();
+            <!-- Control Buttons -->
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="playPauseBtn">
+                    <i class="fas fa-play"></i> Phát
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Đặt lại
+                </button>
+            </div>
 
-                // X-axis Ticks
-                for (let i = Math.floor(xMin); i <= xMax; i++) {
-                    if (i === 0) continue;
-                    const pos = Canvas.mapToPixels(i, 0);
-                    ctx.beginPath();
-                    ctx.moveTo(pos.x, pos.y - tickSize); ctx.lineTo(pos.x, pos.y + tickSize);
-                    ctx.stroke();
-                    ctx.fillText(i, pos.x - 3, pos.y + 15);
-                }
-                // Y-axis Ticks
-                for (let i = Math.floor(yMin); i <= yMax; i++) {
-                    if (i === 0) continue;
-                    const pos = Canvas.mapToPixels(0, i);
-                    ctx.beginPath();
-                    ctx.moveTo(pos.x - tickSize, pos.y); ctx.lineTo(pos.x + tickSize, pos.y);
-                    ctx.stroke();
-                    ctx.fillText(i, pos.x + 10, pos.y + 4);
-                }
-            },
-            plotFunction(func, color, lineWidth, isDashed = false) {
-                ctx.strokeStyle = color;
-                ctx.lineWidth = lineWidth;
-                ctx.beginPath();
-                if (isDashed) ctx.setLineDash([5, 8]);
+            <!-- Info Box -->
+            <div class="info-box" id="formula">
+                <h4><i class="fas fa-calculator"></i> Công thức Chuỗi Taylor</h4>
+                <p>
+                    Chuỗi Taylor của <strong>sin(x)</strong> tại x = 0:
+                </p>
+                <p style="margin-top: 0.5rem; font-family: 'Courier New', monospace; background: white; padding: 0.5rem; border-radius: 4px;">
+                    sin(x) ≈ x - x³/3! + x⁵/5! - x⁷/7! + ...
+                </p>
+                <p style="margin-top: 0.5rem;">
+                    Khi tăng số hạng <strong>n</strong>, xấp xỉ càng chính xác hơn.
+                </p>
+            </div>
+        </div>
+    </div>
 
-                const step = 1 / State.scale;
-                const startX = -Canvas.origin.x / State.scale;
-                const endX = (Canvas.width - Canvas.origin.x) / State.scale;
+    <!-- P5.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    
+    <!-- Taylor Series Logic -->
+    <script>
+        let numTerms = 5;
+        let xValue = 0;
+        let isAnimating = false;
+        let animationX = 0;
 
-                for (let x = startX; x <= endX; x += step) {
-                    const y = func(x);
-                    const { x: px, y: py } = Canvas.mapToPixels(x, y);
-                    if (py > -50 && py < Canvas.height + 50) {
-                        (x === startX) ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-                    }
-                }
-                ctx.stroke();
-                if (isDashed) ctx.setLineDash([]);
-            }
-        };
-        
-        const UI = {
-            drawTextPanel(lines, x, y, padding = 10) {
-                ctx.font = '16px "Courier New", monospace';
-                const lineHeight = 20;
-                const maxWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
-                
-                // Sửa: Dùng biến CSS
-                ctx.fillStyle = Colors.ControlBg;
-                ctx.strokeStyle = Colors.Border;
-                ctx.lineWidth = 1;
+        function setup() {
+            let canvas = createCanvas(windowWidth * 0.6, windowHeight * 0.7);
+            canvas.parent('canvas-container');
+        }
 
-                ctx.beginPath();
-                ctx.roundRect(x, y, maxWidth + 2 * padding, lines.length * lineHeight + 2 * padding, 5);
-                ctx.fill();
-                ctx.stroke();
-
-                // Sửa: Dùng biến CSS
-                ctx.fillStyle = Colors.Text;
-                ctx.textAlign = 'left';
-                lines.forEach((line, index) => {
-                    ctx.fillText(line, x + padding, y + padding + (index + 1) * lineHeight - 5);
-                });
-            },
+        function draw() {
+            background(255);
             
-            updateControls() {
-                playPauseBtn.textContent = State.isPaused ? 'Play' : 'Pause';
-                degreeSlider.value = State.degree;
-                degreeLabel.textContent = State.degree;
-            },
-
-            render() {
-                // === SỬA ĐỔI: Logic Responsive cho Vị trí ===
-                const isMobile = Canvas.width < 768;
-                const titleFontSize = isMobile ? 18 : 24;
-                const titleY = isMobile ? 150 : 40; // Dịch xuống dưới thanh điều khiển mobile
-                const panelY = isMobile ? 170 : 60; // Dịch xuống dưới thanh điều khiển mobile
-
-                // Title
-                ctx.fillStyle = Colors.Text;
-                ctx.font = `bold ${titleFontSize}px 'Poppins', sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.fillText("Trực quan hóa chuỗi Taylor cho sin(x)", Canvas.width / 2, titleY);
-                
-                // Equation Box
-                let equationLines = [`T(x) ˜ x`];
-                if (State.degree > 1) equationLines[0] += ` - x³/3!`;
-                if (State.degree > 2) equationLines[0] += ` + x⁵/5!`;
-                if (State.degree > 3) {
-                    const finalTermN = (State.degree - 1) * 2 + 1;
-                    equationLines[0] += ` + ... + (-1)^${State.degree-1} * x^${finalTermN}/${finalTermN}!`;
-                }
-                if (State.degree == 0) equationLines = [`T(x) ˜ 0`];
-
-                UI.drawTextPanel(equationLines, 20, panelY);
-            }
-        };
-
-        // --- Animation & Control Logic (Không đổi) ---
-        const App = {
-            togglePlayPause() {
-                State.isPaused = !State.isPaused;
-                if (!State.isPaused && State.degree < State.maxDegree) {
-                    this.startTimer();
-                } else {
-                    this.stopTimer();
-                }
-                UI.updateControls();
-            },
-            reset() {
-                State.degree = 0;
-                State.isPaused = false;
-                this.startTimer();
-                UI.updateControls();
-            },
-            setDegree(newDegree) {
-                State.degree = parseInt(newDegree, 10);
-                if (!State.isPaused) {
-                    this.stopTimer();
-                    if (State.degree < State.maxDegree) this.startTimer();
-                }
-                UI.updateControls();
-            },
-            startTimer() {
-                this.stopTimer(); 
-                State.animationTimer = setInterval(() => {
-                    if (State.degree < State.maxDegree) {
-                        State.degree++;
-                        UI.updateControls();
-                    } else {
-                        this.stopTimer();
-                        State.isPaused = true;
-                        UI.updateControls();
-                    }
-                }, State.animationInterval);
-            },
-            stopTimer() {
-                clearInterval(State.animationTimer);
-                State.animationTimer = null;
-            },
+            let scale = width / (4 * PI);
+            let originX = width / 2;
+            let originY = height / 2;
             
-            mainLoop() {
-                Canvas.clear();
-                Graph.drawAxes();
-                
-                // Sửa: Plot sin(x) (Dùng biến CSS --secondary-color)
-                Graph.plotFunction(Math.sin, Colors.Secondary, 2, true);
-                
-                // Sửa: Plot Taylor (Dùng biến CSS --primary-color)
-                Graph.plotFunction((x) => MathFuncs.taylorPolynomial(x, State.degree), Colors.Primary, 3);
-                
-                UI.render();
-                requestAnimationFrame(this.mainLoop.bind(this));
-            },
-
-            init() {
-                Canvas.setup();
-                
-                const urlParams = new URLSearchParams(window.location.search);
-                const nFromUrl = parseInt(urlParams.get('n'));
-
-                if (!isNaN(nFromUrl) && nFromUrl >= 0 && nFromUrl <= State.maxDegree) {
-                    State.degree = nFromUrl;
-                } else {
-                    State.degree = 1;
-                }
-                
-                UI.updateControls();
-                
-                window.addEventListener('resize', () => Canvas.setup());
-                playPauseBtn.addEventListener('click', () => this.togglePlayPause());
-                resetBtn.addEventListener('click', () => this.reset());
-                degreeSlider.addEventListener('input', (e) => this.setDegree(e.target.value));
-                canvasEl.addEventListener('mousemove', (e) => {
-                    State.mouse.x = e.clientX;
-                    State.mouse.y = e.clientY;
-                });
-                
-                this.mainLoop();
+            // Draw axes
+            stroke(200);
+            strokeWeight(1);
+            line(0, originY, width, originY);
+            line(originX, 0, originX, height);
+            
+            // Draw sin(x) in gray
+            stroke(108, 117, 125);
+            strokeWeight(2);
+            noFill();
+            beginShape();
+            for (let x = -width/2; x < width/2; x += 2) {
+                let realX = x / scale;
+                let y = sin(realX) * scale;
+                vertex(originX + x, originY - y);
             }
-        };
+            endShape();
+            
+            // Draw Taylor approximation in blue
+            stroke(13, 110, 253);
+            strokeWeight(3);
+            beginShape();
+            for (let x = -width/2; x < width/2; x += 2) {
+                let realX = x / scale;
+                let y = taylorSin(realX, numTerms) * scale;
+                if (abs(y) < height) {
+                    vertex(originX + x, originY - y);
+                }
+            }
+            endShape();
+            
+            // Draw current point
+            if (isAnimating) {
+                animationX += 0.02;
+                if (animationX > TWO_PI) animationX = -TWO_PI;
+                xValue = animationX;
+                document.getElementById('valueX').textContent = xValue.toFixed(2);
+                document.getElementById('sliderX').value = xValue;
+            }
+            
+            let pointX = originX + xValue * scale;
+            let pointY = originY - taylorSin(xValue, numTerms) * scale;
+            fill(220, 53, 69);
+            noStroke();
+            circle(pointX, pointY, 12);
+            
+            // Draw error line
+            let actualY = originY - sin(xValue) * scale;
+            stroke(220, 53, 69, 100);
+            strokeWeight(2);
+            line(pointX, pointY, pointX, actualY);
+            
+            // Draw labels
+            fill(0);
+            noStroke();
+            textSize(12);
+            textAlign(LEFT, TOP);
+            text('sin(x)', 20, 20);
+            fill(13, 110, 253);
+            text(`Taylor (n=${numTerms})`, 20, 40);
+        }
 
-        App.init();
+        function taylorSin(x, n) {
+            let sum = 0;
+            for (let i = 0; i < n; i++) {
+                let term = pow(-1, i) * pow(x, 2*i + 1) / factorial(2*i + 1);
+                sum += term;
+            }
+            return sum;
+        }
 
-    })();
-</script>
+        function factorial(n) {
+            if (n <= 1) return 1;
+            return n * factorial(n - 1);
+        }
+
+        function windowResized() {
+            resizeCanvas(windowWidth * 0.6, windowHeight * 0.7);
+        }
+
+        // Controls
+        document.getElementById('sliderTerms').addEventListener('input', (e) => {
+            numTerms = parseInt(e.target.value);
+            document.getElementById('valueTerms').textContent = numTerms;
+        });
+
+        document.getElementById('sliderX').addEventListener('input', (e) => {
+            xValue = parseFloat(e.target.value);
+            document.getElementById('valueX').textContent = xValue.toFixed(2);
+            isAnimating = false;
+        });
+
+        document.getElementById('playPauseBtn').addEventListener('click', (e) => {
+            isAnimating = !isAnimating;
+            e.target.innerHTML = isAnimating ? 
+                '<i class="fas fa-pause"></i> Tạm dừng' : 
+                '<i class="fas fa-play"></i> Phát';
+        });
+
+        document.getElementById('resetBtn').addEventListener('click', () => {
+            numTerms = 5;
+            xValue = 0;
+            isAnimating = false;
+            animationX = 0;
+            document.getElementById('sliderTerms').value = 5;
+            document.getElementById('sliderX').value = 0;
+            document.getElementById('valueTerms').textContent = 5;
+            document.getElementById('valueX').textContent = '0.0';
+        });
+
+        // View counter (mock)
+        setTimeout(() => {
+            document.getElementById('view-count').textContent = Math.floor(Math.random() * 1000 + 500);
+        }, 500);
+    </script>
 </body>
 </html>
