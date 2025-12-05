@@ -544,16 +544,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load WASM Module with cache-busting and proper async initialization
     const wasmVersion = '1.0.0'; // Update this when you update WASM
-    SheetPileFEM_Module({
-        locateFile: (path) => {
-            if (path.endsWith('.wasm')) {
-                return `${path}?v=${wasmVersion}`; // Cache-busting
-            }
-            return path;
-        },
-        onRuntimeInitialized: function() {
-            wasmModule = this;
+    
+    // Wrap in try-catch to prevent browser freeze
+    try {
+        SheetPileFEM_Module({
+            locateFile: (path) => {
+                if (path.endsWith('.wasm')) {
+                    return `${path}?v=${wasmVersion}`; // Cache-busting
+                }
+                return path;
+            },
+            print: (text) => console.log('[WASM]', text),
+            printErr: (text) => console.error('[WASM Error]', text)
+        }).then(Module => {
+            wasmModule = Module;
             console.log("✅ Sheet Pile FEM WASM Module Fully Initialized");
+            console.log("✅ Available functions:", Object.keys(Module).filter(k => typeof Module[k] === 'function'));
             
             // Hide loading overlay
             if (loadingOverlay) {
@@ -573,28 +579,39 @@ document.addEventListener('DOMContentLoaded', () => {
             if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
             if (wasmSpinner) wasmSpinner.style.display = 'none';
             if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
-        }
-    }).catch(e => {
-        console.error("❌ Error loading WASM module:", e);
+            
+        }).catch(e => {
+            console.error("❌ Error loading WASM module:", e);
+            console.error("❌ Error stack:", e.stack);
+            
+            // Hide loading overlay
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+            
+            if (runButton) {
+                runButton.textContent = "❌ Lỗi WASM";
+                runButton.classList.remove('btn-success');
+                runButton.classList.add('btn-danger');
+                runButton.disabled = true;
+            }
+
+            if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
+            if (wasmSpinner) wasmSpinner.style.display = 'none';
+            if (wasmStatusText) wasmStatusText.innerHTML = `❌ Lỗi tải WASM!<br><small>${e.message}</small>`;
+            
+            showError(`Không thể tải lõi tính toán (WASM): ${e.message}`);
+        });
+    } catch (syncError) {
+        console.error("❌ Synchronous error during WASM initialization:", syncError);
         
         // Hide loading overlay
         if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
         }
         
-        if (runButton) {
-            runButton.textContent = "❌ Lỗi WASM";
-            runButton.classList.remove('btn-success');
-            runButton.classList.add('btn-danger');
-            runButton.disabled = true;
-        }
-
-        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
-        if (wasmSpinner) wasmSpinner.style.display = 'none';
-        if (wasmStatusText) wasmStatusText.textContent = '❌ Lỗi tải WASM!';
-        
-        showError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
-    });
+        showError(`Lỗi khởi tạo WASM: ${syncError.message}`);
+    }
     
     // File Management Button Listeners
     const btnNew = document.getElementById('btn-new-file');

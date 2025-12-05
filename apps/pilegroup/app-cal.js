@@ -253,6 +253,155 @@ function updatePileCount() {
 }
 
 /**
+ * PILE MANAGEMENT FUNCTIONS
+ */
+
+/**
+ * Initialize Default 4 Piles (Rectangular Layout)
+ */
+function initializeDefaultPiles() {
+    const pileTableBody = document.getElementById('pile-table-body');
+    if (!pileTableBody) return;
+    
+    // Default 4 piles in rectangular layout: corners of a rectangle
+    // Assuming Bx=7m, By=9m, we place piles at corners with 1m margin
+    const defaultPiles = [
+        { x: -3.0, y: -4.0, fi: 0, psi: 0 },  // Bottom-left
+        { x: 3.0, y: -4.0, fi: 0, psi: 0 },   // Bottom-right
+        { x: -3.0, y: 4.0, fi: 0, psi: 0 },   // Top-left
+        { x: 3.0, y: 4.0, fi: 0, psi: 0 }     // Top-right
+    ];
+    
+    pileTableBody.innerHTML = '';
+    defaultPiles.forEach((pile, index) => {
+        addPileRow(index + 1, pile.x, pile.y, pile.fi, pile.psi);
+    });
+    
+    updatePileCount();
+}
+
+/**
+ * Add a single pile row to the table
+ */
+function addPileRow(id, x = 0, y = 0, fi = 0, psi = 0) {
+    const pileTableBody = document.getElementById('pile-table-body');
+    if (!pileTableBody) return;
+    
+    const newRow = pileTableBody.insertRow();
+    newRow.innerHTML = `
+        <td class="text-center fw-bold">${id}</td>
+        <td><input type="number" class="form-control" value="${x}" step="0.1"></td>
+        <td><input type="number" class="form-control" value="${y}" step="0.1"></td>
+        <td><input type="number" class="form-control" value="${fi}" step="0.01"></td>
+        <td><input type="number" class="form-control" value="${psi}" step="0.01"></td>
+    `;
+}
+
+/**
+ * Add Pile Button Handler
+ */
+function handleAddPile() {
+    const pileTableBody = document.getElementById('pile-table-body');
+    const currentCount = pileTableBody.rows.length;
+    
+    // Check FREE tier restriction
+    const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
+    if (!isLicensed && currentCount >= 4) {
+        alert("⚠️ Phiên bản FREE chỉ cho phép tối đa 4 cọc.\n\nVui lòng nâng cấp lên PRO để sử dụng không giới hạn.");
+        document.getElementById('tab-license').click();
+        return;
+    }
+    
+    // Add new pile at origin with default values
+    addPileRow(currentCount + 1, 0, 0, 0, 0);
+    updatePileCount();
+}
+
+/**
+ * Remove Last Pile Button Handler
+ */
+function handleRemovePile() {
+    const pileTableBody = document.getElementById('pile-table-body');
+    const currentCount = pileTableBody.rows.length;
+    
+    if (currentCount <= 1) {
+        alert("⚠️ Phải có ít nhất 1 cọc.");
+        return;
+    }
+    
+    pileTableBody.deleteRow(currentCount - 1);
+    updatePileCount();
+}
+
+/**
+ * Load Sample Data (24 Piles)
+ */
+function loadSampleData() {
+    const pileTableBody = document.getElementById('pile-table-body');
+    if (!pileTableBody) return;
+    
+    // Check if user wants to replace existing data
+    if (pileTableBody.rows.length > 0) {
+        if (!confirm("Tải dữ liệu mẫu 24 cọc?\n\nDữ liệu hiện tại sẽ bị thay thế.")) {
+            return;
+        }
+    }
+    
+    // Sample 24-pile configuration (6x4 grid)
+    // Assuming Bx=7m, By=9m
+    // Spacing: ~2m in X direction, ~2.4m in Y direction
+    const sample24Piles = [
+        // Row 1 (Y = -3.6)
+        { x: -5.0, y: -3.6, fi: 0, psi: 0 },
+        { x: -3.0, y: -3.6, fi: 0, psi: 0 },
+        { x: -1.0, y: -3.6, fi: 0, psi: 0 },
+        { x: 1.0, y: -3.6, fi: 0, psi: 0 },
+        { x: 3.0, y: -3.6, fi: 0, psi: 0 },
+        { x: 5.0, y: -3.6, fi: 0, psi: 0 },
+        
+        // Row 2 (Y = -1.2)
+        { x: -5.0, y: -1.2, fi: 0, psi: 0 },
+        { x: -3.0, y: -1.2, fi: 0, psi: 0 },
+        { x: -1.0, y: -1.2, fi: 0, psi: 0 },
+        { x: 1.0, y: -1.2, fi: 0, psi: 0 },
+        { x: 3.0, y: -1.2, fi: 0, psi: 0 },
+        { x: 5.0, y: -1.2, fi: 0, psi: 0 },
+        
+        // Row 3 (Y = 1.2)
+        { x: -5.0, y: 1.2, fi: 0, psi: 0 },
+        { x: -3.0, y: 1.2, fi: 0, psi: 0 },
+        { x: -1.0, y: 1.2, fi: 0, psi: 0 },
+        { x: 1.0, y: 1.2, fi: 0, psi: 0 },
+        { x: 3.0, y: 1.2, fi: 0, psi: 0 },
+        { x: 5.0, y: 1.2, fi: 0, psi: 0 },
+        
+        // Row 4 (Y = 3.6)
+        { x: -5.0, y: 3.6, fi: 0, psi: 0 },
+        { x: -3.0, y: 3.6, fi: 0, psi: 0 },
+        { x: -1.0, y: 3.6, fi: 0, psi: 0 },
+        { x: 1.0, y: 3.6, fi: 0, psi: 0 },
+        { x: 3.0, y: 3.6, fi: 0, psi: 0 },
+        { x: 5.0, y: 3.6, fi: 0, psi: 0 }
+    ];
+    
+    // Clear and load
+    pileTableBody.innerHTML = '';
+    sample24Piles.forEach((pile, index) => {
+        addPileRow(index + 1, pile.x, pile.y, pile.fi, pile.psi);
+    });
+    
+    updatePileCount();
+    
+    // Inform user about FREE tier limitation
+    const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
+    if (!isLicensed) {
+        alert("✅ Đã tải 24 cọc mẫu!\n\n⚠️ Lưu ý: Phiên bản FREE giới hạn 4 cọc cho tính toán.\nDữ liệu mẫu này chỉ để tham khảo. Kích hoạt PRO để phân tích 24 cọc.");
+    } else {
+        alert("✅ Đã tải 24 cọc mẫu thành công!");
+    }
+}
+
+/**
  * MAIN EXECUTION FLOW: Run Analysis
  * Follows chain: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
  */
@@ -327,11 +476,10 @@ function newFile() {
     document.getElementById('input-My').value = '361.9';
     document.getElementById('input-Mz').value = '0.0';
     
-    // Clear pile table
-    document.getElementById('pile-table-body').innerHTML = '';
-    updatePileCount();
+    // Initialize with 4 default piles (FREE tier default)
+    initializeDefaultPiles();
     
-    alert("✅ File mới đã được tạo!");
+    alert("✅ File mới đã được tạo với 4 cọc mặc định!");
 }
 
 /**
@@ -372,21 +520,24 @@ function openFile() {
 function parsePileGroupCSV(content) {
     const lines = content.split('\n').map(line => line.trim()).filter(line => line && !line.startsWith('#'));
     
+    // Clear existing pile table first
+    const pileTableBody = document.getElementById('pile-table-body');
+    pileTableBody.innerHTML = '';
+    
+    let pileCounter = 0;
+    
     lines.forEach(line => {
         const parts = line.split(',').map(s => s.trim());
         const key = parts[0];
         
         // Parse pile data
         if (key.startsWith('PILE_')) {
-            const pileTableBody = document.getElementById('pile-table-body');
-            const rowCount = pileTableBody.rows.length + 1;
-            const newRow = pileTableBody.insertRow();
-            newRow.innerHTML = `
-                <td class="text-center fw-bold">${rowCount}</td>
-                <td><input type="number" class="form-control" value="${parts[1] || 0}" step="0.1"></td>
-                <td><input type="number" class="form-control" value="${parts[2] || 0}" step="0.1"></td>
-                <td><input type="number" class="form-control" value="${parts[3] || 0}" step="0.01"></td>
-                <td><input type="number" class="form-control" value="${parts[4] || 0}" step="0.01"></td>`;
+            pileCounter++;
+            const x = parseFloat(parts[1]) || 0;
+            const y = parseFloat(parts[2]) || 0;
+            const fi = parseFloat(parts[3]) || 0;
+            const psi = parseFloat(parts[4]) || 0;
+            addPileRow(pileCounter, x, y, fi, psi);
         }
         // Parse other inputs
         else {
@@ -396,7 +547,14 @@ function parsePileGroupCSV(content) {
     });
     
     updatePileCount();
-    alert("✅ File CSV đã được tải!");
+    
+    // Check FREE tier and warn if needed
+    const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
+    if (!isLicensed && pileCounter > 4) {
+        alert(`✅ File CSV đã được tải với ${pileCounter} cọc!\n\n⚠️ Lưu ý: Phiên bản FREE giới hạn 4 cọc cho tính toán.\nKích hoạt PRO để phân tích tất cả ${pileCounter} cọc.`);
+    } else {
+        alert(`✅ File CSV đã được tải với ${pileCounter} cọc!`);
+    }
 }
 
 /**
@@ -559,16 +717,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load WASM Module with cache-busting and proper async initialization
     const wasmVersion = '1.0.0'; // Update this when you update WASM
-    createPileGroupModule({
-        locateFile: (path) => {
-            if (path.endsWith('.wasm')) {
-                return `${path}?v=${wasmVersion}`; // Cache-busting
-            }
-            return path;
-        },
-        onRuntimeInitialized: function() {
-            wasmModule = this;
+    
+    // Wrap in try-catch to prevent browser freeze
+    try {
+        createPileGroupModule({
+            locateFile: (path) => {
+                if (path.endsWith('.wasm')) {
+                    return `${path}?v=${wasmVersion}`; // Cache-busting
+                }
+                return path;
+            },
+            print: (text) => console.log('[WASM]', text),
+            printErr: (text) => console.error('[WASM Error]', text)
+        }).then(Module => {
+            wasmModule = Module;
             console.log("✅ Pile Group WASM Module Fully Initialized");
+            console.log("✅ Available functions:", Object.keys(Module).filter(k => typeof Module[k] === 'function'));
             
             // Hide loading overlay
             if (loadingOverlay) {
@@ -588,28 +752,39 @@ document.addEventListener('DOMContentLoaded', () => {
             if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
             if (wasmSpinner) wasmSpinner.style.display = 'none';
             if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
-        }
-    }).catch(e => {
-        console.error("❌ Error loading WASM module:", e);
+            
+        }).catch(e => {
+            console.error("❌ Error loading WASM module:", e);
+            console.error("❌ Error stack:", e.stack);
+            
+            // Hide loading overlay
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
+            
+            if (runButton) {
+                runButton.textContent = "❌ Lỗi WASM";
+                runButton.classList.remove('btn-success');
+                runButton.classList.add('btn-danger');
+                runButton.disabled = true;
+            }
+
+            if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
+            if (wasmSpinner) wasmSpinner.style.display = 'none';
+            if (wasmStatusText) wasmStatusText.innerHTML = `❌ Lỗi tải WASM!<br><small>${e.message}</small>`;
+            
+            showError(`Không thể tải lõi tính toán (WASM): ${e.message}`);
+        });
+    } catch (syncError) {
+        console.error("❌ Synchronous error during WASM initialization:", syncError);
         
         // Hide loading overlay
         if (loadingOverlay) {
             loadingOverlay.style.display = 'none';
         }
         
-        if (runButton) {
-            runButton.textContent = "❌ Lỗi WASM";
-            runButton.classList.remove('btn-success');
-            runButton.classList.add('btn-danger');
-            runButton.disabled = true;
-        }
-
-        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
-        if (wasmSpinner) wasmSpinner.style.display = 'none';
-        if (wasmStatusText) wasmStatusText.textContent = '❌ Lỗi tải WASM!';
-        
-        showError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
-    });
+        showError(`Lỗi khởi tạo WASM: ${syncError.message}`);
+    }
     
     // File Management Button Listeners
     const btnNew = document.getElementById('btn-new-file');
@@ -619,4 +794,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnNew) btnNew.addEventListener('click', newFile);
     if (btnOpen) btnOpen.addEventListener('click', openFile);
     if (btnSave) btnSave.addEventListener('click', saveFile);
+    
+    // Pile Management Button Listeners
+    const btnAddPile = document.getElementById('add-pile-row');
+    const btnRemovePile = document.getElementById('remove-pile-row');
+    const btnLoadSample = document.getElementById('load-sample-data');
+    
+    if (btnAddPile) btnAddPile.addEventListener('click', handleAddPile);
+    if (btnRemovePile) btnRemovePile.addEventListener('click', handleRemovePile);
+    if (btnLoadSample) btnLoadSample.addEventListener('click', loadSampleData);
+    
+    // Initialize with 4 default piles on page load
+    initializeDefaultPiles();
 });
