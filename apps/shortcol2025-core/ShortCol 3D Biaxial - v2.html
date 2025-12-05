@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortCol 3D - Cột Lệch Tâm Xiên</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; }
+        .tab-active { border-bottom: 2px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .tab-inactive { color: #6b7280; }
+        .tab-inactive:hover { color: #374151; }
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        .loading-spinner {
+            border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%;
+            width: 20px; height: 20px; animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
+
+        // --- 1. CORE MATH & UTILS ---
+
+        const generateConcreteFibers = (type, B, H, D) => {
+            const fibers = [];
+            const nx = 12; // Tăng độ mịn lưới sợi
+            const ny = 12;
+            
+            if (type === 'rect') {
+                const dx = B / nx;
+                const dy = H / ny;
+                const dA = dx * dy;
+                for (let i = 0; i < nx; i++) {
+                    for (let j = 0; j < ny; j++) {
+                        fibers.push({
+                            x: -B/2 + (i + 0.5) * dx,
+                            y: -H/2 + (j + 0.5) * dy,
+                            dA: dA
+                        });
+                    }
+                }
+            } else {
+                const nr = 8;
+                const ntheta = 16;
+                const R = D/2;
+                for (let i = 0; i < nr; i++) {
+                    const r_inner = (i) * R / nr;
+                    const r_outer = (i + 1) * R / nr;
+                    const r_center = (r_inner + r_outer) / 2;
+                    const dA = Math.PI * (r_outer**2 - r_inner**2) / ntheta;
+                    
+                    for (let j = 0; j < ntheta; j++) {
+                        const theta = (j * 2 * Math.PI) / ntheta;
+                        fibers.push({
+                            x: r_center * Math.cos(theta),
+                            y: r_center * Math.sin(theta),
+                            dA: dA
+                        });
+                    }
+                }
+            }
+            return fibers;
+        };
+
+        const generateRectLayoutEqual = (B, H, Cover, Nb, As) => {
+            const width = B - 2 * Cover;
+            const height = H - 2 * Cover;
+            if (Nb < 4) Nb = 4;
+            if (Nb % 2 !== 0) Nb += 1;
+            let Nb1 = Math.floor(((width) * (Nb + 2) + 2 * (height)) / 2 / (H + B - 4 * Cover));
+            if (Nb1 < 2) Nb1 = 2;
+            let Nbot = Nb1; let Ntop = Nb1;
+            let Nside = (Nb - Nbot - Ntop) / 2 + 2; 
+            if (!Number.isInteger(Nside) || Nside < 2) {
+                 Nside = Math.floor((Nb - 4) / 2) + 2; 
+                 const remainder = Nb - 2 * (Nside - 2);
+                 Nbot = Math.floor(remainder / 2);
+                 Ntop = remainder - Nbot;
+            }
+            const bars = [];
+            for (let i = 0; i < Nbot; i++) bars.push({ x: -width/2 + (width / (Math.max(Nbot - 1, 1))) * i, y: -height/2, As: As });
+            for (let i = 0; i < Ntop; i++) bars.push({ x: -width/2 + (width / (Math.max(Ntop - 1, 1))) * i, y: height/2, As: As });
+            if (Nside > 2) {
+                const sideSpacing = height / (Nside - 1);
+                for (let i = 1; i < Nside - 1; i++) {
+                    bars.push({ x: -width/2, y: -height/2 + sideSpacing * i, As: As });
+                    bars.push({ x: width/2, y: -height/2 + sideSpacing * i, As: As });
+                }
+            }
+            return bars;
+        };
+
+        const generateCircLayout = (D, Cover, Nb, As) => {
+            const R_bars = D / 2 - Cover;
+            const bars = [];
+            if (Nb < 4) Nb = 4;
+            for (let i = 0; i < Nb; i++) {
+                const angle = (2 * Math.PI / Nb) * i;
+                bars.push({ x: R_bars * Math.cos(angle), y: R_bars * Math.sin(angle), As: As });
+            }
+            return bars;
+        };
+
+        // --- 3. CORE TÍNH TOÁN 3D ---
+        
+        const calculate3DSurface = (type, B, H, D, fck, fyk, bars, standard) => {
+            const points = [];
+            const Es = 200000; 
+            
+            // Xử lý thông số theo tiêu chuẩn
+            let e_cu = 0.0035; // Default TCVN/Eurocode
+            let concrete_factor = 1.0; // Hệ số nhân cho fck (nếu là input đặc trưng)
+
+            // Lưu ý: Ứng dụng giả định người dùng nhập giá trị tính toán (Design Value) cho TCVN
+            // Với ACI, người dùng nhập f'c, fy -> cần nhân 0.85 cho bê tông
+            
+            if (standard === 'ACI') {
+                e_cu = 0.003;
+                concrete_factor = 0.85; // Stress block factor 0.85f'c
+            } else if (standard === 'EC2') {
+                e_cu = 0.0035; // C <= 50/60
+                concrete_factor = 1.0; // Giả định input là fcd = acc*fck/gamma
+            } else {
+                // TCVN 5574:2018
+                e_cu = 0.0035;
+                concrete_factor = 1.0; // Input là Rb
+            }
+
+            const Rb = fck * concrete_factor; 
+            const Rs = fyk; 
+
+            const concreteFibers = generateConcreteFibers(type, B, H, D);
+
+            const thetaSteps = 24; 
+            const cSteps = 15;     
+            const maxDim = type === 'rect' ? Math.sqrt(B*B + H*H) : D;
+            
+            for (let t = 0; t < thetaSteps; t++) {
+                const theta = (t * 2 * Math.PI) / thetaSteps;
+                const cosT = Math.cos(theta);
+                const sinT = Math.sin(theta);
+
+                let d_min = 99999, d_max = -99999;
+                
+                const bounds = type === 'rect' 
+                    ? [{x:-B/2,y:-H/2}, {x:B/2,y:-H/2}, {x:B/2,y:H/2}, {x:-B/2,y:H/2}] 
+                    : [{x:-D/2,y:0}, {x:D/2,y:0}, {x:0,y:-D/2}, {x:0,y:D/2}]; 
+                
+                if(type === 'circ') { d_min = -D/2; d_max = D/2; }
+                else {
+                    bounds.forEach(p => {
+                        const d = p.x * cosT + p.y * sinT;
+                        if(d < d_min) d_min = d;
+                        if(d > d_max) d_max = d;
+                    });
+                }
+
+                const c_values = [];
+                for (let k = 0.1; k <= 1.4; k += 1.4/cSteps) {
+                     c_values.push(k * maxDim);
+                }
+
+                c_values.forEach(c => {
+                    let Nu = 0;
+                    let Mux = 0;
+                    let Muy = 0;
+                    const NA_dist_from_origin = d_max - c;
+
+                    concreteFibers.forEach(fib => {
+                        const d_fib = fib.x * cosT + fib.y * sinT;
+                        let strain = e_cu * (d_fib - NA_dist_from_origin) / c;
+                        
+                        // Stress block đơn giản hóa cho Fiber (Tương đương Whitney)
+                        if (d_fib > (d_max - 0.8 * c)) {
+                            Nu += Rb * fib.dA;
+                            Mux += (Rb * fib.dA) * fib.y;
+                            Muy += (Rb * fib.dA) * fib.x;
+                        }
+                    });
+
+                    bars.forEach(bar => {
+                        const d_bar = bar.x * cosT + bar.y * sinT;
+                        let strain = 0;
+                        if (c === 0) strain = -0.01;
+                        else strain = e_cu * (d_bar - NA_dist_from_origin) / c;
+
+                        let stress = strain * Es;
+                        if (stress > Rs) stress = Rs;
+                        if (stress < -Rs) stress = -Rs;
+
+                        const Force = stress * bar.As;
+                        Nu += Force;
+                        Mux += Force * bar.y;
+                        Muy += Force * bar.x;
+                    });
+                    
+                    points.push({
+                        x: Mux / 1e6,
+                        y: Muy / 1e6,
+                        z: Nu / 1e3
+                    });
+                });
+            }
+
+            // Đóng nắp trên (Nén thuần túy) và dưới (Kéo thuần túy)
+            const Ag = type==='rect' ? B*H : Math.PI*D*D/4;
+            const Ast = bars.reduce((s,b)=>s+b.As,0);
+            
+            // Po ước lượng (tương đối) để đóng kín hình
+            const Po_comp = (0.85 * Rb * (Ag - Ast) + Rs * Ast)/1000; 
+            const Po_tens = (-Rs * Ast)/1000;
+            
+            for(let t=0; t<thetaSteps; t++) points.push({x:0, y:0, z: Po_comp});
+            for(let t=0; t<thetaSteps; t++) points.push({x:0, y:0, z: Po_tens});
+
+            return points;
+        };
+
+        const calculateSafetyFactor3D = (Pu, Mux, Muy, surfacePoints) => {
+            const distLoad = Math.sqrt(Pu*Pu + Mux*Mux + Muy*Muy);
+            if (distLoad < 0.1) return 999;
+            let bestDot = -1;
+            let bestPoint = null;
+
+            for (let p of surfacePoints) {
+                const distP = Math.sqrt(p.x*p.x + p.y*p.y + p.z*p.z);
+                if (distP < 1) continue;
+                const dot = (p.x * Mux + p.y * Muy + p.z * Pu) / (distP * distLoad);
+                if (dot > bestDot) {
+                    bestDot = dot;
+                    bestPoint = p;
+                }
+            }
+            
+            if (bestPoint && bestDot > 0.98) {
+                const distCap = Math.sqrt(bestPoint.x**2 + bestPoint.y**2 + bestPoint.z**2);
+                return (distCap / distLoad).toFixed(2);
+            }
+            return "N/A";
+        };
+
+        // --- COMPONENT CHÍNH ---
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('input');
+            const [isCalculating, setIsCalculating] = useState(false);
+            const [colType, setColType] = useState('rect'); 
+            
+            // Inputs
+            const [standard, setStandard] = useState('TCVN'); // TCVN, EC2, ACI
+            const [material, setMaterial] = useState({ fck: 14.5, fyk: 280 }); // fck=Rb, fyk=Rs
+            const [geometry, setGeometry] = useState({ B: 300, H: 400, D: 400, Cover: 30 });
+            const [reinforcement, setReinforcement] = useState({ Nb: 8, d_bar: 20, As_bar: 314 });
+            const [loads, setLoads] = useState([
+                { id: 1, Pu: 800, Mux: 60, Muy: 20, note: "TH1: Tĩnh+Hoạt" },
+            ]);
+
+            // Visual Options
+            const [chartOptions, setChartOptions] = useState({
+                color: '#3b82f6',
+                opacity: 0.3,
+                gridX: true,
+                gridY: true,
+                gridZ: true
+            });
+
+            // Calculated Data
+            const [barLayout, setBarLayout] = useState([]);
+            const [surfacePoints, setSurfacePoints] = useState([]);
+            const chartDivRef = useRef(null);
+
+            // Update Labels based on Standard
+            const getMaterialLabels = () => {
+                if (standard === 'ACI') return { c: "f'c (MPa)", s: "fy (MPa)", note: "Nhập giá trị đặc trưng (Characteristic)" };
+                if (standard === 'EC2') return { c: "fcd (MPa)", s: "fyd (MPa)", note: "Nhập giá trị tính toán (Design)" };
+                return { c: "Rb (MPa)", s: "Rs (MPa)", note: "Nhập giá trị tính toán (Design)" };
+            };
+            const lbl = getMaterialLabels();
+
+            useEffect(() => {
+                let bars = [];
+                const As = reinforcement.As_bar;
+                if (colType === 'rect') {
+                    bars = generateRectLayoutEqual(geometry.B, geometry.H, geometry.Cover, reinforcement.Nb, As);
+                } else {
+                    bars = generateCircLayout(geometry.D, geometry.Cover, reinforcement.Nb, As);
+                }
+                setBarLayout(bars);
+            }, [colType, geometry, reinforcement]);
+
+            useEffect(() => {
+                const timer = setTimeout(() => {
+                    if (barLayout.length > 0) {
+                        setIsCalculating(true);
+                        requestAnimationFrame(() => {
+                            const points = calculate3DSurface(
+                                colType, geometry.B, geometry.H, geometry.D, 
+                                material.fck, material.fyk, barLayout, standard
+                            );
+                            setSurfacePoints(points);
+                            setIsCalculating(false);
+                        });
+                    }
+                }, 400);
+                return () => clearTimeout(timer);
+            }, [barLayout, material, geometry, colType, standard]);
+
+            // Plotly Render
+            useEffect(() => {
+                if (!surfacePoints.length || !chartDivRef.current) return;
+
+                const xS = surfacePoints.map(p => p.x);
+                const yS = surfacePoints.map(p => p.y);
+                const zS = surfacePoints.map(p => p.z);
+
+                const xL = loads.map(l => l.Mux);
+                const yL = loads.map(l => l.Muy);
+                const zL = loads.map(l => l.Pu);
+                const textL = loads.map(l => l.note);
+                const colorL = loads.map((l) => {
+                    const k = calculateSafetyFactor3D(l.Pu, l.Mux, l.Muy, surfacePoints);
+                    return (k >= 1 && k !== "N/A") ? '#22c55e' : '#ef4444';
+                });
+
+                const lineTraces = [];
+                loads.forEach((l) => {
+                     const k = calculateSafetyFactor3D(l.Pu, l.Mux, l.Muy, surfacePoints);
+                     if(k !== "N/A") {
+                         const valK = parseFloat(k);
+                         lineTraces.push({
+                            type: 'scatter3d',
+                            mode: 'lines',
+                            x: [0, l.Mux * Math.max(1.1, valK)],
+                            y: [0, l.Muy * Math.max(1.1, valK)],
+                            z: [0, l.Pu * Math.max(1.1, valK)],
+                            line: { color: valK >= 1 ? '#22c55e' : '#ef4444', width: 3, dash: 'solid' },
+                            showlegend: false, hoverinfo: 'none'
+                         });
+                     }
+                });
+
+                const data = [
+                    {
+                        type: 'mesh3d',
+                        x: xS, y: yS, z: zS,
+                        opacity: chartOptions.opacity,
+                        color: chartOptions.color,
+                        alphahull: 0,
+                        name: 'Vùng chịu lực',
+                        hoverinfo: 'none'
+                    },
+                    {
+                        type: 'scatter3d',
+                        mode: 'markers',
+                        x: xL, y: yL, z: zL,
+                        marker: { size: 6, color: colorL, symbol: 'circle', line: {color: 'white', width: 1} },
+                        text: textL,
+                        name: 'Tải trọng',
+                        hovertemplate: '%{text}<br>Mx: %{x:.1f}<br>My: %{y:.1f}<br>Pu: %{z:.1f}<extra></extra>'
+                    },
+                    ...lineTraces
+                ];
+
+                const layout = {
+                    title: { text: 'Biểu đồ tương tác không gian', font: {size: 14} },
+                    scene: {
+                        xaxis: { title: 'Mux (kNm)', showgrid: chartOptions.gridX, zeroline: true, showbackground: false },
+                        yaxis: { title: 'Muy (kNm)', showgrid: chartOptions.gridY, zeroline: true, showbackground: false },
+                        zaxis: { title: 'Pu (kN)', showgrid: chartOptions.gridZ, zeroline: true, showbackground: false },
+                        aspectmode: 'cube',
+                        camera: { eye: { x: 1.4, y: 1.4, z: 1.4 } }
+                    },
+                    margin: { l: 0, r: 0, b: 0, t: 30 },
+                    showlegend: false,
+                    height: 500,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                };
+
+                Plotly.newPlot(chartDivRef.current, data, layout, {responsive: true, displayModeBar: true});
+
+            }, [surfacePoints, loads, chartOptions]);
+
+            // Handlers
+            const handleLoadChange = (id, field, value) => {
+                setLoads(loads.map(l => l.id === id ? { ...l, [field]: value } : l));
+            };
+
+            const renderCrossSection = () => {
+                const maxDim = Math.max(geometry.B || geometry.D, geometry.H || geometry.D);
+                const scale = 140 / maxDim;
+                return (
+                    <svg width="180" height="180" className="border bg-white mx-auto shadow-sm rounded">
+                        <g transform={`translate(90, 90) scale(${scale})`}>
+                            {colType === 'rect' ? (
+                                <rect x={-geometry.B/2} y={-geometry.H/2} width={geometry.B} height={geometry.H} fill="#f1f5f9" stroke="#334155" strokeWidth="2" />
+                            ) : (
+                                <circle cx="0" cy="0" r={geometry.D/2} fill="#f1f5f9" stroke="#334155" strokeWidth="2" />
+                            )}
+                            <line x1="-1000" y1="0" x2="1000" y2="0" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="5,5" />
+                            <line x1="0" y1="-1000" x2="0" y2="1000" stroke="#cbd5e1" strokeWidth="1" strokeDasharray="5,5" />
+                            {barLayout.map((bar, i) => (
+                                <circle key={i} cx={bar.x} cy={-bar.y} r={reinforcement.d_bar/2} fill="#dc2626" />
+                            ))}
+                        </g>
+                        <text x="5" y="175" fontSize="9" fill="#94a3b8">X: Mux, Y: Muy</text>
+                    </svg>
+                );
+            };
+
+            return (
+                <div className="p-4 max-w-[1400px] mx-auto min-h-screen flex flex-col gap-4 bg-slate-50">
+                    {/* Header */}
+                    <div className="bg-white px-6 py-4 rounded-xl shadow-sm flex justify-between items-center border border-slate-100">
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                                <i data-lucide="box"></i> ShortCol 3D <span className="text-slate-400 font-light">| Biaxial</span>
+                            </h1>
+                            <p className="text-sm text-slate-500 mt-1">Tính toán cột lệch tâm xiên theo {standard}</p>
+                        </div>
+                        <div className="flex items-center gap-4">
+                            {isCalculating && (
+                                <div className="flex items-center gap-2 text-blue-600 bg-blue-50 px-3 py-1 rounded-full text-sm font-semibold animate-pulse">
+                                    <div className="loading-spinner"></div>
+                                    Đang tính toán...
+                                </div>
+                            )}
+                            <select 
+                                value={standard} 
+                                onChange={(e) => setStandard(e.target.value)}
+                                className="bg-slate-100 border-none font-bold text-slate-700 rounded-lg py-2 px-4 focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                            >
+                                <option value="TCVN">TCVN 5574:2018</option>
+                                <option value="EC2">Eurocode 2</option>
+                                <option value="ACI">ACI 318-19/25</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+                        {/* LEFT: INPUT */}
+                        <div className="lg:col-span-4 flex flex-col gap-4">
+                            <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex-1 flex flex-col">
+                                <div className="flex border-b bg-slate-50">
+                                    {['input', 'loads', 'visual'].map(tab => (
+                                        <button 
+                                            key={tab}
+                                            onClick={() => setActiveTab(tab)} 
+                                            className={`flex-1 py-3 text-sm font-semibold transition-colors ${activeTab===tab ? 'text-blue-600 bg-white border-t-2 border-t-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                        >
+                                            {tab === 'input' ? 'Thông số' : tab === 'loads' ? 'Tải trọng' : 'Hiển thị'}
+                                        </button>
+                                    ))}
+                                </div>
+                                
+                                <div className="p-5 flex-1 overflow-y-auto">
+                                    {activeTab === 'input' && (
+                                        <div className="space-y-6">
+                                            {/* Type */}
+                                            <div>
+                                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Loại tiết diện</label>
+                                                <div className="flex gap-2 mt-2">
+                                                    <button onClick={() => setColType('rect')} className={`flex-1 py-2 text-sm border rounded-lg transition-all ${colType==='rect'?'bg-blue-50 border-blue-500 text-blue-700 font-bold ring-1 ring-blue-500':'bg-white text-slate-600 hover:bg-slate-50'}`}>Chữ nhật</button>
+                                                    <button onClick={() => setColType('circ')} className={`flex-1 py-2 text-sm border rounded-lg transition-all ${colType==='circ'?'bg-blue-50 border-blue-500 text-blue-700 font-bold ring-1 ring-blue-500':'bg-white text-slate-600 hover:bg-slate-50'}`}>Tròn</button>
+                                                </div>
+                                            </div>
+
+                                            {/* Geometry */}
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Kích thước (mm)</label>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {colType === 'rect' ? (
+                                                        <>
+                                                            <div><span className="text-xs text-slate-500 mb-1 block">Rộng B</span><input type="number" value={geometry.B} onChange={e=>setGeometry({...geometry, B:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                            <div><span className="text-xs text-slate-500 mb-1 block">Cao H</span><input type="number" value={geometry.H} onChange={e=>setGeometry({...geometry, H:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="col-span-2"><span className="text-xs text-slate-500 mb-1 block">Đường kính D</span><input type="number" value={geometry.D} onChange={e=>setGeometry({...geometry, D:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                    )}
+                                                    <div className="col-span-2"><span className="text-xs text-slate-500 mb-1 block">Lớp bảo vệ a (tới tâm thép)</span><input type="number" value={geometry.Cover} onChange={e=>setGeometry({...geometry, Cover:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Material */}
+                                            <div className="space-y-2">
+                                                <div className="flex justify-between items-center">
+                                                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Vật liệu</label>
+                                                    <span className="text-[10px] text-orange-500 italic bg-orange-50 px-2 py-0.5 rounded">{lbl.note}</span>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div><span className="text-xs text-slate-500 mb-1 block">{lbl.c}</span><input type="number" value={material.fck} onChange={e=>setMaterial({...material, fck:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                    <div><span className="text-xs text-slate-500 mb-1 block">{lbl.s}</span><input type="number" value={material.fyk} onChange={e=>setMaterial({...material, fyk:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Rebar */}
+                                            <div className="space-y-2">
+                                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cốt thép chủ</label>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    <div><span className="text-xs text-slate-500 mb-1 block">Số thanh</span><input type="number" value={reinforcement.Nb} onChange={e=>setReinforcement({...reinforcement, Nb:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                    <div><span className="text-xs text-slate-500 mb-1 block">Đk (mm)</span><input type="number" value={reinforcement.d_bar} onChange={e=>setReinforcement({...reinforcement, d_bar:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                    <div><span className="text-xs text-slate-500 mb-1 block">As (mm2)</span><input type="number" value={reinforcement.As_bar} onChange={e=>setReinforcement({...reinforcement, As_bar:+e.target.value})} className="w-full bg-slate-50 border border-slate-200 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"/></div>
+                                                </div>
+                                            </div>
+
+                                            {/* Preview */}
+                                            <div className="text-center pt-2 border-t border-slate-100">
+                                                {renderCrossSection()}
+                                                <p className="text-[10px] text-slate-400 mt-2">Hàm lượng cốt thép: {((barLayout.length * reinforcement.As_bar) / (colType==='rect' ? geometry.B*geometry.H : Math.PI*Math.pow(geometry.D/2, 2)) * 100).toFixed(2)}%</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'loads' && (
+                                        <div className="space-y-4">
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-sm font-bold text-slate-700">Tổ hợp nội lực</span>
+                                                <button onClick={()=>setLoads([...loads, {id: Date.now(), Pu:0, Mux:0, Muy:0, note:'Mới'}])} className="text-xs bg-green-600 text-white px-3 py-1.5 rounded-lg hover:bg-green-700 font-bold transition-colors shadow-sm">+ Thêm</button>
+                                            </div>
+                                            {loads.map((l, idx) => (
+                                                <div key={l.id} className="border border-slate-200 p-3 rounded-lg bg-white shadow-sm relative group hover:border-blue-300 transition-all">
+                                                    <div className="flex justify-between mb-2">
+                                                        <input className="font-bold text-sm text-blue-700 outline-none w-2/3 bg-transparent" value={l.note} onChange={e=>handleLoadChange(l.id, 'note', e.target.value)} />
+                                                        <button onClick={()=>setLoads(loads.filter(x=>x.id!==l.id))} className="text-slate-400 hover:text-red-500 text-xs font-bold px-2"><i data-lucide="trash-2" className="w-4 h-4"></i></button>
+                                                    </div>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        <div><span className="text-[10px] text-slate-500 font-bold block uppercase">Pu (kN)</span><input type="number" className="w-full border border-slate-200 rounded p-1.5 text-sm bg-slate-50 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none" value={l.Pu} onChange={e=>handleLoadChange(l.id, 'Pu', +e.target.value)}/></div>
+                                                        <div><span className="text-[10px] text-slate-500 font-bold block uppercase">Mux (kNm)</span><input type="number" className="w-full border border-slate-200 rounded p-1.5 text-sm bg-slate-50 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none" value={l.Mux} onChange={e=>handleLoadChange(l.id, 'Mux', +e.target.value)}/></div>
+                                                        <div><span className="text-[10px] text-slate-500 font-bold block uppercase">Muy (kNm)</span><input type="number" className="w-full border border-slate-200 rounded p-1.5 text-sm bg-slate-50 focus:bg-white focus:ring-1 focus:ring-blue-500 outline-none" value={l.Muy} onChange={e=>handleLoadChange(l.id, 'Muy', +e.target.value)}/></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'visual' && (
+                                        <div className="space-y-6">
+                                            <div>
+                                                <label className="text-sm font-semibold text-slate-700 block mb-3">Màu sắc mặt biểu đồ</label>
+                                                <div className="flex gap-3">
+                                                    {['#3b82f6', '#ef4444', '#22c55e', '#a855f7', '#f59e0b', '#64748b'].map(c => (
+                                                        <button 
+                                                            key={c} 
+                                                            onClick={() => setChartOptions({...chartOptions, color: c})}
+                                                            className={`w-8 h-8 rounded-full border-2 ${chartOptions.color === c ? 'border-slate-800 scale-110' : 'border-transparent'}`}
+                                                            style={{backgroundColor: c}}
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <div className="flex justify-between mb-1">
+                                                    <label className="text-sm font-semibold text-slate-700">Độ mờ (Opacity)</label>
+                                                    <span className="text-xs text-slate-500">{Math.round(chartOptions.opacity * 100)}%</span>
+                                                </div>
+                                                <input 
+                                                    type="range" min="0.1" max="1" step="0.1" 
+                                                    value={chartOptions.opacity} 
+                                                    onChange={e => setChartOptions({...chartOptions, opacity: +e.target.value})}
+                                                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <label className="text-sm font-semibold text-slate-700 block mb-3">Hiển thị lưới trục (Grid)</label>
+                                                <div className="space-y-2">
+                                                    <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+                                                        <input type="checkbox" checked={chartOptions.gridZ} onChange={e=>setChartOptions({...chartOptions, gridZ: e.target.checked})} className="w-4 h-4 accent-blue-600"/>
+                                                        <span className="text-sm text-slate-600">Trục Lực dọc (Pu)</span>
+                                                    </label>
+                                                    <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+                                                        <input type="checkbox" checked={chartOptions.gridX} onChange={e=>setChartOptions({...chartOptions, gridX: e.target.checked})} className="w-4 h-4 accent-blue-600"/>
+                                                        <span className="text-sm text-slate-600">Trục Momen Mux</span>
+                                                    </label>
+                                                    <label className="flex items-center gap-3 cursor-pointer p-2 hover:bg-slate-50 rounded">
+                                                        <input type="checkbox" checked={chartOptions.gridY} onChange={e=>setChartOptions({...chartOptions, gridY: e.target.checked})} className="w-4 h-4 accent-blue-600"/>
+                                                        <span className="text-sm text-slate-600">Trục Momen Muy</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* RIGHT: CHART & RESULT */}
+                        <div className="lg:col-span-8 flex flex-col gap-6">
+                            {/* 3D Chart Container */}
+                            <div className="bg-white p-3 rounded-xl shadow-sm border border-slate-100 h-[550px] relative flex flex-col">
+                                <div ref={chartDivRef} className="w-full flex-1 rounded-lg overflow-hidden"></div>
+                                <div className="absolute top-4 left-4 pointer-events-none">
+                                    <span className="bg-white/90 backdrop-blur px-3 py-1 rounded text-xs text-slate-500 border shadow-sm">
+                                        <i data-lucide="mouse-pointer-2" className="inline w-3 h-3 mr-1"></i> Xoay/Zoom
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Result Table */}
+                            <div className="bg-white p-5 rounded-xl shadow-sm border border-slate-100 flex-1 overflow-x-auto">
+                                <h3 className="text-sm font-bold text-slate-700 mb-4 flex items-center gap-2">
+                                    <i data-lucide="clipboard-check" className="text-green-600"></i> Kết quả kiểm tra
+                                </h3>
+                                <table className="w-full text-sm text-left border-collapse">
+                                    <thead>
+                                        <tr className="bg-slate-50 text-slate-600 border-b border-slate-200">
+                                            <th className="p-3 font-bold rounded-tl-lg">Tổ hợp</th>
+                                            <th className="p-3 text-right font-bold">Pu (kN)</th>
+                                            <th className="p-3 text-right font-bold">Mux (kNm)</th>
+                                            <th className="p-3 text-right font-bold">Muy (kNm)</th>
+                                            <th className="p-3 text-center font-bold">Hệ số K</th>
+                                            <th className="p-3 text-center font-bold rounded-tr-lg">Trạng thái</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100">
+                                        {loads.map(l => {
+                                            const kVal = calculateSafetyFactor3D(l.Pu, l.Mux, l.Muy, surfacePoints);
+                                            const k = parseFloat(kVal);
+                                            const isSafe = k >= 1;
+                                            const statusStyle = isSafe 
+                                                ? "bg-green-100 text-green-700 border-green-200" 
+                                                : "bg-red-100 text-red-700 border-red-200";
+                                            
+                                            return (
+                                                <tr key={l.id} className="hover:bg-slate-50 transition-colors">
+                                                    <td className="p-3 font-medium text-blue-900">{l.note}</td>
+                                                    <td className="p-3 text-right text-slate-600">{l.Pu}</td>
+                                                    <td className="p-3 text-right text-slate-600">{l.Mux}</td>
+                                                    <td className="p-3 text-right text-slate-600">{l.Muy}</td>
+                                                    <td className="p-3 text-center font-bold text-slate-800">{kVal}</td>
+                                                    <td className="p-3 text-center">
+                                                        {isNaN(k) ? <span className="text-slate-400">-</span> : 
+                                                            <span className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide border ${statusStyle}`}>
+                                                                {isSafe ? "Đạt" : "Không đạt"}
+                                                            </span>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        
+        setTimeout(() => window.lucide && window.lucide.createIcons(), 1000);
+    </script>
+</body>
+</html>

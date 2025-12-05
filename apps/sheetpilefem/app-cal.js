@@ -1,18 +1,17 @@
 /*
- * app-cal.js (cho Sheet Pile FEM - Kiến trúc MỚI)
+ * app-cal.js (cho Sheet Pile FEM - REFACTORED ARCHITECTURE)
  *
- * Chịu trách nhiệm:
- * 1. Tải và khởi tạo module WebAssembly (WASM).
- * 2. Gán sự kiện cho nút "Run Analysis" (ID: btn-run-analysis).
- * 3. Thu thập toàn bộ dữ liệu input từ HTML.
- * 4. Kiểm tra logic bản quyền (giới hạn 2 lớp đất) KHI NHẤN RUN.
- * 5. Gọi hàm WASM và xử lý kết quả trả về.
- * 6. Gọi các hàm trong app-out.js để hiển thị kết quả hoặc lỗi.
+ * Responsibilities:
+ * 1. Load and initialize WebAssembly module
+ * 2. Implement execution flow: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
+ * 3. Gather input data from HTML
+ * 4. Handle errors and display results
  */
 
-// Biến toàn cục để giữ module WASM sau khi khởi tạo
+// Global WASM module instance
 let wasmModule;
-// Biến toàn cục cho Bootstrap Tab (để chuyển tab khi lỗi)
+
+// Bootstrap Tab reference for license tab navigation
 let licenseTabTrigger;
 
 /**
@@ -121,139 +120,217 @@ function gatherInputData() {
 }
 
 /**
- * Hàm chính thực thi phân tích
+ * STEP 1: Validate Inputs
+ * @returns {object|null} - Input data object or null if invalid
  */
-async function runAnalysis() {
-    // 1. Kiểm tra module đã sẵn sàng
-    if (!wasmModule) {
-        if (typeof displayError === 'function') {
-            displayError("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
-        } else {
-            alert("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
-        }
-        return;
-    }
-
-    // 2. Kích hoạt trạng thái "Đang tải" (gọi hàm từ app-out.js)
-    if (typeof showLoading === 'function') showLoading(true);
-    if (typeof hideError === 'function') hideError();
-    if (typeof hideResults === 'function') hideResults();
-
+function validateInputs() {
     try {
-        // === LOGIC BẢN QUYỀN MỚI ===
-        // 1. Đọc trạng thái đã lưu
-        const isLicensed = localStorage.getItem('sheetpileLicensed') === 'true';
-        
-        // 2. Đếm số lớp đất từ bảng
-        const soilLayerCount = document.querySelectorAll('#soil-layer-table tbody tr').length;
-
-        // 3. Kiểm tra điều kiện (chỉ kiểm tra lớp đất)
-        if (!isLicensed && soilLayerCount > 2) {
-            // 4. Vi phạm -> Báo lỗi và chuyển tab
-            const errorMessage = `Hãy đăng ký để tính toán nhiều hơn 2 lớp đất. (Hiện tại: ${soilLayerCount} lớp)`;
-            
-            // Hiện thông báo lỗi (giả định app-out.js cung cấp hàm này)
-            if (typeof displayError === 'function') {
-                displayError(errorMessage);
-            } else {
-                alert(errorMessage);
-            }
-            
-            // Tự động chuyển sang tab "Bản quyền"
-            if (licenseTabTrigger) {
-                licenseTabTrigger.show();
-            }
-            
-            // Dừng thực thi
-            return; 
-        }
-        // =============================
-        
-        // (Đã xóa logic kiểm tra bản quyền cũ)
-
-        // 4. Thu thập dữ liệu (Nếu license hợp lệ hoặc trong giới hạn)
         const inputData = gatherInputData();
-        const inputJsonString = JSON.stringify(inputData);
-
-        // 5. Gọi hàm WASM
-        const resultJsonString = wasmModule.calculateSheetPile(inputJsonString);
         
-        // 6. Xử lý kết quả
-        const result = JSON.parse(resultJsonString);
-
-        if (result.status === 'error') {
-            throw new Error(result.message);
-        } else {
-            // Gửi kết quả cho app-out.js
-            if (typeof displayResults === 'function') displayResults(result); 
+        // Basic validation
+        if (!inputData.soil_layers || inputData.soil_layers.length === 0) {
+            throw new Error('Vui lòng thêm ít nhất 1 lớp đất.');
         }
-
+        
+        if (inputData.general.L <= 0) {
+            throw new Error('Chiều dài tường (L) phải lớn hơn 0.');
+        }
+        
+        return inputData;
     } catch (error) {
-        // Bắt mọi lỗi
-        console.error("Analysis Error:", error);
-        if (typeof displayError === 'function') {
-            displayError(error.message || "Đã xảy ra lỗi không xác định.");
-        }
-    } finally {
-        // 7. Tắt trạng thái "Đang tải"
-        if (typeof showLoading === 'function') showLoading(false);
+        showError(error.message);
+        return null;
     }
 }
 
 /**
- * KHỞI TẠO: Chờ DOM tải xong
+ * STEP 2: Validate License (calls app-check.js function)
+ * @returns {boolean} - True if allowed to proceed
+ */
+function validateLicenseForAnalysis() {
+    const isLicensed = localStorage.getItem('sheetpileLicensed') === 'true';
+    
+    if (!isLicensed) {
+        // Check FREE mode restrictions
+        const restriction = checkFreeModeRestrictions();
+        
+        if (!restriction.valid) {
+            showError(restriction.message);
+            
+            // Navigate to license tab
+            if (licenseTabTrigger) {
+                licenseTabTrigger.show();
+            }
+            
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * STEP 3: Call WASM Calculation
+ * @param {object} inputData - Validated input data
+ * @returns {object|null} - Result object or null if error
+ */
+function callWasmCalculation(inputData) {
+    try {
+        if (!wasmModule) {
+            throw new Error("Lõi tính toán (WASM) chưa sẵn sàng.");
+        }
+        
+        const inputJsonString = JSON.stringify(inputData);
+        const resultJsonString = wasmModule.calculateSheetPile(inputJsonString);
+        const result = JSON.parse(resultJsonString);
+        
+        if (result.status === 'error') {
+            throw new Error(result.message || 'Lỗi tính toán từ WASM.');
+        }
+        
+        return result;
+    } catch (error) {
+        showError(error.message);
+        return null;
+    }
+}
+
+/**
+ * STEP 4: Render Results (calls app-out.js)
+ * @param {object} result - Calculation results
+ */
+function renderResults(result) {
+    if (typeof displayResults === 'function') {
+        displayResults(result);
+    } else {
+        console.error('displayResults function not found in app-out.js');
+    }
+}
+
+/**
+ * Helper: Show Error Message
+ * @param {string} message - Error message
+ */
+function showError(message) {
+    const errorDiv = document.getElementById('error-message');
+    if (errorDiv) {
+        errorDiv.textContent = `❌ ${message}`;
+        errorDiv.style.display = 'block';
+    }
+    console.error('Analysis Error:', message);
+}
+
+/**
+ * Helper: Hide Error Message
+ */
+function hideError() {
+    const errorDiv = document.getElementById('error-message');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+}
+
+/**
+ * Helper: Show Loading Spinner
+ * @param {boolean} isLoading
+ */
+function showLoading(isLoading) {
+    const spinner = document.getElementById('calc-spinner');
+    const button = document.getElementById('btn-run-analysis');
+    
+    if (spinner) {
+        spinner.style.display = isLoading ? 'inline-block' : 'none';
+    }
+    
+    if (button) {
+        button.disabled = isLoading;
+    }
+}
+
+/**
+ * MAIN EXECUTION FLOW: Run Analysis
+ * Follows chain: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
+ */
+async function runAnalysis() {
+    hideError();
+    showLoading(true);
+    
+    try {
+        // STEP 1: Validate Inputs
+        const inputData = validateInputs();
+        if (!inputData) {
+            return; // Validation failed
+        }
+        
+        // STEP 2: Validate License
+        if (!validateLicenseForAnalysis()) {
+            return; // License check failed
+        }
+        
+        // STEP 3: Call WASM Calculation
+        const result = callWasmCalculation(inputData);
+        if (!result) {
+            return; // Calculation failed
+        }
+        
+        // STEP 4: Render Results
+        renderResults(result);
+        
+    } catch (error) {
+        showError(error.message || "Đã xảy ra lỗi không xác định.");
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * Initialize Application
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Lấy nút Run Analysis (ID MỚI)
     const runButton = document.getElementById('btn-run-analysis');
-    // Lấy các phần tử trạng thái WASM (ID MỚI)
     const wasmStatusDiv = document.getElementById('wasm-status');
     const wasmStatusText = document.getElementById('wasm-status-text');
     const wasmSpinner = document.getElementById('wasm-spinner');
     
-    // Lấy trình kích hoạt tab "Bản quyền" để sử dụng sau
+    // Get license tab reference
     const licenseTabElement = document.getElementById('tab-license');
     if (licenseTabElement) {
         licenseTabTrigger = new bootstrap.Tab(licenseTabElement);
     }
     
-    // Vô hiệu hóa nút cho đến khi WASM tải xong
-    runButton.disabled = true;
+    // Disable button until WASM loads
+    if (runButton) runButton.disabled = true;
 
-    // Khởi tạo module WASM
+    // Load WASM Module
     createSheetPileModule().then(Module => {
         wasmModule = Module;
-        console.log("Sheet Pile FEM WASM Module Loaded.");
+        console.log("✅ Sheet Pile FEM WASM Module Loaded");
         
-        // Kích hoạt nút Run
-        runButton.disabled = false;
-        // Cập nhật text nút (đã có icon)
-        const buttonText = runButton.querySelector('span:not(.spinner-border)');
-        if (buttonText) buttonText.textContent = ' Run Analysis';
+        // Enable Run button
+        if (runButton) {
+            runButton.disabled = false;
+            runButton.addEventListener('click', runAnalysis);
+        }
 
-        // Cập nhật trạng thái WASM
-        if(wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
-        if(wasmSpinner) wasmSpinner.style.display = 'none';
-        if(wasmStatusText) wasmStatusText.textContent = 'Lõi tính toán đã sẵn sàng!';
-        
-        // Gán sự kiện click
-        runButton.addEventListener('click', runAnalysis);
+        // Update WASM status UI
+        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
+        if (wasmSpinner) wasmSpinner.style.display = 'none';
+        if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
         
     }).catch(e => {
-        // Lỗi nghiêm trọng: Không thể tải WASM
-        console.error("Error loading WASM module:", e);
-        runButton.textContent = "Lỗi tải WASM";
-        runButton.classList.remove('btn-success');
-        runButton.classList.add('btn-danger');
-
-        if(wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
-        if(wasmSpinner) wasmSpinner.style.display = 'none';
-        if(wasmStatusText) wasmStatusText.textContent = 'Lỗi tải lõi tính toán!';
+        console.error("❌ Error loading WASM module:", e);
         
-        if (typeof displayError === 'function') {
-            displayError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
-        } else {
-            alert('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+        if (runButton) {
+            runButton.textContent = "❌ Lỗi WASM";
+            runButton.classList.remove('btn-success');
+            runButton.classList.add('btn-danger');
+            runButton.disabled = true;
         }
+
+        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
+        if (wasmSpinner) wasmSpinner.style.display = 'none';
+        if (wasmStatusText) wasmStatusText.textContent = '❌ Lỗi tải WASM!';
+        
+        showError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
     });
 });

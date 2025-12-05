@@ -1,0 +1,22 @@
+# VAT LIEU (Materials)
+# f'c (MPa)   fy (MPa)   Ec (MPa)   Es (MPa)   eps_max
+30.0          420.0      25742.0    200000.0   0.003
+
+# TIET DIEN (Section Geometry)
+# Shape (0:Rect, 1:Circ)   Width/Dia (mm)   Height (mm)
+1                          500.0            0.0
+
+# COT THEP (Rebars)
+# So luong thanh (Number of bars)
+10
+# Danh sach toa do: x (mm)   y (mm)   Area (mm2)   Dia (mm)
+202.0    0.0      201.0    16.0
+163.4    118.7    201.0    16.0
+62.4     192.1    201.0    16.0
+-62.4    192.1    201.0    16.0
+-163.4   118.7    201.0    16.0
+-202.0   0.0      201.0    16.0
+-163.4   -118.7   201.0    16.0
+-62.4    -192.1   201.0    16.0
+62.4     -192.1   201.0    16.0
+163.4    -118.7   201.0    16.0

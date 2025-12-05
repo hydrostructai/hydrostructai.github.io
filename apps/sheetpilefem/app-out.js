@@ -1,338 +1,476 @@
-/**
- * SheetPileFEM-WASM - Module Hiển thị Kết quả
- * app-out.js
+/*
+ * app-out.js (Sheet Pile FEM - VISUALIZATION IMPLEMENTATION)
  *
- * Chịu trách nhiệm:
- * 1. Logic cho việc vẽ biểu đồ Plotly.
- * 2. Logic cho việc hiển thị bảng tóm tắt và bảng chi tiết.
- * 3. Logic cho việc xuất kết quả ra CSV.
+ * Responsibilities:
+ * 1. Display calculation results with Chart.js
+ * 2. Render vertical charts (Deflection, Moment, Shear)
+ * 3. Show summary statistics
+ * 4. Handle FREE mode watermark
+ * 5. Export functionality
  */
-(function(App) {
-    "use-strict";
 
-    const PLOTLY_CONFIG = {
-        responsive: true,
-        displaylogo: false,
-        modeBarButtonsToRemove: ['toImage', 'sendDataToCloud', 'select2d', 'lasso2d', 'toggleSpikelines']
-    };
+// Global variables for chart instances
+let g_currentResults = null;
+let g_chartDeflection = null;
+let g_chartMoment = null;
+let g_chartShear = null;
+let g_chartPressure = null;
 
-    /**
-     * Hàm trợ giúp tạo layout chung cho Plotly
-     * @param {string} title Tiêu đề biểu đồ
-     * @param {string} xtitle Tên trục X
-     * @param {string} ytitle Tên trục Y
-     * @param {boolean} x_reversed True nếu đảo ngược trục X
-     * @returns {object} Đối tượng layout của Plotly
-     */
-    function plotlyLayout(title, xtitle, ytitle, x_reversed = false) {
-        return {
-            title: {
-                text: title,
-                font: { size: 16 }
-            },
-            xaxis: {
-                title: xtitle,
-                autorange: x_reversed ? 'reversed' : true,
-                zeroline: true,
-                zerolinecolor: '#999',
-                zerolinewidth: 1,
-            },
-            yaxis: {
-                title: ytitle
-            },
-            legend: {
-                orientation: 'h',
-                yanchor: 'bottom',
-                y: 1.02,
-                xanchor: 'right',
-                x: 1
-            },
-            margin: { l: 70, r: 40, b: 60, t: 60, pad: 4 }
-        };
-    }
-
-    /**
-     * Hàm chính: Nhận kết quả và gọi các hàm vẽ
-     * @param {Array<object>} results Mảng các đối tượng ResultNode từ C++
-     * @param {object} inputs Đối tượng AnalysisInput đã gửi cho C++
-     */
-    App.displayResults = function(results, inputs) {
-        // 1. Vẽ các biểu đồ
-        plotGeom(results, inputs);
-        plotPressure(results);
-        plotDeflection(results);
-        plotMoment(results);
-        plotShear(results);
-
-        // 2. Hiển thị các bảng
-        displaySummaryTable(results);
-        displayResultsTable(results);
-    }
-
-    /**
-     * 1. Vẽ Biểu đồ Hình học (Geometry)
-     */
-    function plotGeom(results, inputs) {
-        const elevations = results.map(r => r.elevation);
-        const y_min = Math.min(...elevations);
-        const y_max = Math.max(...elevations);
-        const y_range = y_max - y_min;
-
-        const traces = [];
-
-        // 1. Vẽ Tường
-        traces.push({
-            x: [0, 0],
-            y: [inputs.wall_top, inputs.wall_bottom],
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: '#333', width: 5 },
-            name: 'Tường Cừ'
-        });
-
-        // 2. Vẽ Mặt đất
-        traces.push({
-            x: [-1, 0],
-            y: [inputs.ground_behind, inputs.ground_behind],
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'green', dash: 'solid' },
-            name: 'Mặt đất (Sau)'
-        });
-        traces.push({
-            x: [0, 1],
-            y: [inputs.ground_front, inputs.ground_front],
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'darkred', dash: 'solid' },
-            name: 'Mặt đất (Trước)'
-        });
-
-        // 3. Vẽ Mực nước
-        traces.push({
-            x: [-1, 0],
-            y: [inputs.water_behind, inputs.water_behind],
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'blue', dash: 'dash' },
-            name: 'Mực nước (Sau)'
-        });
-        traces.push({
-            x: [0, 1],
-            y: [inputs.water_front, inputs.water_front],
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'cyan', dash: 'dash' },
-            name: 'Mực nước (Trước)'
-        });
-
-        // 4. Vẽ Neo
-        inputs.anchors.forEach(anchor => {
-            traces.push({
-                x: [-0.5, 0],
-                y: [anchor.elevation, anchor.elevation],
-                type: 'scatter',
-                mode: 'lines+markers',
-                line: { color: 'orange', width: 3 },
-                marker: { symbol: 'triangle-left', size: 12, color: 'orange' },
-                name: `Neo #${anchor.id}`
-            });
-        });
-
-        const layout = plotlyLayout('Mô hình Hình học', 'Vị trí Tương đối', 'Cao độ (m)');
-        layout.xaxis.range = [-1.5, 1.5];
-        layout.xaxis.showticklabels = false;
-        layout.yaxis.range = [inputs.wall_bottom - y_range * 0.1, inputs.wall_top + y_range * 0.1];
-
-        Plotly.newPlot(App.dom.chartGeom, traces, layout, PLOTLY_CONFIG);
-    }
-
-    /**
-     * 2. Vẽ Biểu đồ Áp lực (Pressure)
-     */
-    function plotPressure(results) {
-        const elevations = results.map(r => r.elevation);
-        
-        // p_active_kPa là TỔNG áp lực (Đất + Tải trọng + Nước)
-        const p_active = results.map(r => r.p_active_kPa); 
-        
-        // p_passive_kPa là phản lực bị động
-        const p_passive = results.map(r => r.p_passive_kPa);
-
-        const traceActive = {
-            x: p_active,
-            y: elevations,
-            type: 'scatter',
-            mode: 'lines',
-            fill: 'tozerox',
-            line: { color: 'red' },
-            name: 'Áp lực Chủ động (Net)'
-        };
-        
-        const tracePassive = {
-            x: p_passive,
-            y: elevations,
-            type: 'scatter',
-            mode: 'lines',
-            fill: 'tozerox',
-            line: { color: 'green' },
-            name: 'Phản lực Bị động'
-        };
-        
-        // (Để tách p_a và p_q, C++ phải trả về các trường riêng biệt)
-
-        const layout = plotlyLayout('Biểu đồ Áp lực Đất (Net)', 'Áp lực (kPa)', 'Cao độ (m)', true);
-        Plotly.newPlot(App.dom.chartPressure, [traceActive, tracePassive], layout, PLOTLY_CONFIG);
-    }
-
-    /**
-     * 3. Vẽ Biểu đồ Chuyển vị (Deflection)
-     */
-    function plotDeflection(results) {
-        const elevations = results.map(r => r.elevation);
-        const deflections = results.map(r => r.displacement_mm);
-
-        const trace = {
-            x: deflections,
-            y: elevations,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'blue' },
-            name: 'Chuyển vị'
-        };
-
-        const layout = plotlyLayout('Biểu đồ Chuyển vị', 'Chuyển vị (mm)', 'Cao độ (m)');
-        Plotly.newPlot(App.dom.chartDeflection, [trace], layout, PLOTLY_CONFIG);
-    }
-
-    /**
-     * 4. Vẽ Biểu đồ Moment
-     */
-    function plotMoment(results) {
-        const elevations = results.map(r => r.elevation);
-        const moments = results.map(r => r.moment_kNm);
-
-        const trace = {
-            x: moments,
-            y: elevations,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'purple' },
-            name: 'Moment'
-        };
-
-        const layout = plotlyLayout('Biểu đồ Moment', 'Moment (kNm/m)', 'Cao độ (m)');
-        Plotly.newPlot(App.dom.chartMoment, [trace], layout, PLOTLY_CONFIG);
-    }
-
-    /**
-     * 5. Vẽ Biểu đồ Lực cắt (Shear)
-     */
-    function plotShear(results) {
-        const elevations = results.map(r => r.elevation);
-        const shears = results.map(r => r.shear_kN);
-
-        const trace = {
-            x: shears,
-            y: elevations,
-            type: 'scatter',
-            mode: 'lines',
-            line: { color: 'orange' },
-            name: 'Lực cắt'
-        };
-
-        const layout = plotlyLayout('Biểu đồ Lực cắt', 'Lực cắt (kN/m)', 'Cao độ (m)');
-        Plotly.newPlot(App.dom.chartShear, [trace], layout, PLOTLY_CONFIG);
-    }
-
-
-    /**
-     * 6. Hiển thị Bảng Tóm tắt
-     */
-    function displaySummaryTable(results) {
-        // Tìm giá trị lớn nhất
-        const maxMoment = Math.max(...results.map(r => r.moment_kNm));
-        const minMoment = Math.min(...results.map(r => r.moment_kNm));
-        const maxShear = Math.max(...results.map(r => r.shear_kN));
-        const minShear = Math.min(...results.map(r => r.shear_kN));
-        const maxDeflection = Math.max(...results.map(r => r.displacement_mm));
-        const minDeflection = Math.min(...results.map(r => r.displacement_mm));
-
-        // (Chúng ta có thể thêm logic tìm cao độ của các giá trị này)
-
-        const html = `
-            <table class="table table-sm table-bordered">
-                <thead class="table-light">
-                    <tr>
-                        <th>Hạng mục</th>
-                        <th>Giá trị Lớn nhất</th>
-                        <th>Giá trị Nhỏ nhất</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Moment (kNm/m)</td>
-                        <td>${maxMoment.toFixed(2)}</td>
-                        <td>${minMoment.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Lực cắt (kN/m)</td>
-                        <td>${maxShear.toFixed(2)}</td>
-                        <td>${minShear.toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                        <td>Chuyển vị (mm)</td>
-                        <td>${maxDeflection.toFixed(2)}</td>
-                        <td>${minDeflection.toFixed(2)}</td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-        App.dom.tableSummaryContainer.innerHTML = html;
-    }
-
-    /**
-     * 7. Hiển thị Bảng Kết quả Chi tiết
-     */
-    function displayResultsTable(results) {
-        // 1. Tạo Header
-        const headers = Object.keys(results[0]);
-        let headerHtml = '<tr>';
-        headers.forEach(h => headerHtml += `<th>${h}</th>`);
-        headerHtml += '</tr>';
-        App.dom.tableResultsHeader.innerHTML = headerHtml;
-
-        // 2. Tạo Body
-        let bodyHtml = '';
-        results.forEach(row => {
-            bodyHtml += '<tr>';
-            headers.forEach(key => {
-                const val = row[key];
-                // Làm tròn số nếu là kiểu number
-                const displayVal = (typeof val === 'number') ? val.toFixed(3) : val;
-                bodyHtml += `<td>${displayVal}</td>`;
-            });
-            bodyHtml += '</tr>';
-        });
-        App.dom.tableResultsBody.innerHTML = bodyHtml;
-    }
+/**
+ * Main Display Results Function
+ * Called by app-cal.js after successful calculation
+ * @param {object} results - Calculation results from WASM
+ */
+function displayResults(results) {
+    g_currentResults = results;
     
-    /**
-     * 8. Xuất Bảng Kết quả ra CSV
-     */
-    App.handleSaveResultsCSV = function() {
-        const header = App.dom.tableResultsHeader.innerText.trim();
-        const body = App.dom.tableResultsBody.innerText.trim();
+    try {
+        // Check license mode and show watermark if FREE
+        showLicenseWatermark();
         
-        if (!header || !body) {
-            App.setStatus('Không có dữ liệu kết quả để lưu.', 'text-danger');
-            return;
+        // Display summary statistics
+        displaySummary(results);
+        
+        // Render all charts
+        renderDeflectionChart(results);
+        renderMomentChart(results);
+        renderShearChart(results);
+        renderPressureChart(results);
+        
+        // Show results section
+        const outputSection = document.getElementById('output-section');
+        if (outputSection) {
+            outputSection.style.display = 'block';
+            outputSection.scrollIntoView({ behavior: 'smooth' });
         }
         
-        const csvContent = header + '\n' + body;
+        console.log('✅ Results visualized successfully');
         
-        App.downloadFile(csvContent, 'sheetpile_results.csv', 'text/csv');
-        App.setStatus('Đã lưu kết quả CSV.', 'text-success');
+    } catch (error) {
+        console.error('Error displaying results:', error);
+        alert(`Lỗi hiển thị kết quả: ${error.message}`);
     }
+}
 
-})(SheetPileApp); // Truyền vào không gian tên chung
+/**
+ * Show License Watermark for FREE Mode
+ */
+function showLicenseWatermark() {
+    const isLicensed = localStorage.getItem('sheetpileLicensed') === 'true';
+    
+    if (!isLicensed) {
+        const outputSection = document.getElementById('output-section');
+        if (!outputSection) return;
+        
+        // Check if watermark already exists
+        let watermark = outputSection.querySelector('.trial-watermark');
+        if (!watermark) {
+            watermark = document.createElement('div');
+            watermark.className = 'trial-watermark alert alert-warning';
+            watermark.innerHTML = `
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <strong>PHIÊN BẢN FREE - GIỚI HẠN KẾT QUẢ</strong>
+                <p class="mb-0">Kích hoạt bản quyền PRO để xem đầy đủ phân tích và xuất báo cáo.</p>
+            `;
+            outputSection.insertBefore(watermark, outputSection.firstChild);
+        }
+    }
+}
+
+/**
+ * Display Summary Statistics
+ * @param {object} results - Calculation results
+ */
+function displaySummary(results) {
+    const summaryContainer = document.getElementById('json-output');
+    if (!summaryContainer) return;
+    
+    // Parse results (assuming results have arrays of data)
+    const deflections = results.displacement_mm || [];
+    const moments = results.moment_kNm || [];
+    const shears = results.shear_kN || [];
+    
+    const maxDeflection = Math.max(...deflections.map(Math.abs));
+    const maxMoment = Math.max(...moments.map(Math.abs));
+    const maxShear = Math.max(...shears.map(Math.abs));
+    
+    const minDeflection = Math.min(...deflections.map(Math.abs));
+    const minMoment = Math.min(...moments.map(Math.abs));
+    const minShear = Math.min(...shears.map(Math.abs));
+    
+    summaryContainer.innerHTML = `
+        <div class="summary-panel">
+            <h5 class="text-white mb-3">
+                <i class="bi bi-clipboard-data"></i> Tóm tắt kết quả phân tích
+            </h5>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="summary-item">
+                        <span class="summary-label">
+                            <i class="bi bi-arrows-move"></i> Chuyển vị lớn nhất:
+                        </span>
+                        <span class="summary-value">${maxDeflection.toFixed(2)} mm</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Chuyển vị nhỏ nhất:</span>
+                        <span class="summary-value">${minDeflection.toFixed(2)} mm</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-item">
+                        <span class="summary-label">
+                            <i class="bi bi-arrow-repeat"></i> Moment lớn nhất:
+                        </span>
+                        <span class="summary-value">${maxMoment.toFixed(2)} kNm</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Moment nhỏ nhất:</span>
+                        <span class="summary-value">${minMoment.toFixed(2)} kNm</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="summary-item">
+                        <span class="summary-label">
+                            <i class="bi bi-arrow-down-up"></i> Lực cắt lớn nhất:
+                        </span>
+                        <span class="summary-value">${maxShear.toFixed(2)} kN</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label">Lực cắt nhỏ nhất:</span>
+                        <span class="summary-value">${minShear.toFixed(2)} kN</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Render Deflection Chart (Vertical - Depth on Y-axis)
+ * @param {object} results - Calculation results
+ */
+function renderDeflectionChart(results) {
+    const canvas = document.getElementById('chart-displacement');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Destroy previous chart if exists
+    if (g_chartDeflection) {
+        g_chartDeflection.destroy();
+    }
+    
+    // Prepare data
+    const depths = results.elevation || results.depth || [];
+    const deflections = results.displacement_mm || [];
+    
+    g_chartDeflection = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: deflections,
+            datasets: [{
+                label: 'Chuyển vị (mm)',
+                data: deflections.map((val, idx) => ({ x: val, y: depths[idx] })),
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            indexAxis: 'y', // CRITICAL: Swap axes for vertical display
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Chuyển vị tường cừ (Displacement)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Chuyển vị (mm)',
+                        font: { weight: 'bold' }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Độ sâu (m)',
+                        font: { weight: 'bold' }
+                    },
+                    reverse: true, // 0 at top, increasing downward
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Render Moment Chart (Vertical - Depth on Y-axis)
+ * @param {object} results - Calculation results
+ */
+function renderMomentChart(results) {
+    const canvas = document.getElementById('chart-moment');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    if (g_chartMoment) {
+        g_chartMoment.destroy();
+    }
+    
+    const depths = results.elevation || results.depth || [];
+    const moments = results.moment_kNm || [];
+    
+    g_chartMoment = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Moment (kNm)',
+                data: moments.map((val, idx) => ({ x: val, y: depths[idx] })),
+                borderColor: '#dc3545',
+                backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Moment uốn (Bending Moment)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Moment (kNm/m)',
+                        font: { weight: 'bold' }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Độ sâu (m)',
+                        font: { weight: 'bold' }
+                    },
+                    reverse: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Render Shear Chart (Vertical - Depth on Y-axis)
+ * @param {object} results - Calculation results
+ */
+function renderShearChart(results) {
+    const canvas = document.getElementById('chart-shear');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    if (g_chartShear) {
+        g_chartShear.destroy();
+    }
+    
+    const depths = results.elevation || results.depth || [];
+    const shears = results.shear_kN || [];
+    
+    g_chartShear = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Lực cắt (kN)',
+                data: shears.map((val, idx) => ({ x: val, y: depths[idx] })),
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Lực cắt (Shear Force)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Lực cắt (kN/m)',
+                        font: { weight: 'bold' }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Độ sâu (m)',
+                        font: { weight: 'bold' }
+                    },
+                    reverse: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Render Pressure Chart (Vertical - Depth on Y-axis)
+ * @param {object} results - Calculation results
+ */
+function renderPressureChart(results) {
+    const canvas = document.getElementById('chart-pressure');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    
+    if (g_chartPressure) {
+        g_chartPressure.destroy();
+    }
+    
+    const depths = results.elevation || results.depth || [];
+    const pressures = results.p_active_kPa || results.pressure_kPa || [];
+    
+    g_chartPressure = new Chart(ctx, {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: 'Áp lực (kPa)',
+                data: pressures.map((val, idx) => ({ x: val, y: depths[idx] })),
+                borderColor: '#ffc107',
+                backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Áp lực đất (Earth Pressure)',
+                    font: { size: 16, weight: 'bold' }
+                },
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Áp lực (kPa)',
+                        font: { weight: 'bold' }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Độ sâu (m)',
+                        font: { weight: 'bold' }
+                    },
+                    reverse: true,
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+/**
+ * Export Results to CSV
+ */
+function exportToCSV() {
+    if (!g_currentResults) {
+        alert('Không có dữ liệu để xuất.');
+        return;
+    }
+    
+    const depths = g_currentResults.elevation || g_currentResults.depth || [];
+    const deflections = g_currentResults.displacement_mm || [];
+    const moments = g_currentResults.moment_kNm || [];
+    const shears = g_currentResults.shear_kN || [];
+    
+    let csv = 'Depth (m),Displacement (mm),Moment (kNm),Shear (kN)\n';
+    
+    for (let i = 0; i < depths.length; i++) {
+        csv += `${depths[i].toFixed(3)},${deflections[i].toFixed(3)},${moments[i].toFixed(3)},${shears[i].toFixed(3)}\n`;
+    }
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `sheetpile_results_${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    
+    console.log('✅ CSV exported successfully');
+}
+
+/**
+ * Initialize Export Button
+ */
+document.addEventListener('DOMContentLoaded', () => {
+    const exportButton = document.getElementById('btn-export-csv');
+    if (exportButton) {
+        exportButton.addEventListener('click', exportToCSV);
+    }
+    
+    console.log('✅ app-out.js initialized with Chart.js visualization');
+});

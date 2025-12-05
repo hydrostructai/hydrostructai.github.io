@@ -1,0 +1,27 @@
+shortcol2025-core
+├── CMakeLists.txt                  # Cấu hình build cho WebAssembly (Emscripten)
+├── include
+│   ├── math
+│   │   └── NumericalSolver.h       # Chứa Newton-Raphson và Brent-Dekker
+│   ├── core
+│   │   ├── Materials.h             # Định nghĩa vật liệu (Bê tông, Thép)
+│   │   ├── Section.h               # Định nghĩa tiết diện (Tròn, Chữ nhật)
+│   │   └── Rebar.h                 # Quản lý cốt thép
+│   ├── codes
+│   │   ├── DesignStandard.h        # Interface chuẩn thiết kế
+│   │   ├── ACI318_25.h             # Implement ACI
+│   │   ├── Eurocode2.h             # Implement Eurocode 2
+│   │   └── TCVN5574_2018.h         # Implement TCVN (Việt Nam)
+│   └── analysis
+│       └── ColumnAnalyzer.h        # Class phân tích chính
+└── src
+    ├── math
+    │   └── NumericalSolver.cpp
+    ├── codes
+    │   ├── ACI318_25.cpp
+    │   ├── Eurocode2.cpp
+    │   └── TCVN5574_2018.cpp
+    ├── analysis
+    │   └── ColumnAnalyzer.cpp
+    └── wasm
+        └── Bindings.cpp            # Cầu nối sang JavaScript

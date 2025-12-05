@@ -1,22 +1,24 @@
 /*
- * app-cal.js (cho Pile Group - Kiến trúc MỚI)
+ * app-cal.js (cho Pile Group - REFACTORED ARCHITECTURE)
  *
- * Chịu trách nhiệm:
- * 1. Tải và khởi tạo module WebAssembly (WASM).
- * 2. Gán sự kiện cho nút "Run Analysis" (ID: calculate-button).
- * 3. Thu thập toàn bộ dữ liệu input từ HTML (ID mới).
- * 4. Kiểm tra logic bản quyền (giới hạn 10 cọc) KHI NHẤN RUN.
- * 5. Gọi hàm WASM và xử lý kết quả trả về.
- * 6. Gọi các hàm trong app-out.js để hiển thị kết quả hoặc lỗi.
+ * Responsibilities:
+ * 1. Load and initialize WebAssembly module
+ * 2. Implement execution flow: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
+ * 3. Gather input data from HTML
+ * 4. Handle errors and display results
  */
 
-// Biến toàn cục để giữ module WASM
+// Global WASM module instance
 let wasmModule;
-// Biến toàn cục cho Bootstrap Tab (để chuyển tab khi lỗi)
+
+// Bootstrap Tab reference for license tab navigation
 let licenseTabTrigger;
 
 /**
- * Hàm trợ giúp để lấy giá trị số (float) từ một input
+ * Helper: Get float value from input element
+ * @param {string} elementId - Element ID
+ * @param {string} fieldName - Field name for error messages
+ * @returns {number} - Parsed float value
  */
 function getFloatValue(elementId, fieldName) {
     const element = document.getElementById(elementId);
@@ -25,45 +27,41 @@ function getFloatValue(elementId, fieldName) {
     }
     const value = parseFloat(element.value);
     if (isNaN(value)) {
-        throw new Error(`Dữ liệu không hợp lệ cho "${fieldName}" (ID: ${elementId}). Vui lòng kiểm tra lại.`);
+        throw new Error(`Dữ liệu không hợp lệ cho "${fieldName}" (ID: ${elementId}).`);
     }
     return value;
 }
 
 /**
- * Thu thập toàn bộ dữ liệu đầu vào từ các form và bảng (theo ID MỚI).
+ * Gather Input Data from HTML Form
+ * @returns {object} - Input data object
  */
 function gatherInputData() {
     const inputData = {};
 
-    // 1. Vật liệu & Cọc (Tab 1)
+    // 1. Material & Pile Properties (Tab 1)
     inputData.vat_lieu = {
-        E: getFloatValue('input-E', 'Vật liệu: Modul đàn hồi (E)'),
-        Icoc: getFloatValue('input-Icoc', 'Vật liệu: Momen quán tính (Icoc)'),
-        D: getFloatValue('input-D', 'Vật liệu: Cạnh/Đường kính (D)'),
-        F: getFloatValue('input-F', 'Vật liệu: Diện tích (F)'),
-        // Fh: không có trong HTML mới
-        Lcoc: getFloatValue('input-Lcoc', 'Vật liệu: Chiều dài cọc (Lcoc)'),
-        L0: getFloatValue('input-L0', 'Vật liệu: Chiều dài cọc tự do (L0)')
-        // m: Đã chuyển sang tab Đất nền
+        E: getFloatValue('input-E', 'Modul đàn hồi (E)'),
+        Icoc: getFloatValue('input-Icoc', 'Momen quán tính (Icoc)'),
+        D: getFloatValue('input-D', 'Đường kính/Cạnh (D)'),
+        F: getFloatValue('input-F', 'Diện tích (F)'),
+        Lcoc: getFloatValue('input-Lcoc', 'Chiều dài cọc (Lcoc)'),
+        L0: getFloatValue('input-L0', 'Chiều dài cọc tự do (L0)')
     };
 
-    // 2. Đất nền (Tab 2)
+    // 2. Soil Foundation (Tab 2)
     inputData.dat_nen = {
-        // Lấy 'm' từ tab đất nền theo HTML mới
-        m: getFloatValue('input-m', 'Đất nền: Hệ số m (m)'), 
+        m: getFloatValue('input-m', 'Hệ số m'),
         dieu_kien_mui: document.getElementById('select-dieu-kien-mui').value,
-        Rdat: getFloatValue('input-Rdat', 'Đất nền: Cường độ (Rdat)'),
-        mchan: getFloatValue('input-mchan', 'Đất nền: Hệ số m chân (mchan)')
-        // nLopDat: không có trong HTML mới
+        Rdat: getFloatValue('input-Rdat', 'Cường độ đất nền (Rdat)'),
+        mchan: getFloatValue('input-mchan', 'Hệ số m chân (mchan)')
     };
     
-    // 2b. Các lớp đất (Tab 2 - Bảng)
+    // 2b. Soil Layers (Tab 2 - Table)
     inputData.dat_nen.lop_dat = [];
     const lopDatRows = document.querySelectorAll('#soil-layer-body tr');
     lopDatRows.forEach((row, index) => {
         const inputs = row.querySelectorAll('input[type="number"]');
-        // HTML mới có 3 cột: Ldat, Tdat, Phi
         const ldat = parseFloat(inputs[0].value);
         const tdat = parseFloat(inputs[1].value);
         const phi = parseFloat(inputs[2].value);
@@ -71,20 +69,16 @@ function gatherInputData() {
         if (isNaN(ldat) || isNaN(tdat) || isNaN(phi)) {
             throw new Error(`Dữ liệu không hợp lệ tại Lớp đất ${index + 1}.`);
         }
-        inputData.dat_nen.lop_dat.push({ 
-            Ldat: ldat,
-            Tdat: tdat, // Thêm Tdat
-            Phi: phi   // Thêm Phi
-        });
+        inputData.dat_nen.lop_dat.push({ Ldat: ldat, Tdat: tdat, Phi: phi });
     });
     
-    // 3. Bệ cọc (Tab 1)
+    // 3. Pile Cap Properties (Tab 1)
     inputData.be_coc = {
-        Bx: getFloatValue('input-Bx', 'Bệ cọc: Kích thước Bx'),
-        By: getFloatValue('input-By', 'Bệ cọc: Kích thước By')
+        Bx: getFloatValue('input-Bx', 'Kích thước Bx'),
+        By: getFloatValue('input-By', 'Kích thước By')
     };
 
-    // 4. Vị trí Cọc (Tab 4)
+    // 4. Pile Positions (Tab 4)
     inputData.coc = [];
     const cocRows = document.querySelectorAll('#pile-table-body tr');
     cocRows.forEach((row, index) => {
@@ -92,8 +86,8 @@ function gatherInputData() {
         const coc = {
             x: parseFloat(inputs[0].value),
             y: parseFloat(inputs[1].value),
-            fi: parseFloat(inputs[2].value), // Góc Fi
-            psi: parseFloat(inputs[3].value) // Góc Psi
+            fi: parseFloat(inputs[2].value),
+            psi: parseFloat(inputs[3].value)
         };
         Object.entries(coc).forEach(([key, val]) => {
             if (isNaN(val)) throw new Error(`Dữ liệu không hợp lệ tại Cọc ${index + 1}, trường ${key}.`);
@@ -101,147 +95,257 @@ function gatherInputData() {
         inputData.coc.push(coc);
     });
 
-    // 5. Tải trọng (Tab 3)
+    // 5. Loads (Tab 3)
     inputData.tai_trong = {
-        Hx: getFloatValue('input-Hx', 'Tải trọng: Hx'),
-        Hy: getFloatValue('input-Hy', 'Tải trọng: Hy'),
-        Pz: getFloatValue('input-Pz', 'Tải trọng: Pz'),
-        Mx: getFloatValue('input-Mx', 'Tải trọng: Mx'),
-        My: getFloatValue('input-My', 'Tải trọng: My'),
-        Mz: getFloatValue('input-Mz', 'Tải trọng: Mz')
+        Hx: getFloatValue('input-Hx', 'Tải trọng Hx'),
+        Hy: getFloatValue('input-Hy', 'Tải trọng Hy'),
+        Pz: getFloatValue('input-Pz', 'Tải trọng Pz'),
+        Mx: getFloatValue('input-Mx', 'Tải trọng Mx'),
+        My: getFloatValue('input-My', 'Tải trọng My'),
+        Mz: getFloatValue('input-Mz', 'Tải trọng Mz')
     };
 
     return inputData;
 }
 
 /**
- * Hàm chính thực thi phân tích
+ * STEP 1: Validate Inputs
+ * @returns {object|null} - Input data object or null if invalid
  */
-async function runAnalysis() {
-    if (!wasmModule) {
-        // Giả sử app-out.js cung cấp hàm displayError
-        if (typeof displayError === 'function') {
-            displayError("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
-        } else {
-            alert("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
-        }
-        return;
-    }
-
-    // Giả sử app-out.js cung cấp các hàm UI này
-    if (typeof showLoading === 'function') showLoading(true);
-    if (typeof hideError === 'function') hideError();
-    if (typeof hideResults === 'function') hideResults();
-
+function validateInputs() {
     try {
-        // === LOGIC BẢN QUYỀN MỚI ===
-        // 1. Đọc trạng thái đã lưu
-        const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
-        
-        // 2. Đếm số cọc từ bảng
-        const pileCount = document.querySelectorAll('#pile-table-body tr').length;
-
-        // 3. Kiểm tra điều kiện
-        if (!isLicensed && pileCount > 10) {
-            // 4. Vi phạm -> Báo lỗi và chuyển tab
-            const errorMessage = `Hãy đăng ký để tính toán nhiều hơn 10 cọc. (Hiện tại: ${pileCount} cọc)`;
-            
-            // Hiện thông báo lỗi
-            if (typeof displayError === 'function') {
-                displayError(errorMessage);
-            } else {
-                alert(errorMessage);
-            }
-            
-            // Tự động chuyển sang tab "Bản quyền"
-            if (licenseTabTrigger) {
-                licenseTabTrigger.show();
-            }
-            
-            // Dừng thực thi
-            return; 
-        }
-        // =============================
-
-        // Nếu vượt qua kiểm tra bản quyền -> tiếp tục tính toán
         const inputData = gatherInputData();
-        const inputJsonString = JSON.stringify(inputData);
         
-        // Gọi hàm WASM (giả định tên hàm là 'calculatePileGroup')
-        const resultJsonString = wasmModule.calculatePileGroup(inputJsonString);
-        
-        const result = JSON.parse(resultJsonString);
-
-        if (result.status === 'error') {
-            throw new Error(result.message);
-        } else {
-            // Gửi cả inputData (cho việc vẽ) và result (cho bảng)
-            // (Giả sử app-out.js cung cấp hàm displayResults)
-            if (typeof displayResults === 'function') {
-                displayResults(result, inputData); 
-            }
+        // Basic validation
+        if (!inputData.coc || inputData.coc.length === 0) {
+            throw new Error('Vui lòng thêm ít nhất 1 cọc vào bảng bố trí.');
         }
-
+        
+        if (inputData.vat_lieu.Lcoc <= 0) {
+            throw new Error('Chiều dài cọc (Lcoc) phải lớn hơn 0.');
+        }
+        
+        if (inputData.be_coc.Bx <= 0 || inputData.be_coc.By <= 0) {
+            throw new Error('Kích thước bệ cọc (Bx, By) phải lớn hơn 0.');
+        }
+        
+        return inputData;
     } catch (error) {
-        console.error("Analysis Error:", error);
-        if (typeof displayError === 'function') {
-            displayError(error.message || "Đã xảy ra lỗi không xác định.");
-        }
-    } finally {
-        if (typeof showLoading === 'function') showLoading(false);
+        showError(error.message);
+        return null;
     }
 }
 
 /**
- * KHỞI TẠO: Chờ DOM tải xong
+ * STEP 2: Validate License (calls app-check.js function)
+ * @returns {boolean} - True if allowed to proceed
+ */
+function validateLicenseForAnalysis() {
+    const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
+    
+    if (!isLicensed) {
+        // Check FREE mode restrictions
+        const restriction = checkFreeModeRestrictions();
+        
+        if (!restriction.valid) {
+            showError(restriction.message);
+            
+            // Navigate to license tab
+            if (licenseTabTrigger) {
+                licenseTabTrigger.show();
+            }
+            
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/**
+ * STEP 3: Call WASM Calculation
+ * @param {object} inputData - Validated input data
+ * @returns {object|null} - Result object or null if error
+ */
+function callWasmCalculation(inputData) {
+    try {
+        if (!wasmModule) {
+            throw new Error("Lõi tính toán (WASM) chưa sẵn sàng.");
+        }
+        
+        const inputJsonString = JSON.stringify(inputData);
+        const resultJsonString = wasmModule.calculatePileGroup(inputJsonString);
+        const result = JSON.parse(resultJsonString);
+        
+        if (result.status === 'error') {
+            throw new Error(result.message || 'Lỗi tính toán từ WASM.');
+        }
+        
+        return result;
+    } catch (error) {
+        showError(error.message);
+        return null;
+    }
+}
+
+/**
+ * STEP 4: Render Results (calls app-out.js)
+ * @param {object} result - Calculation results
+ * @param {object} inputData - Input data for visualization
+ */
+function renderResults(result, inputData) {
+    if (typeof displayResults === 'function') {
+        displayResults(result, inputData);
+    } else {
+        console.error('displayResults function not found in app-out.js');
+    }
+}
+
+/**
+ * Helper: Show Error Message
+ * @param {string} message - Error message
+ */
+function showError(message) {
+    const errorDiv = document.getElementById('error-message');
+    if (errorDiv) {
+        errorDiv.textContent = `❌ ${message}`;
+        errorDiv.style.display = 'block';
+    }
+    console.error('Analysis Error:', message);
+}
+
+/**
+ * Helper: Hide Error Message
+ */
+function hideError() {
+    const errorDiv = document.getElementById('error-message');
+    if (errorDiv) {
+        errorDiv.style.display = 'none';
+    }
+}
+
+/**
+ * Helper: Show Loading Spinner
+ * @param {boolean} isLoading
+ */
+function showLoading(isLoading) {
+    const spinner = document.getElementById('calc-spinner');
+    const button = document.getElementById('calculate-button');
+    
+    if (spinner) {
+        spinner.style.display = isLoading ? 'inline-block' : 'none';
+    }
+    
+    if (button) {
+        button.disabled = isLoading;
+    }
+}
+
+/**
+ * Update Pile Count Display
+ */
+function updatePileCount() {
+    const pileCountSpan = document.getElementById('pile-count');
+    const pileCount = document.querySelectorAll('#pile-table-body tr').length;
+    if (pileCountSpan) {
+        pileCountSpan.textContent = pileCount;
+    }
+}
+
+/**
+ * MAIN EXECUTION FLOW: Run Analysis
+ * Follows chain: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
+ */
+async function runAnalysis() {
+    hideError();
+    showLoading(true);
+    
+    try {
+        // STEP 1: Validate Inputs
+        const inputData = validateInputs();
+        if (!inputData) {
+            return; // Validation failed
+        }
+        
+        // STEP 2: Validate License
+        if (!validateLicenseForAnalysis()) {
+            return; // License check failed
+        }
+        
+        // STEP 3: Call WASM Calculation
+        const result = callWasmCalculation(inputData);
+        if (!result) {
+            return; // Calculation failed
+        }
+        
+        // STEP 4: Render Results
+        renderResults(result, inputData);
+        
+    } catch (error) {
+        showError(error.message || "Đã xảy ra lỗi không xác định.");
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * Initialize Application
  */
 document.addEventListener('DOMContentLoaded', () => {
-    // Lấy nút Run Analysis (ID MỚI)
     const runButton = document.getElementById('calculate-button');
-    // Lấy các phần tử trạng thái WASM (ID MỚI)
     const wasmStatusDiv = document.getElementById('wasm-status');
     const wasmStatusText = document.getElementById('wasm-status-text');
     const wasmSpinner = document.getElementById('wasm-spinner');
     
-    // Lấy trình kích hoạt tab "Bản quyền" để sử dụng sau
+    // Get license tab reference
     const licenseTabElement = document.getElementById('tab-license');
     if (licenseTabElement) {
         licenseTabTrigger = new bootstrap.Tab(licenseTabElement);
     }
+    
+    // Disable button until WASM loads
+    if (runButton) runButton.disabled = true;
 
-    // Vô hiệu hóa nút cho đến khi WASM tải xong
-    runButton.disabled = true;
+    // Initialize pile count display
+    updatePileCount();
+    
+    // Update pile count when table changes
+    const pileTableBody = document.getElementById('pile-table-body');
+    if (pileTableBody) {
+        const observer = new MutationObserver(updatePileCount);
+        observer.observe(pileTableBody, { childList: true });
+    }
 
-    // Khởi tạo module WASM (giả định file pilegroup.js cung cấp 'createPileGroupModule')
+    // Load WASM Module
     createPileGroupModule().then(Module => {
         wasmModule = Module;
-        console.log("Pile Group WASM Module Loaded.");
+        console.log("✅ Pile Group WASM Module Loaded");
         
-        // Kích hoạt nút Run
-        runButton.disabled = false;
-        
-        // Cập nhật trạng thái WASM
-        if(wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
-        if(wasmSpinner) wasmSpinner.style.display = 'none';
-        if(wasmStatusText) wasmStatusText.textContent = 'Lõi tính toán đã sẵn sàng!';
-        
-        // Gán sự kiện click
-        runButton.addEventListener('click', runAnalysis);
+        // Enable Run button
+        if (runButton) {
+            runButton.disabled = false;
+            runButton.addEventListener('click', runAnalysis);
+        }
+
+        // Update WASM status UI
+        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-success');
+        if (wasmSpinner) wasmSpinner.style.display = 'none';
+        if (wasmStatusText) wasmStatusText.textContent = '✅ Lõi tính toán sẵn sàng!';
         
     }).catch(e => {
-        // Lỗi nghiêm trọng: Không thể tải WASM
-        console.error("Error loading WASM module:", e);
-        runButton.textContent = "Lỗi WASM";
-        runButton.disabled = true;
-
-        if(wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
-        if(wasmSpinner) wasmSpinner.style.display = 'none';
-        if(wasmStatusText) wasmStatusText.textContent = 'Lỗi tải lõi tính toán!';
+        console.error("❌ Error loading WASM module:", e);
         
-        if (typeof displayError === 'function') {
-            displayError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
-        } else {
-            alert('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
+        if (runButton) {
+            runButton.textContent = "❌ Lỗi WASM";
+            runButton.classList.remove('btn-success');
+            runButton.classList.add('btn-danger');
+            runButton.disabled = true;
         }
+
+        if (wasmStatusDiv) wasmStatusDiv.classList.replace('alert-info', 'alert-danger');
+        if (wasmSpinner) wasmSpinner.style.display = 'none';
+        if (wasmStatusText) wasmStatusText.textContent = '❌ Lỗi tải WASM!';
+        
+        showError('Không thể tải lõi tính toán (WASM). Vui lòng tải lại trang.');
     });
 });
