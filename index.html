@@ -3,9 +3,10 @@ layout: splash
 author_profile: true
 header:
   overlay_color: "#CCFFCC"
-  overlay_filter: "0.2"
+  # Đã tăng filter lên 0.6 để chữ trắng nổi bật trên nền xanh nhạt
+  overlay_filter: "0.6"
   overlay_image: "/assets/images/hero-engineering.jpg"
-  caption: "<span style='color: #f4f6f8; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);'>Email: ha.nguyen@hydrostructai.com | Điện thoại: +84 374874142</span>"
+  caption: "<span style='color: #fff; text-shadow: 1px 1px 4px rgba(0,0,0,0.8);'>Email: ha.nguyen@hydrostructai.com | Điện thoại: +84 374874142</span>"
   title: "Ứng dụng Web cho Kỹ thuật Xây dựng"
   subtitle: "Các công cụ trực tuyến miễn phí để hỗ trợ kỹ sư trong công việc hàng ngày."
   cta_label: "Khám phá tất cả Web App"
@@ -105,7 +106,7 @@ header:
       <li class="blog-post-item">
         <div class="post-header">
           <h3 class="post-title">
-            <a href="{{ '/2025/06/12/swmm-epanet-explorer/' | relative_url }}">Công cụ Trực quan hóa Tệp INP cho SWMM5 và EPANET</a>
+            <a href="{% post_url 2025-06-12-swmm-epanet-explorer %}">Công cụ Trực quan hóa Tệp INP cho SWMM5 và EPANET</a>
           </h3>
           <div class="post-meta">
             <span class="post-date">
@@ -124,7 +125,7 @@ header:
           Web App miễn phí giúp kỹ sư xem nhanh cấu trúc, dữ liệu tệp đầu vào INP của phần mềm SWMM5 và EPANET ngay trên trình duyệt mà không cần cài đặt.
         </div>
         
-        <a href="{{ '/2025/06/12/swmm-epanet-explorer/' | relative_url }}" class="read-more-link">
+        <a href="{% post_url 2025-06-12-swmm-epanet-explorer %}" class="read-more-link">
           Đọc tiếp <i class="fas fa-arrow-right"></i>
         </a>
       </li>
@@ -169,19 +170,22 @@ header:
 .section-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem 1rem; /* GIẢM PADDING: từ 2rem xuống 1.5rem */
+  /* Thu hẹp padding trên dưới từ 2rem -> 1rem */
+  padding: 1rem 1rem;
 }
 
 .section-title {
   font-size: 1.8rem;
-  margin-bottom: 1.5rem; /* GIẢM MARGIN: từ 2rem xuống 1.5rem */
+  /* Thu hẹp margin tiêu đề */
+  margin-bottom: 1.2rem;
   color: #333;
   border-left: 5px solid #0d6efd;
   padding-left: 15px;
 }
 
 .section-divider {
-  margin: 0.5rem 0; /* GIẢM MARGIN: từ 1rem xuống 0.5rem để các phần gần nhau hơn */
+  /* Thu hẹp khoảng cách giữa các phần */
+  margin: 0.5rem 0;
   border: 0;
   border-top: 1px solid #eee;
 }
@@ -193,7 +197,7 @@ header:
 .app-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem; /* GIẢM GAP: từ 2rem xuống 1.5rem */
+  gap: 1.5rem;
 }
 
 .app-card {
@@ -219,7 +223,7 @@ header:
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem; /* GIẢM PADDING: từ 1.5rem xuống 1rem */
+  padding: 1rem;
   border-bottom: 1px solid #eee;
 }
 
@@ -234,14 +238,14 @@ header:
 .app-card:hover .app-card-image img { transform: scale(1.05); }
 
 .app-card-body {
-  padding: 1.25rem; /* GIẢM PADDING: từ 1.5rem xuống 1.25rem */
+  padding: 1.25rem;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
 }
 
 .app-card-title {
-  margin: 0 0 0.5rem 0; /* GIẢM MARGIN */
+  margin: 0 0 0.5rem 0;
   font-size: 1.35rem;
   font-weight: 700;
   color: #2c3e50;
@@ -250,7 +254,7 @@ header:
 .app-card-desc {
   font-size: 0.95rem;
   color: #666;
-  margin-bottom: 1rem; /* GIẢM MARGIN */
+  margin-bottom: 1rem;
   flex-grow: 1;
   line-height: 1.5;
   text-align: justify;
@@ -276,7 +280,7 @@ header:
 .tools-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem; /* GIẢM GAP: từ 1rem xuống 0.75rem */
+  gap: 0.8rem;
 }
 
 .tool-item {
@@ -285,7 +289,7 @@ header:
   gap: 10px;
   background: #fff;
   border: 1px solid #ddd;
-  padding: 0.75rem; /* GIẢM PADDING: từ 1rem xuống 0.75rem */
+  padding: 0.8rem;
   border-radius: 8px;
   text-decoration: none;
   color: #555;
@@ -309,9 +313,10 @@ header:
 .blog-post-item {
   counter-increment: post-counter;
   position: relative;
-  padding: 1.25rem; /* GIẢM PADDING */
-  padding-left: 3.5rem; /* Điều chỉnh padding trái */
-  margin-bottom: 1rem; /* GIẢM MARGIN: từ 1.5rem xuống 1rem */
+  padding: 1.25rem;
+  /* Giữ padding-left 4rem để số thứ tự không bị chồng lấn */
+  padding-left: 4rem; 
+  margin-bottom: 1rem;
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
@@ -328,7 +333,7 @@ header:
   content: counter(post-counter);
   position: absolute;
   left: 1rem;
-  top: 1.25rem; /* Căn chỉnh lại vị trí số */
+  top: 1.25rem;
   width: 2rem;
   height: 2rem;
   background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
@@ -341,17 +346,17 @@ header:
   font-size: 1rem;
 }
 
-.post-title { margin: 0 0 0.5rem; font-size: 1.3rem; }
+.post-title { margin: 0 0 0.5rem; font-size: 1.35rem; }
 .post-title a { text-decoration: none; color: #333; }
 .post-title a:hover { color: #0d6efd; }
 
-.post-meta { font-size: 0.85rem; color: #888; margin-bottom: 0.5rem; display: flex; gap: 15px; flex-wrap: wrap; }
+.post-meta { font-size: 0.85rem; color: #888; margin-bottom: 0.7rem; display: flex; gap: 15px; flex-wrap: wrap; }
 .post-meta i { margin-right: 5px; }
 
 .post-excerpt {
   color: #555;
-  line-height: 1.5;
-  margin-bottom: 0.75rem;
+  line-height: 1.6;
+  margin-bottom: 0.8rem;
 }
 
 .read-more-link {
