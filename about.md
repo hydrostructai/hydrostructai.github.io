@@ -36,12 +36,12 @@ Chúng tôi xây dựng dự án này dựa trên triết lý "Freemium" một c
 
 ### Về Tác giả
 
-Tôi là **Nguyễn Hải Hà**, Tiến sĩ kỹ thuật **Kỹ thuật xây dựng công trình thủy, chuyên gia về Công trình Thủy lợi/ Kỹ thuật bờ biển/ Kết cấu công trình/ Địa kỹ thuật]** với niềm đam mê sâu sắc về lập trình và ứng dụng công nghệ để giải quyết các bài toán kỹ thuật thực tế.
+Tôi là **Nguyễn Hải Hà**, Tiến sĩ Kỹ thuật xây dựng công trình thủy, **Chuyên gia về Công trình Thủy lợi/ Bảo vệ bờ sông bờ biển/ Kết cấu công trình/ Địa kỹ thuật** với niềm đam mê sâu sắc về lập trình và ứng dụng công nghệ để giải quyết các bài toán kỹ thuật thực tế.
 
 HydroStructAI là nỗ lực của tôi nhằm kết nối hai thế giới: sự chính xác của Kỹ thuật và sự linh hoạt của Phát triển Web hiện đại.
 
 ### Kết nối
 
-Chúng tôi luôn tìm kiếm sự hợp tác, phản hồi và các ý tưởng mới. Nếu bạn có bất kỳ câu hỏi nào, hoặc muốn đóng góp cho dự án, xin vui lòng liên hệ qua **[Email của bạn]** hoặc kết nối trên **[Link LinkedIn/GitHub của bạn]**.
+Chúng tôi luôn tìm kiếm sự hợp tác, phản hồi và các ý tưởng mới. Nếu bạn có bất kỳ câu hỏi nào, hoặc muốn đóng góp cho dự án, xin vui lòng liên hệ qua **ha.nguyen@hydrostructai.com**.
 
 Hãy bắt đầu bằng cách khám phá các [ứng dụng](/apps/) của chúng tôi!
