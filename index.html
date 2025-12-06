@@ -1,174 +1,261 @@
 ---
-# SỬ DỤNG LAYOUT "SPLASH" (TRANG ĐÍCH)
-# Bố cục này cho phép tùy chỉnh trang chủ để trưng bày cả App và Bài viết.
 layout: splash
 author_profile: true
-
-# --- VÙNG "HERO" (GIỚI THIỆU CHÍNH) ---
 header:
   overlay_color: "#CCFFCC"
-  # SỬA: Làm sáng hơn (từ 0.8 xuống 0.5)
   overlay_filter: "0.2"
-  # Bạn CẦN tạo file ảnh này và đặt vào /assets/images/
-  overlay_image: "/assets/images/hero-engineering.jpg" 
-  # SỬA: Thêm span với style inline để đổi màu
-  caption: "<span style='color: #f4f6f8;'>Email: ha.nguyen@hydrostructai.com  |  Điện thoại: +84 374874142</span>"
+  overlay_image: "/assets/images/hero-engineering.jpg"
+  caption: "<span style='color: #f4f6f8; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);'>Email: ha.nguyen@hydrostructai.com | Điện thoại: +84 374874142</span>"
   title: "Ứng dụng Web cho Kỹ thuật Xây dựng"
-  subtitle: "Các công cụ trực tuyến miễn phí để hỗ trợ kỹ sư trong công việc hàng ngày." 
-    
-  # Nút kêu gọi hành động (CTA)
+  subtitle: "Các công cụ trực tuyến miễn phí để hỗ trợ kỹ sư trong công việc hàng ngày."
   cta_label: "Khám phá tất cả Web App"
-  cta_url: "/apps/" # Link tới trang apps.md
+  cta_url: "/apps/"
+---
+
+<div class="section-container">
+  <h2 class="section-title text-center">HỆ THỐNG WEB APPS CHO KỸ THUẬT XÂY DỰNG</h2>
   
-HỆ THỐNG WEB APPS CHO KỸ THUẬT XÂY DỰNG
+  {% assign apps = site.pages | where: "path", "apps.md" | first %}
+  {% if apps %}
+  <div class="app-grid">
+    
+    <div class="app-card">
+      <div class="app-card-image">
+        <img src="{{ relative_url }}/assets/images/app-icons/lateral-pile.png" alt="Lateral Pile Analysis" onerror="this.src='/assets/images/app-icons/pilegroup-icon.png'">
+      </div>
+      <div class="app-card-body">
+        <h3 class="app-card-title">Cọc chịu tải ngang (Lateral Pile)</h3>
+        <p class="app-card-desc">Phân tích cọc đơn chịu tải trọng ngang theo mô hình phi tuyến p-y curve. Hiển thị biểu đồ chuyển vị, nội lực và phản lực đất.</p>
+        <a href="/apps/lateralpile/" class="btn btn--primary btn--large w-100">Mở Ứng dụng</a>
+      </div>
+    </div>
 
-<div class="feature__wrapper">
-{% assign apps = site.pages | where: "path", "apps.md" | first %}
-{% if apps %}
-
-	<div class="feature__item">
-	  <div class="archive__item">
-		<div class="archive__item-teaser">
-		  <img src="{{ relative_url }}/assets/images/app-icons/pile-group2.png" alt="Lateral Pile Analysis">
-		</div>
-		<div class="archive__item-body">
-		  <h2 class="archive__item-title">
-			<a href="{{ relative_url }}/apps/lateralpile/">Lateral Pile Analysis</a>
-		  </h2>
-		  <div class="archive__item-excerpt">
-			<p>Phân tích cọc đơn chịu tải trọng ngang theo mô hình phi tuyến p-y curve. Hiển thị biểu đồ chuyển vị, nội lực và phản lực đất trực quan.</p>
-		  </div>
-		  <p><a href="{{ relative_url }}/apps/lateralpile/" class="btn btn--primary">Launch App</a></p>
-		</div>
-	  </div>
-	</div>
-
-
-  <div class="feature__item">
-    <div class="archive__item">
-      <div class="archive__item-teaser">
+    <div class="app-card">
+      <div class="app-card-image">
         <img src="/assets/images/app-icons/sheetpile-icon.png" alt="Sheet Pile FEM icon">
       </div>
-      <div class="archive__item-body">
-        <h3 class="archive__item-title">Phân tích Tường Cừ ván theo PP PTHH (Sheet Pile FEM)</h3>
-        <div class="archive__item-excerpt">
-          <p>Phân tích Tường cừ ván có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM).</p>
-        </div>
-        <a href="/apps/sheetpilefem/" class="btn btn--info">Mở Ứng dụng</a>
+      <div class="app-card-body">
+        <h3 class="app-card-title">Tường Cừ ván (Sheet Pile FEM)</h3>
+        <p class="app-card-desc">Phân tích Tường cừ ván có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM) tiên tiến.</p>
+        <a href="/apps/sheetpilefem/" class="btn btn--primary btn--large w-100">Mở Ứng dụng</a>
       </div>
     </div>
-  </div>
-  
-  <div class="feature__item">
-    <div class="archive__item">
-      <div class="archive__item-teaser">
-        <img src="/assets/images/app-icons/pilegroup-icon.png" alt="Pile Group icon"> 
+
+    <div class="app-card">
+      <div class="app-card-image">
+        <img src="/assets/images/app-icons/pilegroup-icon.png" alt="Pile Group icon">
       </div>
-      <div class="archive__item-body">
-        <h3 class="archive__item-title">Bệ cọc đài cao (Pile Group 3D)</h3>
-        <div class="archive__item-excerpt">
-          <p>Phân tích móng cọc  đài cao (dạng bệ cứng bao gồm cọc thắng/ cọc xiên) theo phương pháp ma trận độ cứng 3D (Zavriev-Spiro).</p>
-        </div>
-        <a href="/apps/pilegroup/" class="btn btn--info">Mở Ứng dụng</a>
+      <div class="app-card-body">
+        <h3 class="app-card-title">Bệ cọc đài cao (Pile Group 3D)</h3>
+        <p class="app-card-desc">Phân tích móng cọc đài cao (bệ cứng, cọc thẳng/xiên) theo phương pháp ma trận độ cứng 3D (Zavriev-Spiro).</p>
+        <a href="/apps/pilegroup/" class="btn btn--primary btn--large w-100">Mở Ứng dụng</a>
       </div>
     </div>
+
   </div>
-  
-
-  
-{% endif %}
-</div>
-
----
-
-## Other Tools (Các công cụ khác)
-
-<div class="page__content">
-<ul>
-    <li><a href="/tools/circlearea/">Vẽ Hình tròn Tiếp tuyến (Apollonius)</a></li>
-    <li><a href="/tools/hypocycloid/index.html">Vẽ Đường Hypocycloid</a></li>
-    <li><a href="/tools/taylor-series/index.html">Vẽ Chuỗi Taylor</a></li>
-    <li><a href="/tools/heartdrawing/index.html">Vẽ Trái Tim Tham Số</a></li>
-</ul>
-</div>
-
----
-
-## 📝 Bài viết mới nhất
-
-<div class="entries-list">
-  {% assign blog_posts = site.posts
-  | reject_exp: "post", "post.categories contains 'Web Apps'"
-  | reject_exp: "post", "post.path contains 'tools/'"
-  | slice: 0, 6 %}
-  
-  {% if blog_posts.size > 0 %}
-    <ol class="blog-posts-list">
-    {% for post in blog_posts %}
-      <li class="blog-post-item">
-        <div class="post-header">
-          <h3 class="post-title">
-            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
-          </h3>
-          <div class="post-meta">
-            <span class="post-date">
-              <i class="far fa-calendar-alt"></i> {{ post.date | date: "%d/%m/%Y" }}
-            </span>
-            {% if post.author %}
-            <span class="post-author">
-              <i class="far fa-user"></i> {{ post.author }}
-            </span>
-            {% endif %}
-            {% if post.read_time %}
-            <span class="post-read-time">
-              <i class="far fa-clock"></i> {{ post.read_time }} phút đọc
-            </span>
-            {% endif %}
-          </div>
-        </div>
-        
-        <div class="post-excerpt">
-          {% if post.excerpt %}
-            {{ post.excerpt | strip_html | truncatewords: 50 }}
-          {% else %}
-            {{ post.content | strip_html | truncatewords: 50 }}
-          {% endif %}
-        </div>
-        
-        <a href="{{ post.url | relative_url }}" class="read-more-link">
-          Đọc tiếp <i class="fas fa-arrow-right"></i>
-        </a>
-      </li>
-    {% endfor %}
-    </ol>
-  {% else %}
-    <p class="no-posts-message">Chưa có bài viết nào.</p>
   {% endif %}
 </div>
 
+<hr class="section-divider">
+
+<div class="section-container">
+  <h2 class="section-title">Các công cụ khác (Other Tools)</h2>
+  <div class="tools-grid">
+    <a href="/tools/circlearea/" class="tool-item">
+      <i class="fas fa-shapes"></i> Vẽ Hình tròn Tiếp tuyến (Apollonius)
+    </a>
+    <a href="/tools/hypocycloid/index.html" class="tool-item">
+      <i class="fas fa-bezier-curve"></i> Vẽ Đường Hypocycloid
+    </a>
+    <a href="/tools/taylor-series/index.html" class="tool-item">
+      <i class="fas fa-chart-line"></i> Vẽ Chuỗi Taylor
+    </a>
+    <a href="/tools/heartdrawing/index.html" class="tool-item">
+      <i class="fas fa-heart"></i> Vẽ Trái Tim Tham Số
+    </a>
+  </div>
+</div>
+
+<hr class="section-divider">
+
+<div class="section-container">
+  <h2 class="section-title">📝 Bài viết mới nhất</h2>
+  
+  <div class="entries-list">
+    {% assign blog_posts = site.posts
+    | reject_exp: "post", "post.categories contains 'Web Apps'"
+    | reject_exp: "post", "post.path contains 'tools/'"
+    | slice: 0, 6 %}
+    
+    {% if blog_posts.size > 0 %}
+      <ol class="blog-posts-list">
+      {% for post in blog_posts %}
+        <li class="blog-post-item">
+          <div class="post-header">
+            <h3 class="post-title">
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </h3>
+            <div class="post-meta">
+              <span class="post-date"><i class="far fa-calendar-alt"></i> {{ post.date | date: "%d/%m/%Y" }}</span>
+              {% if post.author %}<span class="post-author"><i class="far fa-user"></i> {{ post.author }}</span>{% endif %}
+              {% if post.read_time %}<span class="post-read-time"><i class="far fa-clock"></i> {{ post.read_time }} phút đọc</span>{% endif %}
+            </div>
+          </div>
+          
+          <div class="post-excerpt">
+            {% if post.excerpt %}
+              {{ post.excerpt | strip_html | truncatewords: 40 }}
+            {% else %}
+              {{ post.content | strip_html | truncatewords: 40 }}
+            {% endif %}
+          </div>
+          
+          <a href="{{ post.url | relative_url }}" class="read-more-link">
+            Đọc tiếp <i class="fas fa-arrow-right"></i>
+          </a>
+        </li>
+      {% endfor %}
+      </ol>
+    {% else %}
+      <p class="no-posts-message">Chưa có bài viết nào.</p>
+    {% endif %}
+  </div>
+</div>
+
 <style>
+/* Layout Chung */
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+.section-title {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  color: #333;
+  border-left: 5px solid #0d6efd;
+  padding-left: 15px;
+}
+.section-divider {
+  margin: 2rem 0;
+  border: 0;
+  border-top: 1px solid #eee;
+}
+.text-center { text-align: center; border-left: none; }
+.w-100 { width: 100%; }
+
+/* App Grid System */
+.app-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.app-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.app-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.app-card-image {
+  height: 200px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.app-card-image img {
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.app-card-body {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-card-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.app-card-desc {
+  font-size: 0.95rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+  flex-grow: 1;
+  line-height: 1.5;
+}
+
+/* Tools Grid */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.tool-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #555;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.tool-item:hover {
+  background: #f0f7ff;
+  border-color: #0d6efd;
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+/* Blog List Style (Giữ nguyên logic của bạn nhưng làm đẹp hơn) */
 .blog-posts-list {
   list-style: none;
   counter-reset: post-counter;
   padding-left: 0;
-  margin-top: 2rem;
 }
 
 .blog-post-item {
   counter-increment: post-counter;
   position: relative;
   padding: 1.5rem;
-  padding-left: 4rem;
-  margin-bottom: 2rem;
+  padding-left: 4rem; /* Chừa chỗ cho số thứ tự */
+  margin-bottom: 1.5rem;
   background: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  transition: all 0.2s;
 }
 
 .blog-post-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  border-color: #dbeafe;
 }
 
 .blog-post-item::before {
@@ -178,7 +265,7 @@ HỆ THỐNG WEB APPS CHO KỸ THUẬT XÂY DỰNG
   top: 1.5rem;
   width: 2rem;
   height: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -188,80 +275,18 @@ HỆ THỐNG WEB APPS CHO KỸ THUẬT XÂY DỰNG
   font-size: 1rem;
 }
 
-.post-header {
-  margin-bottom: 1rem;
-}
+.post-title { margin: 0 0 0.5rem; font-size: 1.4rem; }
+.post-title a { text-decoration: none; color: #333; }
+.post-title a:hover { color: #0d6efd; }
+.post-meta { font-size: 0.85rem; color: #888; margin-bottom: 0.5rem; }
+.post-meta span { margin-right: 15px; }
+.read-more-link { color: #0d6efd; font-weight: 600; text-decoration: none; }
+.read-more-link:hover { text-decoration: underline; }
 
-.post-title {
-  margin: 0 0 0.5rem 0;
-  font-size: 1.5rem;
-  line-height: 1.3;
-}
-
-.post-title a {
-  color: #212529;
-  text-decoration: none;
-  transition: color 0.2s;
-}
-
-.post-title a:hover {
-  color: #0d6efd;
-}
-
-.post-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.875rem;
-  color: #6c757d;
-}
-
-.post-meta i {
-  margin-right: 0.25rem;
-}
-
-.post-excerpt {
-  color: #495057;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-}
-
-.read-more-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: #0d6efd;
-  text-decoration: none;
-  font-weight: 600;
-  transition: gap 0.2s;
-}
-
-.read-more-link:hover {
-  gap: 0.75rem;
-  color: #0b5ed7;
-}
-
-.no-posts-message {
-  text-align: center;
-  padding: 2rem;
-  color: #6c757d;
-  font-style: italic;
-}
-
+/* Responsive Mobile */
 @media (max-width: 768px) {
-  .blog-post-item {
-    padding-left: 1rem;
-  }
-  
-  .blog-post-item::before {
-    position: static;
-    display: inline-flex;
-    margin-bottom: 0.5rem;
-  }
-  
-  .post-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  .section-title { font-size: 1.5rem; text-align: center; border-left: none; }
+  .blog-post-item { padding-left: 1rem; }
+  .blog-post-item::before { position: static; display: inline-flex; margin-right: 10px; margin-bottom: 10px; }
 }
 </style>
