@@ -1,0 +1,184 @@
+---
+layout: single
+title: "Lateral Pile Analysis (Phân tích Cọc chịu tải ngang)"
+permalink: /apps/lateralpile/
+sidebar:
+  nav: "docs"
+toc: false
+classes: wide
+---
+
+<script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+<style>
+  .app-container { display: flex; flex-wrap: wrap; gap: 20px; }
+  .input-panel { flex: 1; min-width: 300px; background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #ddd; }
+  .result-panel { flex: 2; min-width: 400px; }
+  .form-group { margin-bottom: 15px; }
+  .form-group label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 0.9em; }
+  .form-control { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+  .btn-calc { width: 100%; padding: 12px; background: #007bff; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+  .btn-calc:hover { background: #0056b3; }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+  .chart-box { background: white; border: 1px solid #eee; padding: 10px; border-radius: 4px; height: 350px; }
+  
+  /* Table styles for Soil Layers */
+  .soil-table { width: 100%; font-size: 0.85em; margin-bottom: 10px; }
+  .soil-table th { text-align: left; padding: 5px; background: #eee; }
+  .soil-table td { padding: 5px; }
+  .soil-table input { width: 100%; padding: 4px; box-sizing: border-box; }
+</style>
+
+<div class="app-container">
+  
+  <div class="input-panel">
+    <h3>Input Parameters</h3>
+    
+    <div class="form-group">
+      <label>Tiêu chuẩn thiết kế (Standard)</label>
+      <select id="std-select" class="form-control">
+        <option value="TCVN_10304_2025">TCVN 10304:2025</option>
+        <option value="API_RP2A">API RP2A-WSD</option>
+        <option value="EUROCODE_8">Eurocode 8</option>
+      </select>
+    </div>
+
+    <h4>Thông số Cọc (Pile)</h4>
+    <div class="form-group">
+      <label>Hình dáng (Shape)</label>
+      <select id="pile-shape" class="form-control">
+        <option value="round">Tròn (Round)</option>
+        <option value="square">Vuông (Square)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Kích thước D hoặc B (m)</label>
+      <input type="number" id="pile-dim" class="form-control" value="1.0" step="0.1">
+    </div>
+    <div class="form-group">
+      <label>Mô đun đàn hồi E (kN/m2)</label>
+      <input type="number" id="pile-e" class="form-control" value="3.0e7" step="1000">
+    </div>
+
+    <h4>Tải trọng đầu cọc (Loads)</h4>
+    <div class="form-group">
+      <label>Lực ngang H (kN)</label>
+      <input type="number" id="load-h" class="form-control" value="500">
+    </div>
+    <div class="form-group">
+      <label>Momen M (kN.m)</label>
+      <input type="number" id="load-m" class="form-control" value="1500">
+    </div>
+    <div class="form-group">
+      <label>Lực dọc N (kN)</label>
+      <input type="number" id="load-n" class="form-control" value="2000">
+    </div>
+
+    <h4>Địa chất (Soil Layers)</h4>
+    <table class="soil-table" id="soil-table">
+      <thead>
+        <tr>
+          <th>Bot (m)</th>
+          <th>Type</th>
+          <th>Su/Phi</th>
+          <th>γ (kN/m3)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="number" value="5.0" class="layer-depth"></td>
+          <td>
+            <select class="layer-type">
+              <option value="sand">Sand</option>
+              <option value="clay">Clay</option>
+            </select>
+          </td>
+          <td><input type="number" value="30" class="layer-param" title="Phi for Sand, Su for Clay"></td>
+          <td><input type="number" value="18" class="layer-gamma"></td>
+        </tr>
+        <tr>
+          <td><input type="number" value="20.0" class="layer-depth"></td>
+          <td>
+            <select class="layer-type">
+              <option value="clay" selected>Clay</option>
+              <option value="sand">Sand</option>
+            </select>
+          </td>
+          <td><input type="number" value="50" class="layer-param"></td>
+          <td><input type="number" value="19" class="layer-gamma"></td>
+        </tr>
+      </tbody>
+    </table>
+    <small><i>*Nhập chiều sâu đáy lớp</i></small>
+
+    <button class="btn-calc" onclick="runAnalysis()">RUN ANALYSIS</button>
+  </div>
+
+  <div class="result-panel">
+    <h3>Kết quả tính toán (Results)</h3>
+    
+    <div class="chart-grid">
+      <div id="chart-deflection" class="chart-box"></div> <div id="chart-moment" class="chart-box"></div>     <div id="chart-shear" class="chart-box"></div>      <div id="chart-soil" class="chart-box"></div>       </div>
+  </div>
+</div>
+
+<script src="{{ relative_url }}/apps/lateralpile/app-cal.js"></script>
+<script>
+  // Hàm khởi tạo mặc định
+  document.addEventListener('DOMContentLoaded', function() {
+    // Vẽ biểu đồ rỗng khi mới vào
+    runAnalysis(); 
+  });
+
+  function runAnalysis() {
+    // 1. Thu thập dữ liệu từ Input (Mapping to JSON structure)
+    const inputData = {
+      config: { standard: document.getElementById('std-select').value },
+      pile: {
+        shape: document.getElementById('pile-shape').value,
+        dimension: parseFloat(document.getElementById('pile-dim').value),
+        E: parseFloat(document.getElementById('pile-e').value)
+      },
+      loads: {
+        H: parseFloat(document.getElementById('load-h').value),
+        M: parseFloat(document.getElementById('load-m').value)
+      },
+      // Logic lấy đất nền (simplified)
+      soil: [] 
+    };
+
+    // 2. Giả lập kết quả tính toán (Thay thế phần này bằng gọi hàm từ WASM/JS thực tế)
+    // Giả sử cọc dài 20m, chia làm 20 đoạn
+    const z = Array.from({length: 21}, (_, i) => i * 1); // Depth 0 to 20m
+    const y = z.map(d => 0.05 * Math.exp(-0.3 * d) * 1000); // mm (Deflection)
+    const M = z.map(d => 1500 * Math.exp(-0.2 * d) * Math.cos(0.5 * d)); // kN.m
+    const V = z.map(d => 500 * Math.exp(-0.2 * d)); // kN
+    const p = z.map(d => 50 * d * Math.exp(-0.1 * d)); // kN/m
+
+    // 3. Vẽ biểu đồ bằng Plotly (Trục Y đảo ngược)
+    const layoutCommon = {
+      margin: { t: 30, b: 30, l: 50, r: 20 },
+      yaxis: { title: 'Depth (m)', autorange: 'reversed' },
+      showlegend: false
+    };
+
+    // Chart 1: Deflection
+    Plotly.newPlot('chart-deflection', [{
+      x: y, y: z, type: 'scatter', mode: 'lines', line: { color: 'blue', width: 2 }, name: 'Deflection'
+    }], { ...layoutCommon, title: 'Deflection (mm)', xaxis: { title: 'y (mm)' } });
+
+    // Chart 2: Moment
+    Plotly.newPlot('chart-moment', [{
+      x: M, y: z, type: 'scatter', mode: 'lines', line: { color: 'red', width: 2 }, fill: 'tozerox', name: 'Moment'
+    }], { ...layoutCommon, title: 'Bending Moment (kN.m)', xaxis: { title: 'M (kN.m)' } });
+
+    // Chart 3: Shear
+    Plotly.newPlot('chart-shear', [{
+      x: V, y: z, type: 'scatter', mode: 'lines', line: { color: 'green', width: 2 }, name: 'Shear'
+    }], { ...layoutCommon, title: 'Shear Force (kN)', xaxis: { title: 'V (kN)' } });
+
+    // Chart 4: Soil Reaction
+    Plotly.newPlot('chart-soil', [{
+      x: p, y: z, type: 'scatter', mode: 'lines', line: { color: 'orange', width: 2, dash: 'dot' }, name: 'Soil P'
+    }], { ...layoutCommon, title: 'Soil Reaction (kN/m)', xaxis: { title: 'p (kN/m)' } });
+  }
+</script>

@@ -27,6 +27,40 @@ header:
 <div class="feature__wrapper">
 {% assign apps = site.pages | where: "path", "apps.md" | first %}
 {% if apps %}
+
+	<div class="feature__item">
+	  <div class="archive__item">
+		<div class="archive__item-teaser">
+		  <img src="{{ relative_url }}/assets/images/app-icons/pile-group2.png" alt="Lateral Pile Analysis">
+		</div>
+		<div class="archive__item-body">
+		  <h2 class="archive__item-title">
+			<a href="{{ relative_url }}/apps/lateralpile/">Lateral Pile Analysis</a>
+		  </h2>
+		  <div class="archive__item-excerpt">
+			<p>Phân tích cọc đơn chịu tải trọng ngang theo mô hình phi tuyến p-y curve. Hiển thị biểu đồ chuyển vị, nội lực và phản lực đất trực quan.</p>
+		  </div>
+		  <p><a href="{{ relative_url }}/apps/lateralpile/" class="btn btn--primary">Launch App</a></p>
+		</div>
+	  </div>
+	</div>
+
+
+  <div class="feature__item">
+    <div class="archive__item">
+      <div class="archive__item-teaser">
+        <img src="/assets/images/app-icons/sheetpile-icon.png" alt="Sheet Pile FEM icon">
+      </div>
+      <div class="archive__item-body">
+        <h3 class="archive__item-title">Phân tích Tường Cừ ván theo PP PTHH (Sheet Pile FEM)</h3>
+        <div class="archive__item-excerpt">
+          <p>Phân tích Tường cừ ván có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM).</p>
+        </div>
+        <a href="/apps/sheetpilefem/" class="btn btn--info">Mở Ứng dụng</a>
+      </div>
+    </div>
+  </div>
+  
   <div class="feature__item">
     <div class="archive__item">
       <div class="archive__item-teaser">
@@ -42,20 +76,7 @@ header:
     </div>
   </div>
   
-  <div class="feature__item">
-    <div class="archive__item">
-      <div class="archive__item-teaser">
-        <img src="/assets/images/app-icons/sheetpile-icon.png" alt="Sheet Pile FEM icon">
-      </div>
-      <div class="archive__item-body">
-        <h3 class="archive__item-title">Phân tích Tường Cừ ván theo PP PTHH (Sheet Pile FEM)</h3>
-        <div class="archive__item-excerpt">
-          <p>Phân tích Tường cừ ván có neo hoặc không neo bằng Phương pháp Phần tử Hữu hạn (FEM).</p>
-        </div>
-        <a href="/apps/sheetpilefem/" class="btn btn--info">Mở Ứng dụng</a>
-      </div>
-    </div>
-  </div>
+
   
 {% endif %}
 </div>
