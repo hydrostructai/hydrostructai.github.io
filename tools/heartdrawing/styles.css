@@ -18,7 +18,7 @@ body {
    2. HEADER SECTION
    ================================= */
 .tool-header {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); /* Màu đỏ chủ đạo cho Heart App */
+    background: linear-gradient(135deg, #ffb6c1 0%, #e9967a 100%);  /*(hồng nhạt đến hồng đậm hơn)  */
     color: white;
     padding: 2rem 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
