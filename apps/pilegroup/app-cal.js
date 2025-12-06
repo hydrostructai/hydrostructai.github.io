@@ -1,5 +1,5 @@
 /*
- * app-cal.js (cho Pile Group - REFACTORED ARCHITECTURE)
+ * app-cal.js (cho Pile Group - FIXED ROBUST VERSION)
  *
  * Responsibilities:
  * 1. Load and initialize WebAssembly module
@@ -62,14 +62,16 @@ function gatherInputData() {
     const lopDatRows = document.querySelectorAll('#soil-layer-body tr');
     lopDatRows.forEach((row, index) => {
         const inputs = row.querySelectorAll('input[type="number"]');
-        const ldat = parseFloat(inputs[0].value);
-        const tdat = parseFloat(inputs[1].value);
-        const phi = parseFloat(inputs[2].value);
+        if (inputs.length >= 3) {
+            const ldat = parseFloat(inputs[0].value);
+            const tdat = parseFloat(inputs[1].value);
+            const phi = parseFloat(inputs[2].value);
 
-        if (isNaN(ldat) || isNaN(tdat) || isNaN(phi)) {
-            throw new Error(`Dữ liệu không hợp lệ tại Lớp đất ${index + 1}.`);
+            if (isNaN(ldat) || isNaN(tdat) || isNaN(phi)) {
+                throw new Error(`Dữ liệu không hợp lệ tại Lớp đất ${index + 1}.`);
+            }
+            inputData.dat_nen.lop_dat.push({ Ldat: ldat, Tdat: tdat, Phi: phi });
         }
-        inputData.dat_nen.lop_dat.push({ Ldat: ldat, Tdat: tdat, Phi: phi });
     });
     
     // 3. Pile Cap Properties (Tab 1)
@@ -83,16 +85,18 @@ function gatherInputData() {
     const cocRows = document.querySelectorAll('#pile-table-body tr');
     cocRows.forEach((row, index) => {
         const inputs = row.querySelectorAll('input[type="number"]');
-        const coc = {
-            x: parseFloat(inputs[0].value),
-            y: parseFloat(inputs[1].value),
-            fi: parseFloat(inputs[2].value),
-            psi: parseFloat(inputs[3].value)
-        };
-        Object.entries(coc).forEach(([key, val]) => {
-            if (isNaN(val)) throw new Error(`Dữ liệu không hợp lệ tại Cọc ${index + 1}, trường ${key}.`);
-        });
-        inputData.coc.push(coc);
+        if (inputs.length >= 4) {
+            const coc = {
+                x: parseFloat(inputs[0].value),
+                y: parseFloat(inputs[1].value),
+                fi: parseFloat(inputs[2].value),
+                psi: parseFloat(inputs[3].value)
+            };
+            Object.entries(coc).forEach(([key, val]) => {
+                if (isNaN(val)) throw new Error(`Dữ liệu không hợp lệ tại Cọc ${index + 1}, trường ${key}.`);
+            });
+            inputData.coc.push(coc);
+        }
     });
 
     // 5. Loads (Tab 3)
@@ -131,31 +135,39 @@ function validateInputs() {
         
         return inputData;
     } catch (error) {
-        showError(error.message);
+        showError(error.message || String(error));
         return null;
     }
 }
 
 /**
- * STEP 2: Validate License (calls app-check.js function)
+ * STEP 2: Validate License (with Safe Fallback)
  * @returns {boolean} - True if allowed to proceed
  */
 function validateLicenseForAnalysis() {
     const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
     
     if (!isLicensed) {
-        // Check FREE mode restrictions
-        const restriction = checkFreeModeRestrictions();
-        
-        if (!restriction.valid) {
-            showError(restriction.message);
-            
-            // Navigate to license tab
-            if (licenseTabTrigger) {
-                licenseTabTrigger.show();
+        // Kiểm tra xem hàm checkFreeModeRestrictions có tồn tại không (từ app-check.js)
+        if (typeof checkFreeModeRestrictions === 'function') {
+            const restriction = checkFreeModeRestrictions();
+            if (!restriction.valid) {
+                // Đảm bảo luôn có message hiển thị
+                showError(restriction.message || "Giới hạn phiên bản Free: Vui lòng kiểm tra số lượng cọc.");
+                
+                if (licenseTabTrigger) {
+                    licenseTabTrigger.show();
+                }
+                return false;
             }
-            
-            return false;
+        } else {
+            // Fallback: Kiểm tra thủ công nếu chưa load được file check
+            const pileCount = document.querySelectorAll('#pile-table-body tr').length;
+            if (pileCount > 4) {
+                showError("Phiên bản FREE giới hạn tối đa 4 cọc. Vui lòng xóa bớt cọc hoặc nâng cấp PRO.");
+                if (licenseTabTrigger) licenseTabTrigger.show();
+                return false;
+            }
         }
     }
     
@@ -170,20 +182,34 @@ function validateLicenseForAnalysis() {
 function callWasmCalculation(inputData) {
     try {
         if (!wasmModule) {
-            throw new Error("Lõi tính toán (WASM) chưa sẵn sàng.");
+            throw new Error("Lõi tính toán (WASM) chưa sẵn sàng. Vui lòng đợi hoặc tải lại trang.");
         }
         
         const inputJsonString = JSON.stringify(inputData);
+        
+        // Kiểm tra hàm tồn tại trong module không
+        if (typeof wasmModule.calculatePileGroup !== 'function') {
+            throw new Error("Lỗi WASM: Hàm 'calculatePileGroup' không tìm thấy trong module.");
+        }
+
         const resultJsonString = wasmModule.calculatePileGroup(inputJsonString);
-        const result = JSON.parse(resultJsonString);
+        
+        // Parse kết quả
+        let result;
+        try {
+            result = JSON.parse(resultJsonString);
+        } catch (e) {
+            throw new Error("Lỗi phân tích dữ liệu trả về từ WASM (Invalid JSON).");
+        }
         
         if (result.status === 'error') {
-            throw new Error(result.message || 'Lỗi tính toán từ WASM.');
+            throw new Error(result.message || 'Lỗi tính toán nội bộ từ WASM.');
         }
         
         return result;
     } catch (error) {
-        showError(error.message);
+        showError(error.message || "Lỗi không xác định khi gọi tính toán.");
+        console.error(error);
         return null;
     }
 }
@@ -198,6 +224,7 @@ function renderResults(result, inputData) {
         displayResults(result, inputData);
     } else {
         console.error('displayResults function not found in app-out.js');
+        showError("Không thể hiển thị kết quả (thiếu hàm displayResults).");
     }
 }
 
@@ -207,11 +234,14 @@ function renderResults(result, inputData) {
  */
 function showError(message) {
     const errorDiv = document.getElementById('error-message');
+    // Đảm bảo message không bao giờ là undefined/null
+    const safeMessage = message || "Đã xảy ra lỗi không xác định.";
+    
     if (errorDiv) {
-        errorDiv.textContent = `❌ ${message}`;
+        errorDiv.textContent = `❌ ${safeMessage}`;
         errorDiv.style.display = 'block';
     }
-    console.error('Analysis Error:', message);
+    console.error('Analysis Error:', safeMessage);
 }
 
 /**
@@ -263,8 +293,7 @@ function initializeDefaultPiles() {
     const pileTableBody = document.getElementById('pile-table-body');
     if (!pileTableBody) return;
     
-    // Default 4 piles in rectangular layout: corners of a rectangle
-    // Assuming Bx=7m, By=9m, we place piles at corners with 1m margin
+    // Default 4 piles in rectangular layout
     const defaultPiles = [
         { x: -3.0, y: -4.0, fi: 0, psi: 0 },  // Bottom-left
         { x: 3.0, y: -4.0, fi: 0, psi: 0 },   // Bottom-right
@@ -308,7 +337,7 @@ function handleAddPile() {
     const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
     if (!isLicensed && currentCount >= 4) {
         alert("Phiên bản Free chỉ cho phép tối đa 4 cọc.\n\nVui lòng nâng cấp lên PRO để sử dụng không giới hạn.");
-        document.getElementById('tab-license').click();
+        if (licenseTabTrigger) licenseTabTrigger.show();
         return;
     }
     
@@ -348,40 +377,26 @@ function loadSampleData() {
     }
     
     // Sample 24-pile configuration (6x4 grid)
-    // Assuming Bx=7m, By=9m
-    // Spacing: ~2m in X direction, ~2.4m in Y direction
     const sample24Piles = [
         // Row 1 (Y = -3.6)
-        { x: -5.0, y: -3.6, fi: 0, psi: 0 },
-        { x: -3.0, y: -3.6, fi: 0, psi: 0 },
-        { x: -1.0, y: -3.6, fi: 0, psi: 0 },
-        { x: 1.0, y: -3.6, fi: 0, psi: 0 },
-        { x: 3.0, y: -3.6, fi: 0, psi: 0 },
-        { x: 5.0, y: -3.6, fi: 0, psi: 0 },
+        { x: -5.0, y: -3.6, fi: 0, psi: 0 }, { x: -3.0, y: -3.6, fi: 0, psi: 0 },
+        { x: -1.0, y: -3.6, fi: 0, psi: 0 }, { x: 1.0, y: -3.6, fi: 0, psi: 0 },
+        { x: 3.0, y: -3.6, fi: 0, psi: 0 },  { x: 5.0, y: -3.6, fi: 0, psi: 0 },
         
         // Row 2 (Y = -1.2)
-        { x: -5.0, y: -1.2, fi: 0, psi: 0 },
-        { x: -3.0, y: -1.2, fi: 0, psi: 0 },
-        { x: -1.0, y: -1.2, fi: 0, psi: 0 },
-        { x: 1.0, y: -1.2, fi: 0, psi: 0 },
-        { x: 3.0, y: -1.2, fi: 0, psi: 0 },
-        { x: 5.0, y: -1.2, fi: 0, psi: 0 },
+        { x: -5.0, y: -1.2, fi: 0, psi: 0 }, { x: -3.0, y: -1.2, fi: 0, psi: 0 },
+        { x: -1.0, y: -1.2, fi: 0, psi: 0 }, { x: 1.0, y: -1.2, fi: 0, psi: 0 },
+        { x: 3.0, y: -1.2, fi: 0, psi: 0 },  { x: 5.0, y: -1.2, fi: 0, psi: 0 },
         
         // Row 3 (Y = 1.2)
-        { x: -5.0, y: 1.2, fi: 0, psi: 0 },
-        { x: -3.0, y: 1.2, fi: 0, psi: 0 },
-        { x: -1.0, y: 1.2, fi: 0, psi: 0 },
-        { x: 1.0, y: 1.2, fi: 0, psi: 0 },
-        { x: 3.0, y: 1.2, fi: 0, psi: 0 },
-        { x: 5.0, y: 1.2, fi: 0, psi: 0 },
+        { x: -5.0, y: 1.2, fi: 0, psi: 0 },  { x: -3.0, y: 1.2, fi: 0, psi: 0 },
+        { x: -1.0, y: 1.2, fi: 0, psi: 0 },  { x: 1.0, y: 1.2, fi: 0, psi: 0 },
+        { x: 3.0, y: 1.2, fi: 0, psi: 0 },   { x: 5.0, y: 1.2, fi: 0, psi: 0 },
         
         // Row 4 (Y = 3.6)
-        { x: -5.0, y: 3.6, fi: 0, psi: 0 },
-        { x: -3.0, y: 3.6, fi: 0, psi: 0 },
-        { x: -1.0, y: 3.6, fi: 0, psi: 0 },
-        { x: 1.0, y: 3.6, fi: 0, psi: 0 },
-        { x: 3.0, y: 3.6, fi: 0, psi: 0 },
-        { x: 5.0, y: 3.6, fi: 0, psi: 0 }
+        { x: -5.0, y: 3.6, fi: 0, psi: 0 },  { x: -3.0, y: 3.6, fi: 0, psi: 0 },
+        { x: -1.0, y: 3.6, fi: 0, psi: 0 },  { x: 1.0, y: 3.6, fi: 0, psi: 0 },
+        { x: 3.0, y: 3.6, fi: 0, psi: 0 },   { x: 5.0, y: 3.6, fi: 0, psi: 0 }
     ];
     
     // Clear and load
@@ -413,26 +428,41 @@ async function runAnalysis() {
         // STEP 1: Validate Inputs
         const inputData = validateInputs();
         if (!inputData) {
+            showLoading(false);
             return; // Validation failed
         }
         
         // STEP 2: Validate License
         if (!validateLicenseForAnalysis()) {
+            showLoading(false);
             return; // License check failed
         }
         
         // STEP 3: Call WASM Calculation
-        const result = callWasmCalculation(inputData);
-        if (!result) {
-            return; // Calculation failed
-        }
-        
-        // STEP 4: Render Results
-        renderResults(result, inputData);
-        
+        // Sử dụng setTimeout để UI có thời gian hiển thị loading spinner trước khi treo vì tính toán
+        setTimeout(() => {
+            try {
+                const result = callWasmCalculation(inputData);
+                if (result) {
+                    // STEP 4: Render Results
+                    renderResults(result, inputData);
+                    
+                    // Hiển thị và cuộn tới container kết quả
+                    const resultsContainer = document.getElementById('results-container');
+                    if (resultsContainer) {
+                        resultsContainer.style.display = 'block';
+                        resultsContainer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+            } catch (calcError) {
+                showError(calcError.message);
+            } finally {
+                showLoading(false);
+            }
+        }, 50);
+
     } catch (error) {
-        showError(error.message || "Đã xảy ra lỗi không xác định.");
-    } finally {
+        showError(error.message || "Đã xảy ra lỗi nghiêm trọng.");
         showLoading(false);
     }
 }
@@ -447,37 +477,33 @@ async function runAnalysis() {
 function newFile() {
     if (!confirm("Tạo file mới? Dữ liệu hiện tại sẽ bị xóa.")) return;
     
-    // Reset material inputs
-    document.getElementById('input-E').value = '0.0';
-    document.getElementById('input-F').value = '0.0';
-    document.getElementById('input-Icoc').value = '0.0';
-    document.getElementById('input-D').value = '0.0';
-    document.getElementById('input-Lcoc').value = '0.0';
-    document.getElementById('input-L0').value = '0.0';
+    // Reset inputs by ID...
+    const idsToReset = [
+        'input-E', 'input-F', 'input-Icoc', 'input-D', 'input-Lcoc', 'input-L0',
+        'input-Bx', 'input-By',
+        'input-m', 'input-mchan', 'input-Rdat',
+        'input-Hx', 'input-Hy', 'input-Pz', 'input-Mx', 'input-My', 'input-Mz'
+    ];
     
-    // Reset cap dimensions
-    document.getElementById('input-Bx').value = '0.0';
-    document.getElementById('input-By').value = '0.0';
+    idsToReset.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '0.0';
+    });
     
-    // Reset soil inputs
-    document.getElementById('input-m').value = '0.0';
-    document.getElementById('input-mchan').value = '0.0';
-    document.getElementById('input-Rdat').value = '0.0';
-    document.getElementById('select-dieu-kien-mui').value = 'K';
+    if (document.getElementById('select-dieu-kien-mui')) {
+        document.getElementById('select-dieu-kien-mui').value = 'K';
+    }
     
     // Clear soil layers
-    document.getElementById('soil-layer-body').innerHTML = '';
-    
-    // Reset loads
-    document.getElementById('input-Hx').value = '0.0';
-    document.getElementById('input-Hy').value = '0.0';
-    document.getElementById('input-Pz').value = '0.0';
-    document.getElementById('input-Mx').value = '0.0';
-    document.getElementById('input-My').value = '0.0';
-    document.getElementById('input-Mz').value = '0.0';
+    const soilBody = document.getElementById('soil-layer-body');
+    if (soilBody) soilBody.innerHTML = '';
     
     // Initialize with 4 default piles (FREE tier default)
     initializeDefaultPiles();
+    
+    // Hide results
+    const resContainer = document.getElementById('results-container');
+    if (resContainer) resContainer.style.display = 'none';
     
     alert("✅ File mới đã được tạo với 4 cọc mặc định!");
 }
@@ -522,7 +548,7 @@ function parsePileGroupCSV(content) {
     
     // Clear existing pile table first
     const pileTableBody = document.getElementById('pile-table-body');
-    pileTableBody.innerHTML = '';
+    if (pileTableBody) pileTableBody.innerHTML = '';
     
     let pileCounter = 0;
     
@@ -547,14 +573,7 @@ function parsePileGroupCSV(content) {
     });
     
     updatePileCount();
-    
-    // Check FREE tier and warn if needed
-    const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
-    if (!isLicensed && pileCounter > 4) {
-        alert(`✅ File CSV đã được tải với ${pileCounter} cọc!\n\n Lưu ý: Phiên bản FREE giới hạn 4 cọc cho tính toán.\nKích hoạt PRO để phân tích tất cả ${pileCounter} cọc.`);
-    } else {
-        alert(`✅ File CSV đã được tải với ${pileCounter} cọc!`);
-    }
+    alert(`✅ File CSV đã được tải với ${pileCounter} cọc!`);
 }
 
 /**
@@ -590,7 +609,7 @@ function saveFile() {
 }
 
 /**
- * Save as CSV format for Pile Group
+ * Save as CSV format
  */
 function savePileGroupAsCSV() {
     try {
@@ -598,24 +617,13 @@ function savePileGroupAsCSV() {
         let csv = "# Pile Group 3D - Input Data (CSV)\n\n";
         
         csv += "# Material Properties\n";
-        csv += `E,${inputData.vat_lieu.E}\n`;
-        csv += `Icoc,${inputData.vat_lieu.Icoc}\n`;
-        csv += `D,${inputData.vat_lieu.D}\n`;
-        csv += `F,${inputData.vat_lieu.F}\n`;
-        csv += `Lcoc,${inputData.vat_lieu.Lcoc}\n`;
-        csv += `L0,${inputData.vat_lieu.L0}\n\n`;
+        csv += `E,${inputData.vat_lieu.E}\nIcoc,${inputData.vat_lieu.Icoc}\nD,${inputData.vat_lieu.D}\nF,${inputData.vat_lieu.F}\nLcoc,${inputData.vat_lieu.Lcoc}\nL0,${inputData.vat_lieu.L0}\n\n`;
         
         csv += "# Cap Dimensions\n";
-        csv += `Bx,${inputData.be_coc.Bx}\n`;
-        csv += `By,${inputData.be_coc.By}\n\n`;
+        csv += `Bx,${inputData.be_coc.Bx}\nBy,${inputData.be_coc.By}\n\n`;
         
         csv += "# Loads\n";
-        csv += `Hx,${inputData.tai_trong.Hx}\n`;
-        csv += `Hy,${inputData.tai_trong.Hy}\n`;
-        csv += `Pz,${inputData.tai_trong.Pz}\n`;
-        csv += `Mx,${inputData.tai_trong.Mx}\n`;
-        csv += `My,${inputData.tai_trong.My}\n`;
-        csv += `Mz,${inputData.tai_trong.Mz}\n\n`;
+        csv += `Hx,${inputData.tai_trong.Hx}\nHy,${inputData.tai_trong.Hy}\nPz,${inputData.tai_trong.Pz}\nMx,${inputData.tai_trong.Mx}\nMy,${inputData.tai_trong.My}\nMz,${inputData.tai_trong.Mz}\n\n`;
         
         csv += "# Piles (X,Y,Fi,Psi)\n";
         inputData.coc.forEach((pile, i) => {
@@ -629,7 +637,7 @@ function savePileGroupAsCSV() {
 }
 
 /**
- * Save as INP format for Pile Group
+ * Save as INP format
  */
 function savePileGroupAsINP() {
     try {
@@ -637,24 +645,13 @@ function savePileGroupAsINP() {
         let inp = "# Pile Group 3D - Input File (INP Format)\n\n";
         
         inp += "[MATERIAL]\n";
-        inp += `E = ${inputData.vat_lieu.E}\n`;
-        inp += `Icoc = ${inputData.vat_lieu.Icoc}\n`;
-        inp += `D = ${inputData.vat_lieu.D}\n`;
-        inp += `F = ${inputData.vat_lieu.F}\n`;
-        inp += `Lcoc = ${inputData.vat_lieu.Lcoc}\n`;
-        inp += `L0 = ${inputData.vat_lieu.L0}\n\n`;
+        inp += `E = ${inputData.vat_lieu.E}\nIcoc = ${inputData.vat_lieu.Icoc}\nD = ${inputData.vat_lieu.D}\nF = ${inputData.vat_lieu.F}\nLcoc = ${inputData.vat_lieu.Lcoc}\nL0 = ${inputData.vat_lieu.L0}\n\n`;
         
         inp += "[CAP_DIMENSIONS]\n";
-        inp += `Bx = ${inputData.be_coc.Bx}\n`;
-        inp += `By = ${inputData.be_coc.By}\n\n`;
+        inp += `Bx = ${inputData.be_coc.Bx}\nBy = ${inputData.be_coc.By}\n\n`;
         
         inp += "[LOADS]\n";
-        inp += `Hx = ${inputData.tai_trong.Hx}\n`;
-        inp += `Hy = ${inputData.tai_trong.Hy}\n`;
-        inp += `Pz = ${inputData.tai_trong.Pz}\n`;
-        inp += `Mx = ${inputData.tai_trong.Mx}\n`;
-        inp += `My = ${inputData.tai_trong.My}\n`;
-        inp += `Mz = ${inputData.tai_trong.Mz}\n\n`;
+        inp += `Hx = ${inputData.tai_trong.Hx}\nHy = ${inputData.tai_trong.Hy}\nPz = ${inputData.tai_trong.Pz}\nMx = ${inputData.tai_trong.Mx}\nMy = ${inputData.tai_trong.My}\nMz = ${inputData.tai_trong.Mz}\n\n`;
         
         inp += "[PILES]\n";
         inputData.coc.forEach((pile, i) => {
@@ -680,7 +677,6 @@ function downloadFile(content, filename, mimeType) {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    alert(`✅ File đã được lưu: ${filename}`);
 }
 
 /**
@@ -715,11 +711,15 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(pileTableBody, { childList: true });
     }
 
-    // Load WASM Module with cache-busting and proper async initialization
-    const wasmVersion = '1.0.0'; // Update this when you update WASM
+    // Load WASM Module with cache-busting
+    const wasmVersion = '1.0.0';
     
-    // Wrap in try-catch to prevent browser freeze
     try {
+        // Kiểm tra xem hàm tạo module (từ pilegroup.js) có tồn tại không
+        if (typeof createPileGroupModule !== 'function') {
+            throw new Error("Không tìm thấy hàm khởi tạo WASM (createPileGroupModule). Vui lòng kiểm tra file pilegroup.js.");
+        }
+
         createPileGroupModule({
             locateFile: (path) => {
                 if (path.endsWith('.wasm')) {
@@ -732,14 +732,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }).then(Module => {
             wasmModule = Module;
             console.log("✅ Pile Group WASM Module Fully Initialized");
-            console.log("✅ Available functions:", Object.keys(Module).filter(k => typeof Module[k] === 'function'));
             
             // Hide loading overlay
             if (loadingOverlay) {
                 loadingOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 300);
+                setTimeout(() => { loadingOverlay.style.display = 'none'; }, 300);
             }
             
             // Enable Run button
@@ -755,17 +752,13 @@ document.addEventListener('DOMContentLoaded', () => {
             
         }).catch(e => {
             console.error("❌ Error loading WASM module:", e);
-            console.error("❌ Error stack:", e.stack);
             
-            // Hide loading overlay
-            if (loadingOverlay) {
-                loadingOverlay.style.display = 'none';
-            }
+            // Hide loading overlay & show error
+            if (loadingOverlay) loadingOverlay.style.display = 'none';
             
             if (runButton) {
                 runButton.textContent = "❌ Lỗi WASM";
-                runButton.classList.remove('btn-success');
-                runButton.classList.add('btn-danger');
+                runButton.classList.replace('btn-success', 'btn-danger');
                 runButton.disabled = true;
             }
 
@@ -777,12 +770,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     } catch (syncError) {
         console.error("❌ Synchronous error during WASM initialization:", syncError);
-        
-        // Hide loading overlay
-        if (loadingOverlay) {
-            loadingOverlay.style.display = 'none';
-        }
-        
+        if (loadingOverlay) loadingOverlay.style.display = 'none';
         showError(`Lỗi khởi tạo WASM: ${syncError.message}`);
     }
     
