@@ -81,7 +81,7 @@ function showLicenseWatermark() {
             watermark.className = 'trial-watermark alert alert-warning';
             watermark.innerHTML = `
                 <i class="bi bi-exclamation-triangle-fill"></i>
-                <strong>PHIÊN BẢN FREE - GIỚI HẠN KẾT QUẢ</strong>
+                <strong>Phiên bản Free giới hạn kết quả</strong>
                 <p class="mb-0">Kích hoạt bản quyền PRO để phân tích nhóm cọc lớn và xuất báo cáo đầy đủ.</p>
             `;
             
@@ -187,15 +187,15 @@ function displayCheckTable(kt) {
     tbody.innerHTML = `
         <tr>
             <td>Ứng suất lớn nhất (USmaxday)</td>
-            <td><strong>${kt.USmaxday.toFixed(2)}</strong> T/m²</td>
+            <td><strong>${kt.USmaxday.toFixed(2)}</strong> kN/m²</td>
         </tr>
         <tr>
             <td>Ứng suất nhỏ nhất (USminday)</td>
-            <td><strong>${kt.USminday.toFixed(2)}</strong> T/m²</td>
+            <td><strong>${kt.USminday.toFixed(2)}</strong> kN/m²</td>
         </tr>
         <tr>
             <td>Cường độ đất nền (Rdat)</td>
-            <td><strong>${kt.Rdat.toFixed(2)}</strong> T/m²</td>
+            <td><strong>${kt.Rdat.toFixed(2)}</strong> kN/m²</td>
         </tr>
         <tr class="table-${kt.dat_cuong_do ? 'success' : 'danger'}">
             <td><strong>Kết quả Kiểm toán</strong></td>

@@ -7,89 +7,12 @@
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     
-    <style>
-        body { background-color: #f0f2f5; }
-        .card { box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .nav-tabs .nav-link { color: #495057; }
-        .nav-tabs .nav-link.active {
-            background-color: #0d6efd;
-            color: white;
-            border-bottom-color: #0d6efd;
-        }
-        /* --- THÊM MỚI: Nền xanh nhẹ cho sidebar --- */
-        .sidebar-card {
-            background-color: #e6f7ff; /* Nền xanh nhạt */
-        }
-        /* Tùy chỉnh input trong bảng */
-        #pile-table-body input, #soil-layer-body input {
-            width: 100%;
-            border: 1px solid #ddd;
-            padding: 4px;
-            border-radius: 4px;
-        }
-        #pile-table-body input:focus, #soil-layer-body input:focus {
-            outline: none;
-            border-color: #0d6efd;
-            box-shadow: 0 0 0 2px rgba(13,110,253,.25);
-        }
-        /* Container kết quả (ẩn ban đầu) */
-        #results-container { display: none; }
-        /* Kiểu chữ cho kết quả kiểm toán */
-        .status-success { color: #198754; font-weight: bold; }
-        .status-fail { color: #dc3545; font-weight: bold; }
-        /* Ẩn spinner */
-        .spinner-border { display: none; }
-        /* Ẩn input file gốc */
-        #csv-file-input { display: none; }
-        /* Bảng cuộn */
-        .table-scroll-container {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .table-scroll-container thead th {
-            position: sticky;
-            top: 0;
-            background-color: #f8f9fa;
-        }
-        /* Loading Overlay */
-        #loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.3s ease;
-        }
-        #loading-overlay .spinner {
-            width: 80px;
-            height: 80px;
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #0d6efd;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        #loading-overlay .loading-text {
-            color: white;
-            font-size: 1.5rem;
-            margin-top: 20px;
-            font-weight: 500;
-        }
-    </style>
+    <link href="style.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <!-- Loading Overlay -->
     <div id="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">
@@ -102,26 +25,25 @@
         <div class="row">
             <div class="col-lg-3 mb-4">
                 <div class="card p-3 sticky-top sidebar-card" style="top: 1rem;">
-                    <h4>File Management</h4>
+                    <h4>TỆP DỮ LIỆU</h4>
                     <hr>
                     
-                    <!-- File Management Toolbar -->
                     <div class="btn-group w-100 mb-3" role="group">
                         <button type="button" class="btn btn-outline-primary" id="btn-new-file" title="Tạo mới">
-                            <i class="bi bi-file-earmark-plus"></i> New
+                            <i class="bi bi-file-earmark-plus"></i> Tạo Mới
                         </button>
                         <button type="button" class="btn btn-outline-success" id="btn-open-file" title="Mở file">
-                            <i class="bi bi-folder-open"></i> Open
+                            <i class="bi bi-folder-open"></i> Mở Tệp
                         </button>
                         <button type="button" class="btn btn-outline-warning" id="btn-save-file" title="Lưu file">
-                            <i class="bi bi-save"></i> Save
+                            <i class="bi bi-save"></i> Lưu Tệp
                         </button>
                     </div>
                     <input type="file" id="hidden-file-input" accept=".csv,.inp" style="display:none;">
                     
                     <button class="btn btn-lg btn-success w-100" id="calculate-button" disabled>
                         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="calc-spinner"></span>
-                        <i class="bi bi-calculator"></i> Run Analysis
+                        <i class="bi bi-calculator"></i> TÍNH TOÁN
                     </button>
                     
                     <div class="alert alert-info mt-3" id="wasm-status">
@@ -161,10 +83,10 @@
                         <div class="tab-content p-3 border border-top-0" id="inputTabsContent">
                             
                             <div class="tab-pane fade show active" id="content-material" role="tabpanel">
-                                <h5><i class="bi bi-rulers"></i> 1. Pile Properties (Đặc trưng cọc)</h5>
+                                <h5><i class="bi bi-rulers"></i> 1. Thông số cọc</h5>
                                 <hr>
                                 <div class="alert alert-info">
-                                    <i class="bi bi-info-circle"></i> Nhập đặc trưng vật liệu và hình học của cọc bê tông/thép
+                                    <i class="bi bi-info-circle"></i> Nhập đặc trưng vật liệu và hình học của cọc 
                                 </div>
                                 <div class="row g-3">
                                     <div class="col-md-3">
@@ -173,8 +95,8 @@
                                         </label>
                                         <small class="d-block text-muted mb-1">Mô đun đàn hồi</small>
                                         <div class="input-group">
-                                            <input type="number" class="form-control" id="input-E" value="2800000" step="10000">
-                                            <span class="input-group-text">T/m²</span>
+                                            <input type="number" class="form-control" id="input-E" value="28000000" step="10000">
+                                            <span class="input-group-text">kN/m²</span>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
@@ -229,7 +151,7 @@
                                     </div>
                                 </div>
                                 
-                                <h5 class="mt-4"><i class="bi bi-square-fill"></i> 2. Cap Properties (Kích thước đài/bệ)</h5>
+                                <h5 class="mt-4"><i class="bi bi-square-fill"></i> 2. Kích thước đài/bệ cọc</h5>
                                 <hr>
                                 <div class="alert alert-warning">
                                     <i class="bi bi-exclamation-triangle"></i> Kích thước móng quy ước (cho kiểm toán Zavriev-Spiro)
@@ -262,16 +184,16 @@
                                 <h5>Điều kiện nền</h5>
                                 <div class="row g-3">
                                     <div class="col-md-4">
-                                        <label class="form-label">m (T/m4)</label>
-                                        <input type="number" class="form-control" id="input-m" value="600">
+                                        <label class="form-label">m (kN/m4)</label>
+                                        <input type="number" class="form-control" id="input-m" value="6000">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">m_chan (T/m4)</label>
-                                        <input type="number" class="form-control" id="input-mchan" value="800">
+                                        <label class="form-label">m_chan (kN/m4)</label>
+                                        <input type="number" class="form-control" id="input-mchan" value="8000">
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label">Rdat (T/m2)</label>
-                                        <input type="number" class="form-control" id="input-Rdat" value="680">
+                                        <label class="form-label">Rdat (kN/m2)</label>
+                                        <input type="number" class="form-control" id="input-Rdat" value="6800">
                                     </div>
                                 </div>
                                 <div class="row g-3 mt-2">
@@ -291,19 +213,19 @@
                                             <tr>
                                                 <th>Lớp</th>
                                                 <th>Ldat (m)</th>
-                                                <th>Tdat (T/m2)</th>
+                                                <th>Tdat (kN/m2)</th>
                                                 <th>Phi (rad)</th>
                                             </tr>
                                         </thead>
                                         <tbody id="soil-layer-body">
-                                            </tbody>
+                                        </tbody>
                                     </table>
                                 </div>
                                 <button class="btn btn-sm btn-outline-primary mt-2" id="add-soil-row"><i class="bi bi-plus-circle"></i> Thêm lớp đất</button>
                             </div>
 
                             <div class="tab-pane fade" id="content-loads" role="tabpanel">
-                                <h5><i class="bi bi-arrow-down-square-fill"></i> Loading Condition (Tải trọng tác dụng)</h5>
+                                <h5><i class="bi bi-arrow-down-square-fill"></i> Tải trọng tác dụng</h5>
                                 <hr>
                                 <div class="alert alert-info">
                                     <i class="bi bi-info-circle"></i> Tải trọng tác dụng tại đáy bệ cọc (mặt tiếp xúc với đất)
@@ -313,32 +235,32 @@
                                 <div class="row g-3 mb-4">
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">
-                                            <i class="bi bi-arrow-left-right"></i> Hx (T)
+                                            <i class="bi bi-arrow-left-right"></i> Hx (kN)
                                         </label>
                                         <small class="d-block text-muted mb-1">Lực ngang phương X</small>
                                         <div class="input-group input-group-lg">
-                                            <input type="number" class="form-control" id="input-Hx" value="20.2" step="0.1">
-                                            <span class="input-group-text">T</span>
+                                            <input type="number" class="form-control" id="input-Hx" value="202" step="0.1">
+                                            <span class="input-group-text">kN</span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">
-                                            <i class="bi bi-arrow-up-down"></i> Hy (T)
+                                            <i class="bi bi-arrow-up-down"></i> Hy (kN)
                                         </label>
                                         <small class="d-block text-muted mb-1">Lực ngang phương Y</small>
                                         <div class="input-group input-group-lg">
-                                            <input type="number" class="form-control" id="input-Hy" value="72.0" step="0.1">
-                                            <span class="input-group-text">T</span>
+                                            <input type="number" class="form-control" id="input-Hy" value="720" step="0.1">
+                                            <span class="input-group-text">kN</span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">
-                                            <i class="bi bi-arrow-down-circle-fill text-danger"></i> Pz (T)
+                                            <i class="bi bi-arrow-down-circle-fill text-danger"></i> Pz (kN)
                                         </label>
-                                        <small class="d-block text-muted mb-1">Lực dọc (Vertical)</small>
+                                        <small class="d-block text-muted mb-1">Lực đứng</small>
                                         <div class="input-group input-group-lg">
-                                            <input type="number" class="form-control" id="input-Pz" value="1250.06" step="1">
-                                            <span class="input-group-text">T</span>
+                                            <input type="number" class="form-control" id="input-Pz" value="12500" step="1">
+                                            <span class="input-group-text">kN</span>
                                         </div>
                                     </div>
                                 </div>
@@ -347,32 +269,32 @@
                                 <div class="row g-3">
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">
-                                            <i class="bi bi-arrow-clockwise"></i> Mx (T.m)
+                                            <i class="bi bi-arrow-clockwise"></i> Mx (kN.m)
                                         </label>
                                         <small class="d-block text-muted mb-1">Mô men quanh trục X</small>
                                         <div class="input-group input-group-lg">
-                                            <input type="number" class="form-control" id="input-Mx" value="934.4" step="1">
-                                            <span class="input-group-text">T.m</span>
+                                            <input type="number" class="form-control" id="input-Mx" value="9344" step="1">
+                                            <span class="input-group-text">kN.m</span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">
-                                            <i class="bi bi-arrow-clockwise"></i> My (T.m)
+                                            <i class="bi bi-arrow-clockwise"></i> My (kN.m)
                                         </label>
                                         <small class="d-block text-muted mb-1">Mô men quanh trục Y</small>
                                         <div class="input-group input-group-lg">
-                                            <input type="number" class="form-control" id="input-My" value="361.9" step="1">
-                                            <span class="input-group-text">T.m</span>
+                                            <input type="number" class="form-control" id="input-My" value="3619" step="1">
+                                            <span class="input-group-text">kN.m</span>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label fw-bold">
-                                            <i class="bi bi-arrow-clockwise"></i> Mz (T.m)
+                                            <i class="bi bi-arrow-clockwise"></i> Mz (kN.m)
                                         </label>
                                         <small class="d-block text-muted mb-1">Mô men xoắn quanh Z</small>
                                         <div class="input-group input-group-lg">
                                             <input type="number" class="form-control" id="input-Mz" value="0.0" step="1">
-                                            <span class="input-group-text">T.m</span>
+                                            <span class="input-group-text">kN.m</span>
                                         </div>
                                     </div>
                                 </div>
@@ -388,11 +310,7 @@
                             <div class="tab-pane fade" id="content-piles" role="tabpanel">
                                 <h5><i class="bi bi-grid-3x3-gap-fill"></i> Pile Definition (Bố trí cọc)</h5>
                                 <hr>
-                                <div class="alert alert-warning">
-                                    <i class="bi bi-exclamation-triangle"></i> <strong>Phiên bản FREE:</strong> Giới hạn 4 cọc. 
-                                    <a href="#" class="alert-link" onclick="document.getElementById('tab-license').click()">Kích hoạt PRO</a> để không giới hạn.
-                                </div>
-                                
+                             
                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                     <h6 class="mb-0">
                                         <i class="bi bi-table"></i> Bảng bố trí: 
@@ -436,8 +354,7 @@
                                             </tr>
                                         </thead>
                                         <tbody id="pile-table-body">
-                                            <!-- Rows will be added dynamically -->
-                                        </tbody>
+                                            </tbody>
                                     </table>
                                 </div>
                                 
@@ -561,12 +478,12 @@
                                         <thead>
                                             <tr>
                                                 <th>Cọc số</th>
-                                                <th>N (T)</th>
-                                                <th>QII (T)</th>
-                                                <th>QIII (T)</th>
-                                                <th>MI (T.m)</th>
-                                                <th>MII (T.m)</th>
-                                                <th>MIII (T.m)</th>
+                                                <th>N (kN)</th>
+                                                <th>QII (kN)</th>
+                                                <th>QIII (kN)</th>
+                                                <th>MI (kN.m)</th>
+                                                <th>MII (kN.m)</th>
+                                                <th>MIII (kN.m)</th>
                                             </tr>
                                         </thead>
                                         <tbody id="forces-results-body">
@@ -606,7 +523,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     
     <script src="pilegroup.js"></script> 
     <script src="app-check.js"></script>

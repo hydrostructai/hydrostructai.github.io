@@ -307,7 +307,7 @@ function handleAddPile() {
     // Check FREE tier restriction
     const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
     if (!isLicensed && currentCount >= 4) {
-        alert("⚠️ Phiên bản FREE chỉ cho phép tối đa 4 cọc.\n\nVui lòng nâng cấp lên PRO để sử dụng không giới hạn.");
+        alert("Phiên bản Free chỉ cho phép tối đa 4 cọc.\n\nVui lòng nâng cấp lên PRO để sử dụng không giới hạn.");
         document.getElementById('tab-license').click();
         return;
     }
@@ -395,7 +395,7 @@ function loadSampleData() {
     // Inform user about FREE tier limitation
     const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
     if (!isLicensed) {
-        alert("✅ Đã tải 24 cọc mẫu!\n\n⚠️ Lưu ý: Phiên bản FREE giới hạn 4 cọc cho tính toán.\nDữ liệu mẫu này chỉ để tham khảo. Kích hoạt PRO để phân tích 24 cọc.");
+        alert("✅ Đã tải 24 cọc mẫu!\n\n⚠️ Lưu ý: Phiên bản Free giới hạn 4 cọc cho tính toán.\nDữ liệu mẫu này chỉ để tham khảo. Kích hoạt PRO để phân tích 24 cọc.");
     } else {
         alert("✅ Đã tải 24 cọc mẫu thành công!");
     }
@@ -448,32 +448,32 @@ function newFile() {
     if (!confirm("Tạo file mới? Dữ liệu hiện tại sẽ bị xóa.")) return;
     
     // Reset material inputs
-    document.getElementById('input-E').value = '2800000';
-    document.getElementById('input-F').value = '0.1225';
-    document.getElementById('input-Icoc').value = '0.00125';
-    document.getElementById('input-D').value = '0.35';
-    document.getElementById('input-Lcoc').value = '12.0';
-    document.getElementById('input-L0').value = '2.0';
+    document.getElementById('input-E').value = '0.0';
+    document.getElementById('input-F').value = '0.0';
+    document.getElementById('input-Icoc').value = '0.0';
+    document.getElementById('input-D').value = '0.0';
+    document.getElementById('input-Lcoc').value = '0.0';
+    document.getElementById('input-L0').value = '0.0';
     
     // Reset cap dimensions
-    document.getElementById('input-Bx').value = '7';
-    document.getElementById('input-By').value = '9';
+    document.getElementById('input-Bx').value = '0.0';
+    document.getElementById('input-By').value = '0.0';
     
     // Reset soil inputs
-    document.getElementById('input-m').value = '600';
-    document.getElementById('input-mchan').value = '800';
-    document.getElementById('input-Rdat').value = '680';
+    document.getElementById('input-m').value = '0.0';
+    document.getElementById('input-mchan').value = '0.0';
+    document.getElementById('input-Rdat').value = '0.0';
     document.getElementById('select-dieu-kien-mui').value = 'K';
     
     // Clear soil layers
     document.getElementById('soil-layer-body').innerHTML = '';
     
     // Reset loads
-    document.getElementById('input-Hx').value = '20.2';
-    document.getElementById('input-Hy').value = '72.0';
-    document.getElementById('input-Pz').value = '1250.06';
-    document.getElementById('input-Mx').value = '934.4';
-    document.getElementById('input-My').value = '361.9';
+    document.getElementById('input-Hx').value = '0.0';
+    document.getElementById('input-Hy').value = '0.0';
+    document.getElementById('input-Pz').value = '0.0';
+    document.getElementById('input-Mx').value = '0.0';
+    document.getElementById('input-My').value = '0.0';
     document.getElementById('input-Mz').value = '0.0';
     
     // Initialize with 4 default piles (FREE tier default)
@@ -551,7 +551,7 @@ function parsePileGroupCSV(content) {
     // Check FREE tier and warn if needed
     const isLicensed = localStorage.getItem('pilegroupLicensed') === 'true';
     if (!isLicensed && pileCounter > 4) {
-        alert(`✅ File CSV đã được tải với ${pileCounter} cọc!\n\n⚠️ Lưu ý: Phiên bản FREE giới hạn 4 cọc cho tính toán.\nKích hoạt PRO để phân tích tất cả ${pileCounter} cọc.`);
+        alert(`✅ File CSV đã được tải với ${pileCounter} cọc!\n\n Lưu ý: Phiên bản FREE giới hạn 4 cọc cho tính toán.\nKích hoạt PRO để phân tích tất cả ${pileCounter} cọc.`);
     } else {
         alert(`✅ File CSV đã được tải với ${pileCounter} cọc!`);
     }
