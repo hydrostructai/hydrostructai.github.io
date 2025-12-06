@@ -1,205 +1,127 @@
 /* =================================
-   Thiết lập Chung & Font
+   STYLES.CSS - Hydro Structure AI
    ================================= */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background-color: #f4f4f9;
-    color: #333;
-    margin: 0;
-    padding: 20px;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: #f8f9fa;
+    color: #212529;
     line-height: 1.6;
 }
 
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
+/* --- HEADER --- */
+.tool-header {
+    background: linear-gradient(135deg, #198754 0%, #157347 100%);
+    color: white;
+    padding: 2rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
 }
+.tool-header .container { max-width: 1400px; margin: 0 auto; }
+.tool-title { font-size: 2rem; font-weight: 600; margin-bottom: 0.5rem; }
+.tool-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.9rem; opacity: 0.95; }
+.tool-meta span { display: inline-flex; align-items: center; gap: 0.5rem; }
 
-/* =================================
-   Bố cục Chính
-   ================================= */
-.main-content {
+/* --- MAIN LAYOUT --- */
+.tool-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
     display: flex;
-    flex-direction: column; /* Xếp chồng: Biểu đồ (trên) -> Nội dung (dưới) */
-    align-items: center; /* Căn giữa theo chiều ngang */
-    width: 100%;
-    gap: 30px; /* Khoảng cách giữa phần trên và phần dưới */
+    gap: 2rem;
+    min-height: calc(100vh - 200px);
 }
 
-/* =================================
-   Phần Trên: Biểu đồ & Diện tích
-   ================================= */
-.chart-wrapper {
+/* Cột Trái: Canvas */
+.canvas-section {
+    flex: 2;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Căn giữa canvas và diện tích */
-    gap: 15px; /* Khoảng cách giữa canvas và diện tích */
-    width: 100%;
-    max-width: 800px; /* Giới hạn chiều rộng của biểu đồ nếu cần */
+    gap: 1.5rem;
 }
-
-#canvas-container {
-    border: 1px solid #bdc3c7;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    /* p5.js sẽ tự động đặt kích thước */
-    /* Đảm bảo canvas vừa vặn */
-    max-width: 100%;
-}
-
-/* === BỔ SUNG CSS CHO NÚT MỚI === */
-#calculateButton {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 1.1em;
-    font-weight: bold;
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 5px; /* Giảm khoảng cách trên */
-    gap: 5px; /* Giảm khoảng cách dưới */
-}
-#calculateButton:hover {
-    background-color: #0056b3;
-}
-#calculateButton:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
-}
-
-/* === BỔ SUNG CSS CHO BỘ ĐẾM NGƯỢC === */
-#timer-display {
-    margin: 0;
-    padding: 0;
-}
-
-/* Vùng hiển thị diện tích (dưới biểu đồ) */
-#area-display {
-    padding: 10px 25px;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    border: 1px solid #ddd;
-    text-align: center;
-}
-
-#area-display h3 {
-    margin: 0;
-    font-size: 1.5em;
-    color: #2c3e50;
-}
-
-#area-display h3 span {
-    color: #e74c3c; /* Màu đỏ nổi bật */
-    font-weight: bold;
-    font-family: 'Courier New', Courier, monospace;
-}
-
-/* =================================
-   Phần Dưới: Kết quả & Diễn giải
-   ================================= */
-.bottom-wrapper {
+.canvas-wrapper {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 1rem;
     display: flex;
-    flex-wrap: wrap; /* Cho phép xuống hàng trên màn hình nhỏ */
     justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px; /* Giới hạn chiều rộng tổng */
+    border: 1px solid #eee;
 }
+canvas { border-radius: 4px; max-width: 100%; height: auto; }
 
-/* Kiểu "Thẻ" (Card) chung cho 3 cột */
-#results,
-#explanation,
-#equation-list {
-    background-color: #ffffff;
-    border: 1px solid #bdc3c7;
+/* Khu vực hiển thị kết quả nổi bật */
+.area-display-section {
+    background: white;
+    border-left: 5px solid #198754;
+    padding: 1.5rem;
     border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
-    height: fit-content; /* Chiều cao tự động */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
+.area-display-section h3 { color: #495057; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+.area-display-section .result-number { font-size: 2rem; font-weight: 700; color: #198754; font-family: 'Courier New', monospace; }
 
-/* Cột 1: Kết quả */
-#results {
-    flex: 1; /* Chiếm 1 phần không gian */
-    min-width: 300px; /* Kích thước tối thiểu trước khi xuống hàng */
-}
-
-#results h3 {
-    margin-top: 0;
-    font-size: 1.4em;
-    color: #3498db; /* Màu xanh */
-    border-bottom: 2px solid #3498db;
-    padding-bottom: 10px;
-}
-
-#results p {
-    font-size: 1.1em;
-}
-
-#results p span {
-    font-weight: bold;
-    color: #e74c3c;
-    font-family: 'Courier New', Courier, monospace;
-    display: block; /* Hiển thị số trên dòng riêng */
-    margin-top: 4px;
-}
-
-/* Cột 2: Danh sách phương trình (Mới) */
-#equation-list {
+/* Cột Phải: Controls */
+.controls-section {
     flex: 1;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: 2rem;
     min-width: 300px;
 }
-#equation-list h3 {
-    margin-top: 0;
-    font-size: 1.4em;
-    color: #e74c3c; /* Màu đỏ */
-    border-bottom: 2px solid #e74c3c;
-    padding-bottom: 10px;
-}
-#equation-list ul {
-    padding-left: 20px;
-    margin: 0;
-}
-#equation-list li {
-    font-size: 1.1em;
-    list-style-type: none;
+.controls-section h3 {
+    color: #198754;
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #198754;
 }
 
-
-/* Cột 3: Diễn giải */
-#explanation {
-    flex: 2; /* Chiếm 2 phần không gian (rộng hơn) */
-    min-width: 400px; /* Kích thước tối thiểu trước khi xuống hàng */
+/* --- COMPONENTS --- */
+.btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+    font-size: 1rem;
 }
+.btn-primary { background: #198754; color: white; }
+.btn-primary:hover { background: #146c43; transform: translateY(-2px); }
+.btn-primary:disabled { background: #6c757d; cursor: not-allowed; transform: none; }
 
-#explanation h3 {
-    margin-top: 0;
-    font-size: 1.4em;
-    color: #27ae60; /* Màu xanh lá */
-    border-bottom: 2px solid #27ae60;
-    padding-bottom: 10px;
+.info-box {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
 }
+.info-box h4 { color: #198754; margin-bottom: 0.5rem; font-size: 1rem; }
 
-#explanation h4 {
-    color: #2c3e50;
-    margin-top: 20px;
-    margin-bottom: 5px;
-}
+.toc { background: #e9ecef; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; }
+.toc h4 { font-size: 0.85rem; color: #6c757d; text-transform: uppercase; margin-bottom: 0.5rem; }
+.toc ul { list-style: none; }
+.toc a { text-decoration: none; color: #198754; font-weight: 500; display: block; padding: 2px 0; }
+.toc a:hover { color: #146c43; transform: translateX(5px); transition: transform 0.2s; }
 
-#explanation p {
-    font-size: 1em;
-    margin-bottom: 15px;
-}
-
-#explanation ul {
-    padding-left: 20px;
-    margin-top: 0;
-}
-
-#explanation li {
-    margin-bottom: 10px;
+/* Responsive */
+@media (max-width: 992px) {
+    .tool-container { flex-direction: column; }
+    .controls-section { position: static; }
 }

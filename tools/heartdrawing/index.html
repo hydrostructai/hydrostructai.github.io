@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vẽ Trái Tim</title>
+    <title>Vẽ Trái Tim - Hydro Structure AI</title>
     
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-    
       gtag('config', 'G-BNB682DVWC');
     </script>
 
@@ -18,6 +17,25 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     
     <link rel="stylesheet" href="styles.css">
+
+    <style>
+        /* Bổ sung style cho nút Tạm dừng (màu xám) */
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            box-shadow: 0 4px 6px rgba(108, 117, 125, 0.2);
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 6px 12px rgba(108, 117, 125, 0.3);
+        }
+        .btn-secondary:disabled {
+            background: #e2e6ea;
+            color: #adb5bd;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
 </head>
 <body>
     <div class="tool-header">
@@ -101,8 +119,11 @@
             </div>
 
             <div class="control-buttons">
-                <button class="btn btn-primary" id="runButton" data-lang-key="run_button">
-                    <i class="fas fa-play"></i> <span>Chạy</span>
+                <button class="btn btn-primary" id="resetBtn">
+                    <i class="fas fa-redo"></i> <span data-lang-key="reset_button">Đặt lại</span>
+                </button>
+                <button class="btn btn-secondary" id="pauseBtn">
+                    <i class="fas fa-pause"></i> <span data-lang-key="pause_button">Tạm dừng</span>
                 </button>
             </div>
 
@@ -135,8 +156,9 @@
                 paramA_label: 'Tham số A (x = A sin³t):',
                 paramY_label: 'Tham số Y (y = B cos t - ...):',
                 speed_label: 'Tốc độ:',
-                run_button: 'Chạy',
-                running: 'Đang vẽ...',
+                reset_button: 'Đặt lại',
+                pause_button: 'Tạm dừng',
+                resume_button: 'Tiếp tục',
                 info_title: 'Thông tin',
                 info_desc: 'Đường cong trái tim được tạo bởi phương trình tham số với sin và cos.'
             },
@@ -153,8 +175,9 @@
                 paramA_label: 'Parameter A (x = A sin³t):',
                 paramY_label: 'Parameter Y (y = B cos t - ...):',
                 speed_label: 'Speed:',
-                run_button: 'Run',
-                running: 'Drawing...',
+                reset_button: 'Reset',
+                pause_button: 'Pause',
+                resume_button: 'Resume',
                 info_title: 'Information',
                 info_desc: 'Heart curve created by parametric equations using sin and cos.'
             }
@@ -169,18 +192,21 @@
             langViButton.classList.toggle('active', lang === 'vi');
             langEnButton.classList.toggle('active', lang === 'en');
 
+            // Update static texts
             document.querySelectorAll('[data-lang-key]').forEach(element => {
                 const key = element.getAttribute('data-lang-key');
-                if (translations[lang][key]) {
+                // Skip updating dynamic buttons here to avoid overwriting state text
+                if (translations[lang][key] && !['reset_button', 'pause_button'].includes(key)) {
                     element.textContent = translations[lang][key];
                 }
             });
+
+            // Update buttons explicitly based on state
+            const resetText = translations[lang].reset_button;
+            document.getElementById('resetBtn').querySelector('span').textContent = resetText;
             
-            // Cập nhật lại text của nút nếu nó không đang chạy
-            const runBtnSpan = document.getElementById('runButton').querySelector('span');
-            if (!document.getElementById('runButton').disabled) {
-                runBtnSpan.textContent = translations[lang].run_button;
-            }
+            const pauseText = isPaused ? translations[lang].resume_button : translations[lang].pause_button;
+            document.getElementById('pauseBtn').querySelector('span').textContent = pauseText;
         }
 
         langViButton.addEventListener('click', () => setLanguage('vi'));
@@ -189,7 +215,8 @@
         // --- 2. DRAWING LOGIC ---
         const canvas = document.getElementById('heartCanvas');
         const ctx = canvas.getContext('2d');
-        const runButton = document.getElementById('runButton');
+        const resetBtn = document.getElementById('resetBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
         const speedSlider = document.getElementById('speedSlider');
 
         const inputA = document.getElementById('paramA');
@@ -202,6 +229,7 @@
         let t_step = 0.02;
         let params = {};
         let animationFrameId = null;
+        let isPaused = false;
 
         const centerX = canvas.width / 2;
         const centerY = canvas.height / 2;
@@ -209,7 +237,6 @@
         const TWO_PI = 2 * Math.PI;
 
         function calculateCoordinates(t_val, p) {
-            // Heart Curve Formulas
             const x = p.A * Math.pow(Math.sin(t_val), 3);
             const y = p.B * Math.cos(t_val) 
                     - p.C * Math.cos(2 * t_val) 
@@ -219,13 +246,14 @@
         }
 
         function transformCoordinates(x, y) {
-            // Flip Y axis and center
             const canvasX = centerX + x * scale;
             const canvasY = centerY - y * scale;
             return { canvasX, canvasY };
         }
 
         function drawFrame() {
+            if (isPaused) return; // Nếu đang tạm dừng thì không vẽ tiếp
+
             t += t_step;
             
             // Vẽ
@@ -239,27 +267,27 @@
             if (t < TWO_PI) {
                 animationFrameId = requestAnimationFrame(drawFrame);
             } else {
-                // Kết thúc vẽ: nối về điểm đầu và tô màu
+                // Kết thúc vẽ
                 ctx.closePath();
                 ctx.fill();
-                
-                // Reset nút bấm
-                runButton.disabled = false;
-                const runText = translations[currentLang].run_button;
-                runButton.querySelector('span').textContent = runText;
+                pauseBtn.disabled = true; // Disable nút Pause khi đã vẽ xong
+                pauseBtn.innerHTML = `<i class="fas fa-check"></i> <span>${translations[currentLang].pause_button}</span>`;
             }
         }
 
         function startDrawingLoop() {
-            // Hủy animation cũ nếu có để tránh lỗi chồng hình
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
+            // Reset trạng thái
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            isPaused = false;
+            
+            // Reset UI nút Pause
+            pauseBtn.disabled = false;
+            pauseBtn.innerHTML = `<i class="fas fa-pause"></i> <span>${translations[currentLang].pause_button}</span>`;
 
             // Xóa canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Lấy tham số từ input
+            // Lấy tham số
             params = {
                 A: parseFloat(inputA.value) || 16,
                 B: parseFloat(inputB.value) || 13,
@@ -270,35 +298,44 @@
 
             // Tính toán tốc độ
             const speedValue = parseFloat(speedSlider.value);
-            // Map 1-100 to suitable t_step (0.005 to 0.15)
             const minStep = 0.005;
             const maxStep = 0.15;
             t_step = minStep + Math.pow(speedValue / 100, 2) * (maxStep - minStep);
 
-            // Reset trạng thái vẽ
+            // Reset t và style
             t = 0;
             ctx.beginPath();
-            ctx.strokeStyle = '#dc3545'; // Màu viền đỏ
-            ctx.fillStyle = 'rgba(220, 53, 69, 0.9)'; // Màu tô đỏ nhạt hơn
+            ctx.strokeStyle = '#dc3545';
+            ctx.fillStyle = 'rgba(220, 53, 69, 0.9)';
             ctx.lineWidth = 3;
             ctx.lineCap = 'round';
             ctx.lineJoin = 'round';
 
-            // Di chuyển đến điểm đầu tiên
+            // Di chuyển đến điểm đầu
             const { x: x0, y: y0 } = calculateCoordinates(0, params);
             const { canvasX: cX0, canvasY: cY0 } = transformCoordinates(x0, y0);
             ctx.moveTo(cX0, cY0);
 
-            // Cập nhật UI nút bấm
-            runButton.disabled = true;
-            runButton.querySelector('span').textContent = translations[currentLang].running;
-
-            // Bắt đầu loop
+            // Bắt đầu chạy
             animationFrameId = requestAnimationFrame(drawFrame);
         }
 
+        function togglePause() {
+            isPaused = !isPaused;
+            if (isPaused) {
+                // Đang chạy -> Tạm dừng
+                cancelAnimationFrame(animationFrameId);
+                pauseBtn.innerHTML = `<i class="fas fa-play"></i> <span>${translations[currentLang].resume_button}</span>`;
+            } else {
+                // Đang dừng -> Tiếp tục
+                pauseBtn.innerHTML = `<i class="fas fa-pause"></i> <span>${translations[currentLang].pause_button}</span>`;
+                drawFrame();
+            }
+        }
+
         // --- 3. EVENT LISTENERS ---
-        runButton.addEventListener('click', startDrawingLoop);
+        resetBtn.addEventListener('click', startDrawingLoop);
+        pauseBtn.addEventListener('click', togglePause);
 
         speedSlider.addEventListener('input', (e) => {
             document.getElementById('valueSpeed').textContent = e.target.value;
@@ -307,11 +344,11 @@
         // Initialize
         window.addEventListener('load', () => {
             setLanguage(currentLang);
-            // Tự động chạy lần đầu để người dùng thấy hình ảnh ngay
+            
+            // Tự động chạy khi mở trang
             startDrawingLoop();
             
             // Giả lập bộ đếm view (Placeholder)
-            // Vì trang tĩnh không có backend lưu số thật
             setTimeout(() => {
                 document.getElementById('view-count').textContent = Math.floor(Math.random() * 500 + 1200).toLocaleString();
             }, 800);
