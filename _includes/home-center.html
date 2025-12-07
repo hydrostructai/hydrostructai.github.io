@@ -1,0 +1,94 @@
+<div class="center-content">
+  
+  <h2 class="section-title">Hệ thống Web Apps</h2>
+  
+  {% assign apps = site.pages | where: "path", "apps.md" | first %}
+  {% if apps %} <div class="app-grid">
+      
+      <div class="app-card">
+        <div class="app-card-image">
+          <img src="/assets/images/app-icons/shortcol3D.png" alt="Short Column 3D">
+        </div>
+        <div class="app-card-body">
+          <h3 class="app-card-title">ShortCol 3D</h3>
+          <p class="app-card-desc">
+            Biểu đồ tương tác 3D (P-Mx-My) cho cột BTCT tiết diện chữ nhật chịu nén lệch tâm xiên.
+          </p>
+          <a href="/apps/shortcol3D/" class="btn--app">Mở Ứng Dụng</a>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-image">
+          <img src="/assets/images/app-icons/shortcol2D.png" alt="Short Column 2D">
+        </div>
+        <div class="app-card-body">
+          <h3 class="app-card-title">ShortCol 2D</h3>
+          <p class="app-card-desc">
+            Biểu đồ tương tác 2D (P-M) cho cột BTCT tiết diện chữ nhật chịu nén lệch tâm phẳng.
+          </p>
+          <a href="/apps/shortcol2D/" class="btn--app">Mở Ứng Dụng</a>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-image">
+          <img src="{{ relative_url }}/assets/images/app-icons/lateral-pile.png" alt="Lateral Pile Analysis" onerror="this.src='/assets/images/app-icons/pile-group2.png'">
+        </div>
+        <div class="app-card-body">
+          <h3 class="app-card-title">Lateral Pile</h3>
+          <p class="app-card-desc">
+            Phân tích cọc đơn chịu tải trọng ngang (p-y curve). Biểu đồ chuyển vị, nội lực.
+          </p>
+          <a href="/apps/lateralpile/" class="btn--app">Mở Ứng Dụng</a>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <div class="app-card-image">
+          <img src="/assets/images/app-icons/sheetpile-icon.png" alt="Sheet Pile FEM">
+        </div>
+        <div class="app-card-body">
+          <h3 class="app-card-title">Sheet Pile FEM</h3>
+          <p class="app-card-desc">
+            Phân tích Tường cừ ván có neo/không neo bằng Phương pháp Phần tử Hữu hạn (FEM).
+          </p>
+          <a href="/apps/sheetpilefem/" class="btn--app">Mở Ứng Dụng</a>
+        </div>
+      </div>
+      
+      <div class="app-card">
+        <div class="app-card-image">
+          <img src="/assets/images/app-icons/pilegroup-icon.png" alt="Pile Group 3D">
+        </div>
+        <div class="app-card-body">
+          <h3 class="app-card-title">Pile Group 3D</h3>
+          <p class="app-card-desc">
+            Phân tích móng cọc đài cao (Zavriev-Spiro). Hỗ trợ cọc xiên và ma trận độ cứng 3D.
+          </p>
+          <a href="/apps/pilegroup/" class="btn--app">Mở Ứng Dụng</a>
+        </div>
+      </div>
+      
+  </div>
+  {% endif %}
+
+  <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
+
+  <h3 class="section-title" style="font-size: 1.4rem;">Công cụ khác (Tools)</h3>
+  <div class="tools-grid">
+    <a href="/tools/circlearea/" class="tool-item">
+      <i class="fas fa-shapes"></i> Hình tròn Apollonius
+    </a>
+    <a href="/tools/hypocycloid/index.html" class="tool-item">
+      <i class="fas fa-bezier-curve"></i> Đường Hypocycloid
+    </a>
+    <a href="/tools/taylor-series/index.html" class="tool-item">
+      <i class="fas fa-chart-line"></i> Chuỗi Taylor
+    </a>
+    <a href="/tools/heartdrawing/index.html" class="tool-item">
+      <i class="fas fa-heart"></i> Trái Tim Tham Số
+    </a>
+  </div>
+
+</div>
