@@ -1,0 +1,146 @@
+Dưới đây là **prompt chuẩn – dạng “master prompt”** để bạn dùng cho bất kỳ AI agent nào. Prompt này được tối ưu theo tư duy của **chuyên gia lập trình Web**, **kỹ sư kết cấu**, và **chuyên gia FEM**, đảm bảo agent hiểu đầy đủ nhiệm vụ: nghiên cứu thư mục `sheetpilefem`, kế thừa UI/UX, CSS/JS global, và triển khai một **web app ShortCol2D – Biểu đồ tương tác cột chịu nén lệch tâm 2D** dựa trên logic tính toán cột lệch tâm chính xác.
+
+Bạn chỉ cần copy-paste prompt dưới đây vào bất kỳ AI agent nào:
+
+---
+
+# ✅ **MASTER PROMPT: Web App ShortCol2D (Biểu đồ tương tác cột chịu nén lệch tâm 2D)**
+
+**Vai trò yêu cầu:**
+Bạn là **chuyên gia lập trình web**, **kỹ sư kết cấu**, và **kỹ sư FEM** có kinh nghiệm phát triển webapp tính toán kết cấu, đọc hiểu mã nguồn MATLAB/Python/JS, và chuyển đổi logic tính toán kỹ thuật sang web-app hiệu năng cao.
+
+---
+
+## 🎯 **Nhiệm vụ tổng quát**
+
+Nghiên cứu toàn bộ thư mục **`sheetpilefem`** được cung cấp.
+Từ đó, hãy:
+
+1. **Phân tích toàn bộ cấu trúc code, flow tính toán, thư viện, UI/UX, logic nhập xuất dữ liệu, xử lý FEM**, đặc biệt:
+
+   * cấu trúc HTML templates
+   * tổ chức CSS/JS
+   * thư viện tính toán (JS hoặc wasm)
+   * kiến trúc module
+   * mô hình tính toán (input → xử lý → output → vẽ biểu đồ)
+
+2. **Kế thừa hoàn toàn giao diện và stylesheet** từ:
+
+   * `assets/css/global.css`
+   * `assets/js/global.js`
+   * layout, spacing, typography, màu sắc, UI component style của web app sheetpilefem.
+
+3. **Triển khai một web app mới** có tên:
+
+### 👉 **ShortCol2D – Biểu đồ tương tác cột chịu nén lệch tâm (2D)**
+
+4. **Phải giữ nguyên toàn bộ phương pháp tính toán, logic, và thuật toán kỹ thuật** được cung cấp trong code tham chiếu cho tính toán cột ngắn chịu nén lệch tâm.
+
+5. **Phải đảm bảo tính toán chính xác – hiệu quả – ổn định**, bao gồm:
+
+   * Tính sức chịu tải cột theo tương tác **N–M**
+   * Tính biểu đồ tương tác theo 2 trục hoặc 1 trục (tuỳ code cung cấp)
+   * Dùng các mô hình vật liệu sẵn có: bê tông, thép
+   * Tạo đồ thị 2D tương tác (canvas hoặc SVG)
+   * Tạo bảng kết quả và export nếu có
+   * Duy trì phong cách UI từ sheetpilefem
+
+6. **Không thay đổi phương pháp tính, không sáng tạo thuật toán mới.**
+   → **Chỉ chuyển đúng code vào web app mới**.
+
+---
+
+## 📌 **Yêu cầu kỹ thuật chi tiết**
+
+### 1. **Frontend**
+
+* Giữ nguyên style và component structure của `sheetpilefem`.
+* Kế thừa toàn bộ CSS trong:
+
+  ```
+  assets/css/global.css
+  assets/js/global.js
+  ```
+* Tạo page mới: `/shortcol2d/index.html`
+* UI gồm:
+
+  * Form nhập dữ liệu vật liệu
+  * Form nhập hình học cột
+  * Vị trí thép dọc
+  * Biểu đồ tương tác N-M 2D
+  * Bảng kết quả chi tiết
+  * Ý nghĩa thông số và cảnh báo
+
+### 2. **Backend / Logic tính**
+
+* Chuyển toàn bộ mã tính toán được cung cấp thành mô-đun độc lập JS (hoặc wasm nếu cần).
+* Đảm bảo:
+
+  * Xử lý solver nhanh
+  * Không block UI
+  * Có thể chạy trên WebWorker nếu tính nhiều điểm trong biểu đồ N–M
+  * Kết quả tương thích biểu đồ 2D
+
+### 3. **Biểu đồ**
+
+* Vẽ bằng SVG, Canvas hoặc thư viện (Chart.js, Plotly, hoặc giống sheetpilefem).
+* Phải cho phép:
+
+  * Zoom
+  * Hover tooltip
+  * Highlight điểm giới hạn
+  * Xuất PNG/SVG
+
+### 4. **Cấu trúc output**
+
+* Biểu đồ tương tác N–M
+* Capacity table
+* Trạng thái giới hạn vật liệu
+* Dữ liệu thô JSON để export
+* File report (nếu UI sheetpilefem có sẵn export template)
+
+---
+
+## 🧱 **Yêu cầu bắt buộc**
+
+* **Không thay đổi phương pháp tính** đã có trong code tham chiếu.
+* **Không tự tạo công thức mới**.
+* **Không đơn giản hóa mô hình**.
+* Giữ đúng tư duy kết cấu + tính toán vật liệu + strain compatibility của code.
+* Output phải **đúng tuyệt đối** theo logic gốc.
+* Kế thừa tối đa UI/UX hiện có để tạo ứng dụng đồng bộ.
+
+---
+
+## 📦 **Kết quả mà bạn phải trả về**
+
+1. Toàn bộ source code web app hoàn chỉnh:
+
+   * `index.html`
+   * `shortcol2d.js`
+   * `shortcol2d.css` (nếu tách từ global)
+   * module tính toán
+   * module vẽ biểu đồ
+   * flow xử lý input–compute–output
+   * code giải thích và comment theo chuẩn chuyên gia
+
+2. Mô tả kiến trúc và logic nội bộ.
+
+3. Hướng dẫn tích hợp vào project sheetpilefem.
+
+4. Kiểm thử mẫu với dữ liệu cột bê tông cốt thép phổ biến.
+
+---
+
+## 🚀 **Bắt đầu thực hiện ngay. Hãy phân tích chi tiết thư mục `sheetpilefem` và xây dựng webapp ShortCol2D hoàn chỉnh theo các yêu cầu trên.**
+
+Nếu thiếu thông tin, bạn phải đề xuất cấu trúc hợp lý nhất dựa trên logic kỹ thuật kết cấu và UI đang có.
+
+---
+
+---
+
+Nếu bạn muốn tôi tối ưu thêm phiên bản **prompt đặc thù cho Claude**, **Prompt dài 4000 từ**, hoặc **Prompt chia module**, chỉ cần nói:
+👉 *"viết thêm phiên bản cho Claude"*
+hoặc
+👉 *"tối ưu prompt dạng siêu kỹ sư kết cấu"*

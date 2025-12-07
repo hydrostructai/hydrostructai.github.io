@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShortCol 3D - Phân tích Cột Lệch Tâm Xiên (Biaxial)</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <link rel="stylesheet" href="global.css">
+
+    <style>
+        /* Fallback Styles: Đảm bảo giao diện không vỡ nếu thiếu global.css */
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --bg-body: #f8fafc;
+        }
+        body {
+            background-color: var(--bg-body);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        /* Loading Overlay Transition Styles */
+        #loading-overlay {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800">
+
+    <div id="loading-overlay" 
+         class="fixed inset-0 bg-white/80 flex flex-col items-center justify-center"
+         style="visibility: hidden; opacity: 0;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+        <div class="mt-3 text-primary font-bold text-lg loading-text">Đang khởi tạo hệ thống...</div>
+    </div>
+
+    <div id="root"></div>
+
+    <script src="global.js"></script>
+
+    <script src="shortcol3D.js" type="text/babel"></script>
+    
+    <script src="app-cal.js" type="text/babel"></script>
+    <script src="app-out.js" type="text/babel"></script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // MainApp Component: Nơi kết nối logic và giao diện
+        const MainApp = () => {
+            const [inputData, setInputData] = useState(null);
+            const [calcResults, setCalcResults] = useState(null);
+            const [isComputing, setIsComputing] = useState(false);
+
+            // Hàm xử lý khi người dùng nhấn "Tính toán" từ AppCal
+            const handleCalculate = (data) => {
+                // 1. Lưu dữ liệu input
+                setInputData(data);
+                setIsComputing(true);
+
+                // 2. Hiển thị Overlay
+                // Ưu tiên dùng AppUI từ global.js nếu có, nếu không dùng thuần JS
+                if (typeof AppUI !== 'undefined' && AppUI.overlay) {
+                    AppUI.overlay.show("Đang phân tích mặt cắt & tích phân sợi...");
+                } else {
+                    const overlay = document.getElementById('loading-overlay');
+                    if (overlay) {
+                        overlay.style.visibility = 'visible';
+                        overlay.style.opacity = '1';
+                        overlay.querySelector('.loading-text').textContent = "Đang phân tích mặt cắt...";
+                    }
+                }
+
+                // 3. Sử dụng setTimeout để đẩy việc tính toán nặng ra khỏi luồng render UI
+                // Giúp UI kịp hiển thị overlay trước khi bị treo nhẹ do tính toán
+                setTimeout(() => {
+                    try {
+                        // Khởi tạo Engine
+                        if (typeof ShortCol3D === 'undefined') {
+                            throw new Error("Không tìm thấy module tính toán ShortCol3D. Vui lòng kiểm tra file shortcol3D.js");
+                        }
+                        
+                        const engine = new ShortCol3D();
+                        
+                        // Thực hiện tính toán
+                        const results = engine.analyze(data);
+                        
+                        // Cập nhật kết quả
+                        setCalcResults(results);
+
+                        // Thông báo thành công (nếu có thư viện Toast)
+                        if (typeof AppUI !== 'undefined' && AppUI.toast) {
+                            AppUI.toast.show("Tính toán hoàn tất!", "success");
+                        }
+
+                    } catch (error) {
+                        console.error("Calculation Error:", error);
+                        alert("Đã xảy ra lỗi khi tính toán: " + error.message);
+                    } finally {
+                        // 4. Ẩn Overlay và Reset trạng thái
+                        setIsComputing(false);
+                        
+                        if (typeof AppUI !== 'undefined' && AppUI.overlay) {
+                            AppUI.overlay.hide();
+                        } else {
+                            const overlay = document.getElementById('loading-overlay');
+                            if (overlay) {
+                                overlay.style.opacity = '0';
+                                setTimeout(() => overlay.style.visibility = 'hidden', 300);
+                            }
+                        }
+                    }
+                }, 150); // Delay nhỏ để overlay kịp hiện
+            };
+
+            return (
+                <div className="container-fluid p-0">
+                    {/* Header đơn giản */}
+                    <div className="bg-white border-b px-6 py-3 shadow-sm flex justify-between items-center sticky top-0 z-40">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-blue-200 shadow-lg">
+                                <i className="bi bi-box-seam text-xl"></i>
+                            </div>
+                            <div>
+                                <h1 className="text-lg font-bold text-slate-800 leading-tight">ShortCol 3D Pro</h1>
+                                <p className="text-xs text-slate-500 font-medium">Phân tích tương tác không gian | P-Mx-My</p>
+                            </div>
+                        </div>
+                        <div className="flex gap-2">
+                             <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
+                                v2.1.0 Beta
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Main Layout Grid */}
+                    <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[calc(100vh-65px)]">
+                        
+                        {/* LEFT SIDEBAR: INPUT (4 cols) */}
+                        <div className="lg:col-span-4 xl:col-span-3 border-r bg-slate-50/50 flex flex-col h-full overflow-y-auto max-h-[calc(100vh-65px)]">
+                            {/* Gọi Component AppCal (đã được expose ra window từ app-cal.js) */}
+                            {window.AppCal ? (
+                                <AppCal onCalculate={handleCalculate} isComputing={isComputing} />
+                            ) : (
+                                <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy file app-cal.js</div>
+                            )}
+                        </div>
+
+                        {/* RIGHT CONTENT: OUTPUT (8 cols) */}
+                        <div className="lg:col-span-8 xl:col-span-9 bg-white h-full overflow-y-auto max-h-[calc(100vh-65px)]">
+                            {/* Gọi Component AppOut (đã được expose ra window từ app-out.js) */}
+                            {window.AppOut ? (
+                                <AppOut results={calcResults} input={inputData} />
+                            ) : (
+                                <div className="p-10 text-center text-red-500">Lỗi: Không tìm thấy file app-out.js</div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render App vào thẻ root
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MainApp />);
+    </script>
+</body>
+</html>
