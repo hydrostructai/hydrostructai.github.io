@@ -39,7 +39,7 @@ Mô hình này cho phép:
 
 Các phần mềm FEM thương mại (như Plaxis, GeoStudio) rất mạnh mẽ nhưng cũng đắt đỏ, phức tạp và yêu cầu cài đặt nặng nề. Các công cụ tính toán dựa trên Excel/VBA tuy tiện lợi nhưng chậm chạp và khó mở rộng.
 
-Đây là lúc **WebAssembly (Wasm)** phát huy sức mạnh.
+Đây là lúc **WebAssembly** phát huy sức mạnh.
 
 ### 4. Giải pháp: SheetPileFEM (C++ lõi Wasm)
 
