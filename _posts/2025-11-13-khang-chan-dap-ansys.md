@@ -25,7 +25,6 @@ description: "Hướng dẫn các bước phân tích kháng chấn đập bê t
 Dưới đây là toàn bộ tập lệnh (script) APDL để thực hiện phân tích:
 
 ```apdl
-…..
 !Luu mo hinh pthh dap bttl
 save,dam_model,db
 finish
