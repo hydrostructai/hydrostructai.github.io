@@ -179,6 +179,7 @@ defaults:
       related: true
       toc: true
       toc_sticky: true
+      mathjax: true
   # _pages (cho các trang như about.md, apps.md)
   - scope:
       path: ""
