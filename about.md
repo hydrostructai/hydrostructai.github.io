@@ -3,10 +3,10 @@ layout: splash
 title: "Về HydroStructAI"
 permalink: /about/
 header:
-  overlay_color: "#0d6efd"
-  overlay_filter: "0.5"
+  # Ảnh mặc định (sẽ bị CSS bên dưới ghi đè để chạy slide)
   overlay_image: "/assets/images/hero-engineering.jpg"
-  caption: "Kết nối Kỹ thuật Thủy lợi - Kết cấu & Trí tuệ nhân tạo"
+  caption: "<span style='color: #FFD700; font-weight: bold;'>Email: ha.nguyen@hydrostructai.com | Tel: +84 374874142</span>"
+
 ---
 
 <link rel="stylesheet" href="/assets/css/custom-home.css">
