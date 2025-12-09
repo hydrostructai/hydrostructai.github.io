@@ -7,13 +7,12 @@
 #
 # For technical reasons, this file is *NOT* reloaded automatically when you use
 # 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-
+title: "HydrostructAI"
+description: "HydrostructAI — Hydrodynamics, Structures & AI Engineering"
 # Site Settings
 locale: "vi"
-title: "Hydro Structure AI"
 title_separator: "|"
 name: "Hydro Structure AI"
-description: "Các ứng dụng Web cho Kỹ thuật Xây dựng"
 url: "https://hydrostructai.github.io"
 baseurl: ""
 repository: "hydrostructai/hydrostructai.github.io"
