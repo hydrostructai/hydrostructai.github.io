@@ -1,27 +1,11 @@
 # Welcome to Jekyll!
-#
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-title: "HydrostructAI"
+title: "Hydro Structure AI"
 description: "HydrostructAI — Hydrodynamics, Structures & AI Engineering"
-# Site Settings
 locale: "vi"
 title_separator: "|"
 name: "Hydro Structure AI"
 url: "https://hydrostructai.github.io"
 baseurl: ""
-repository: "hydrostructai/hydrostructai.github.io"
-teaser: # path to an image to be used as a teaser - relative to /assets/images/
-logo: # path to an image to be used for the site logo - relative to /assets/images/
-masthead_title: # overrides the website title displayed in the masthead, use " " for no title
-# path to an image to be used for the site logo - relative to /assets/images/
-# path to a file relative to site root or url
-# external_url: 
 theme: minimal-mistakes-jekyll
 
 # Analytics
@@ -29,12 +13,11 @@ analytics:
   provider: "google-gtag"
   google:
     tracking_id: "G-BNB682DVWC"
-    anonymize_ip: false # default
+    anonymize_ip: false
 
 # Site Author
 author:
   name: "Hydro Structure AI"
-  avatar: # path to avatar image, e.g. "/assets/images/bio-photo.jpg"
   bio: "Các ứng dụng Web cho Kỹ thuật Xây dựng"
   location: "Hanoi, Vietnam"
   links:
@@ -44,7 +27,6 @@ author:
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://hydrostructai.com"
-    # ĐÃ XÓA: Khối link GitHub
 
 # Site Footer
 footer:
@@ -52,9 +34,7 @@ footer:
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
       url: "mailto:ha.nguyen@hydrostructai.com"
-    # ĐÃ XÓA: Khối link GitHub
 
-# Reading Files
 # Reading Files
 include:
   - .htaccess
@@ -86,7 +66,7 @@ exclude:
   - Rakefile
   - README
   - tmp
-  - /docs # Exclude development directory
+  - /docs
 keep_files:
   - .git
   - .svn
@@ -114,15 +94,15 @@ kramdown:
 # Sass/SCSS
 sass:
   sass_dir: _sass
-  style: compressed # https://sass-lang.com/documentation/file.SASS_REFERENCE.html#output_style
+  style: compressed
 
 # Outputting
 permalink: /:categories/:title/
-paginate: 5 # number of posts to show
+paginate: 5
 paginate_path: /page:num/
-timezone: "Asia/Ho_Chi_Minh" # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone: "Asia/Ho_Chi_Minh"
 
-# Plugins (previously gems:)
+# Plugins
 plugins:
   - jekyll-paginate
   - jekyll-sitemap
@@ -140,15 +120,8 @@ whitelist:
   - jekyll-feed
   - jemoji
   - jekyll-include-cache
-future: true
+
 # Archives
-#  Type
-#  - GitHub Pages compatible archive pages built with Liquid ~> type: liquid (default)
-#  - Jekyll Archives plugin archive pages ~> type: jekyll-archives
-#  Path (examples)
-#  - Archive page should exist at path.
-#  - /categories/my-category/
-#  - /tags/my-tag/
 category_archive:
   type: jekyll-archives
   path: /categories/
@@ -157,13 +130,12 @@ tag_archive:
   path: /tags/
 
 # HTML Compression
-# - https://jch.penson.io/jekyll-compress-html/
 compress_html:
   clippings: all
   ignore:
     envs: development
 
-# Defaults
+# Defaults (ĐÃ SỬA LẠI THỤT DÒNG CHUẨN)
 defaults:
   # _posts
   - scope:
@@ -179,20 +151,18 @@ defaults:
       toc: true
       toc_sticky: true
       mathjax: true
-  # _pages (cho các trang như about.md, apps.md)
+  # _pages
   - scope:
       path: ""
       type: pages
     values:
-      layout: single  # Hầu hết các trang cũng nên dùng 'single' [8, 9]     
-# === BỔ SUNG CẤU HÌNH SONG NGỮ ===
-# Ngôn ngữ mặc định của trang web
-lang: "vi"
+      layout: single
 
-# Danh sách ngôn ngữ được hỗ trợ
+# Cấu hình song ngữ
+lang: "vi"
 languages: ["vi", "en"]
 
-# Cấu hình cho plugin jekyll-archives (giữ nguyên)
+# Cấu hình plugin jekyll-archives
 jekyll-archives:
   enabled:
     - categories
