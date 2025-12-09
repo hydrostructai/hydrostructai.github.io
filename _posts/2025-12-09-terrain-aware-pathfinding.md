@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Terrain-Aware Pathfinding: Thuật toán Tối ưu Tuyến Cống ngầm trên Địa hình Phức tạp"
-date: 2024-06-01 08:30:00 +0700
+date: 2025-12-09 08:30:00 +0700
 categories: [Algorithms, Hydraulic Engineering, Python, Revit API]
 tags: [A-Star, Optimization, Computational Design, Infrastructure, Open Source]
 author: "HydroStructAI Team"
