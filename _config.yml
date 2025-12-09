@@ -12,10 +12,8 @@ description: "HydrostructAI — Hydrodynamics, Structures & AI Engineering"
 # Site Settings
 locale: "vi"
 title_separator: "|"
-name: "Hydro Structure AI"
 url: "https://hydrostructai.github.io"
 baseurl: ""
-repository: "hydrostructai/hydrostructai.github.io"
 teaser: # path to an image to be used as a teaser - relative to /assets/images/
 logo: # path to an image to be used for the site logo - relative to /assets/images/
 masthead_title: # overrides the website title displayed in the masthead, use " " for no title
