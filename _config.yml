@@ -162,6 +162,7 @@ compress_html:
     envs: development
 
 # Defaults
+# Defaults
 defaults:
   # _posts
   - scope:
@@ -176,14 +177,13 @@ defaults:
       related: true
       toc: true
       toc_sticky: true
-      mathjax: true
+      mathjax: true # Đã đặt đúng vị trí để bật MathJax cho mọi bài viết
   # _pages (cho các trang như about.md, apps.md)
   - scope:
       path: ""
       type: pages
     values:
-      layout: single  # Hầu hết các trang cũng nên dùng 'single' [8, 9]     
-# === BỔ SUNG CẤU HÌNH SONG NGỮ ===
+      layout: single
 # Ngôn ngữ mặc định của trang web
 lang: "vi"
 
