@@ -1,7 +1,7 @@
 title: Hydro Structure AI
 description: "HydrostructAI — Hydrodynamics, Structures & AI Engineering"
-baseurl: "/main"
-url: "https://hydrostructai.github.io/main"
+baseurl: ""
+url: "https://hydrostructai.github.io"
 tagline: Web Apps for Engineers
 teaser: # path to an image to be used as a teaser - relative to /assets/images/
 logo: # path to an image to be used for the site logo - relative to /assets/images/
@@ -9,7 +9,8 @@ masthead_title: # overrides the website title displayed in the masthead, use " "
 # path to an image to be used for the site logo - relative to /assets/images/
 # path to a file relative to site root or url
 # external_url: 
-theme: minimal-mistakes-jekyll
+remote_theme: "mmistakes/minimal-mistakes"
+# theme: minimal-mistakes-jekyll
 
 # Analytics
 analytics:
