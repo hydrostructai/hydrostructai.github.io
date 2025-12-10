@@ -265,10 +265,14 @@ const AppUI = {
 // Tự động khởi chạy các thiết lập mặc định khi trang load
 document.addEventListener('DOMContentLoaded', () => {
     // 1. Kích hoạt tooltips Bootstrap (nếu dùng)
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
+    if (typeof bootstrap !== 'undefined') {
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    } else {
+        console.warn("Bootstrap JS not found. Tooltips skipped.");
+    }
 
     console.log("Global UI Library Loaded Successfully.");
 });
