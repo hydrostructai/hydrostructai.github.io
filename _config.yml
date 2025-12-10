@@ -3,9 +3,15 @@ title: "Hydro Structure AI"
 description: "HydrostructAI — Hydrodynamics, Structures & AI Engineering"
 locale: "vi"
 title_separator: "|"
-name: "Hydro Structure AI"
 url: "https://hydrostructai.github.io"
 baseurl: ""
+
+teaser: # path to an image to be used as a teaser - relative to /assets/images/
+logo: # path to an image to be used for the site logo - relative to /assets/images/
+masthead_title: # overrides the website title displayed in the masthead, use " " for no title
+# path to an image to be used for the site logo - relative to /assets/images/
+# path to a file relative to site root or url
+# external_url: 
 theme: minimal-mistakes-jekyll
 
 # Analytics
@@ -136,6 +142,8 @@ compress_html:
     envs: development
 
 # Defaults (ĐÃ SỬA LẠI THỤT DÒNG CHUẨN)
+# Defaults
+# Defaults
 defaults:
   # _posts
   - scope:
@@ -152,11 +160,16 @@ defaults:
       toc_sticky: true
       mathjax: true
   # _pages
+      mathjax: true # Đã đặt đúng vị trí để bật MathJax cho mọi bài viết
+  # _pages (cho các trang như about.md, apps.md)
   - scope:
       path: ""
       type: pages
     values:
       layout: single
+
+# Ngôn ngữ mặc định của trang web
+lang: "vi"
 
 # Cấu hình song ngữ
 lang: "vi"

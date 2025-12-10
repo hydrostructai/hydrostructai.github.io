@@ -26,3 +26,7 @@ gem "faraday-retry"   # Hỗ trợ kết nối mạng ổn định hơn
 # --- Timezone Support ---
 # Quan trọng để xử lý timezone: "Asia/Ho_Chi_Minh" không bị lỗi
 gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem "rouge"
+gem "webrick"
+gem "jekyll-archives"
+
