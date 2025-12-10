@@ -1,0 +1,13 @@
+{% comment %}
+  Logic:
+  - If page.sidebar.nav is explicitly set to "right", show sidebar-right.
+  - If page.sidebar.nav is "left" (or default), show sidebar-left.
+  - NOTE: This file is a wrapper to resolve missing include errors.
+{% endcomment %}
+
+{% if page.sidebar.nav == "right" %}
+  {% include sidebar-right.html %}
+{% else %}
+  {% include sidebar-left.html %}
+{% endif %}
+
