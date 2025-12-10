@@ -12,7 +12,7 @@ header:
   cta_url: "/apps/"
 ---
 
-<link rel="stylesheet" href="/assets/css/custom-home.css">
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/custom-home.css">
 
 <style>
 /* ==========================================================================
@@ -23,14 +23,12 @@ header:
   /* 0% đến 20%: Hiển thị Ảnh 1 */
   0%, 45% {
     background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                      url('/assets/images/hero-engineering1.jpg');
+                      url('{{ site.baseurl }}/assets/images/hero-engineering1.jpg');
   }
   /* 25% đến 45%: Hiển thị Ảnh 2 */
   45%, 100% {
     background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
-                      url('/assets/images/hero-engineering2.jpg');
-  }
-
+                      url('{{ site.baseurl }}/assets/images/hero-engineering2.jpg');
   }
 }
 
@@ -48,7 +46,7 @@ header:
   transition: background-image 1s ease-in-out;
   
   /* Quan trọng: Ghi đè style inline của Jekyll */
-  background-image: url('/assets/images/hero-engineering.jpg') !important; 
+  background-image: url('{{ site.baseurl }}/assets/images/hero-engineering.jpg') !important; 
   /* Fallback nếu animation không chạy, nhưng @keyframes sẽ đè lên cái này */
 }
 </style>

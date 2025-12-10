@@ -1,0 +1,16 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.associations": {
+    "*.html": "jekyll",
+    "*.md": "markdown",
+    "Gemfile": "ruby"
+  },
+  "emmet.includeLanguages": {
+    "jekyll": "html"
+  },
+  "search.exclude": {
+    "**/_site": true,
+    "**/.sass-cache": true
+  }
+}

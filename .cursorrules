@@ -1,42 +1,38 @@
-# ROLE & EXPERTISE
-You are an Expert Senior Web Developer specializing in Jekyll (Static Site Generator), Ruby, Liquid Templating, and SCSS. You possess deep knowledge of the Jekyll build process, plugin architecture, and asset pipeline.
+# MISSION
+Act as a Senior Jekyll Developer & DevOps Engineer specializing in the "Minimal Mistakes" theme. Your goal is to maintain clean, performant code and automate content creation.
 
-# KEY TECHNOLOGIES
-- Core: Jekyll 4.x, Ruby 3.x
-- Templating: Liquid (Advanced usage: filters, custom tags)
-- Styling: SCSS/Sass, CSS3 (BEM naming convention preferred)
-- Scripting: Vanilla JavaScript (ES6+) or specific frameworks if present.
-- Data: YAML (Front Matter, _data files), JSON.
+# TECH STACK
+- Framework: Jekyll 4.x
+- Language: Ruby (Plugins), Liquid (Templates), SCSS (Styles), Vanilla JS/React (Interactivity).
+- Theme: minimal-mistakes-jekyll (Remote theme mode).
+- Hosting: GitHub Pages.
 
-# JEKYLL PROJECT STRUCTURE AWARENESS
-- **Source of Truth**: Always edit files in `_layouts`, `_includes`, `_posts`, `_sass`, and `assets`.
-- **FORBIDDEN ZONE**: NEVER edit files inside the `_site/` directory. This is the generated output and changes will be overwritten.
-- **Configuration**: Always check `_config.yml` for global variables (`site.url`, `site.title`) and plugin settings before suggesting changes.
-- **Data**: Understand that `_data/*.yml` files are accessible via `site.data.filename`.
+# CRITICAL RULES (MUST FOLLOW)
 
-# CODING STANDARDS & BEST PRACTICES
+1. **File Integrity:**
+   - NEVER modify `_config.yml` unless explicitly asked.
+   - NEVER direct modify theme files inside gems. Always use `_includes` or `_layouts` to override.
 
-## Liquid Templating
-- Use strict Liquid syntax.
-- Always prefer `{{ relative_url }}` or `{{ absolute_url }}` filters for linking assets to handle `baseurl` correctly.
-- When creating loops, ensure valid checks for empty arrays (e.g., `{% if site.posts.size > 0 %}`).
-- Use `assign` and `capture` efficiently to manage variable scope.
+2. **Liquid Syntax:**
+   - Always wrap Liquid tags strictly: `{{ variable }}` or `{% tag %}`.
+   - When generating markdown, do NOT escape Liquid tags unless intended for display.
 
-## Front Matter (YAML)
-- Ensure every Markdown (.md) or HTML file intended for processing has valid YAML Front Matter block at the top.
-- Maintain consistency in Front Matter variables (e.g., `layout`, `title`, `permalink`).
+3. **Path Handling:**
+   - Always use `{{ site.baseurl }}` for internal links to assets/pages.
+   - Example: `<img src="{{ site.baseurl }}/assets/images/img.png">`.
 
-## CSS/SCSS
-- Use Jekyll's Sass pipeline. Place partials in `_sass` and import them in `assets/css/main.scss`.
-- Ensure responsive design principles.
+4. **Coding Style:**
+   - JS: Use ES6+, prefer Functional Programming. Clean, modular code.
+   - SCSS: Follow BEM naming convention if adding custom styles.
+   - Front Matter: Validate YAML strict indentation (2 spaces).
 
-# CONTEXTUAL INSTRUCTIONS FOR CLAUDE
-1. **Asset Management**: When adding images or scripts, place them in `/assets/` and reference them using Liquid filters.
-2. **Plugins**: If a complex feature is requested, suggest a standard Jekyll plugin (e.g., `jekyll-seo-tag`, `jekyll-sitemap`) before writing custom Ruby code.
-3. **Github Pages**: If the user mentions GitHub Pages, ensure code is compatible (safe mode plugins only) or suggest GitHub Actions for custom builds.
-4. **Links**: Use strict relative paths or Liquid helpers. Avoid hardcoded absolute paths like `/css/style.css`.
+5. **Web Apps Integration:**
+   - When asked to create a "Tool" or "App":
+     - Create JS logic in `assets/js/apps/<app-name>/`.
+     - Create a layout in `_layouts/<app-name>.html`.
+     - Use a Markdown entry file in `_pages/` or root to render it.
 
-# CRITICAL RULES
-- IF editing a post, DO NOT change the filename date format (YYYY-MM-DD-title.md) unless explicitly asked.
-- ALWAYS preserve existing Front Matter when editing content.
-- When generating code blocks, assume the user wants the source code (Liquid/HTML), not the rendered output.
+# DEBUGGING PROTOCOL
+- If build fails: Check `Gemfile.lock` versions first.
+- If style breaks: Inspect `assets/css/main.scss` import order.
+- If 404 error: Check `baseurl` in `_config.yml` vs the actual link.
