@@ -1,6 +1,31 @@
+# Jekyll Generated Site (RẤT QUAN TRỌNG: AI không được sửa file trong này)
 _site/
-.jekyll-cache/
 .sass-cache/
-Gemfile.lock
-node_modules/
+.jekyll-cache/
+.jekyll-metadata
+
+# Ruby/Bundler
 vendor/
+.bundle/
+Gemfile.lock # Có thể bỏ comment nếu muốn AI tự fix version, nhưng thường nên ignore để tránh lỗi lock
+
+# Node modules (nếu có dùng package.json)
+node_modules/
+
+# Logs
+*.log
+
+# System
+.DS_Store
+Thumbs.db
+.git/
+.github/workflows/ # Chỉ un-ignore khi cần sửa CI/CD
+
+# Large Assets (Tiết kiệm token, AI không đọc được binary tốt)
+assets/images/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.pdf
+*.mp4

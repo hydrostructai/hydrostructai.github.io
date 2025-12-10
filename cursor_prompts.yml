@@ -1,0 +1,33 @@
+prompts:
+  new_post:
+    description: "Tạo bài viết blog tiêu chuẩn kỹ thuật"
+    steps:
+      - "Xác định ngày giờ hiện tại (YYYY-MM-DD)."
+      - "Tạo file trong `_posts/YYYY-MM-DD-title-slug.md`."
+      - "Front Matter bắt buộc: title, date, categories, tags, toc: true, classes: wide."
+      - "Cấu trúc bài viết: Introduction -> Technical Analysis -> Code/Math Implementation -> Conclusion."
+      - "Yêu cầu: Dùng placeholder image từ Unsplash cho header."
+
+  debug_build:
+    description: "Tự động tìm lỗi khi jekyll serve thất bại"
+    steps:
+      - "Đọc file `Gemfile` và `_config.yml`."
+      - "Chạy lệnh giả lập: Kiểm tra dependencies."
+      - "Phân tích lỗi phổ biến: webrick dependency (Ruby 3.0+), kramdown version, hoặc lỗi syntax Liquid."
+      - "Đề xuất lệnh terminal để fix."
+
+  create_tool:
+    description: "Tạo Web App tính toán thủy lực dốc nước và tiêu năng sau dốc"
+    steps:
+      - "User input: Tên tool và công thức toán học."
+      - "Action 1: Tạo `_layouts/tool_layout.html` kế thừa `default`."
+      - "Action 2: Tạo `assets/js/apps/[tool_name].js` chứa logic tính toán (Clean function, no UI logic mixed)."
+      - "Action 3: Tạo giao diện HTML form có ID rõ ràng để JS hook vào."
+      - "Action 4: Tạo trang `.md` để hiển thị tool."
+
+  optimize_seo:
+    description: "Tối ưu hóa SEO cho toàn site"
+    steps:
+      - "Kiểm tra `_config.yml`: Đảm bảo `title`, `description`, `url` đã set."
+      - "Kiểm tra `sitemap` plugin có được bật không."
+      - "Review 5 bài post gần nhất: Kiểm tra thẻ description trong Front Matter."
