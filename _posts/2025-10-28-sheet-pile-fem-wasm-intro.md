@@ -11,7 +11,7 @@ tags:
   - C++
   - SaaS
 author_profile: true
-author: "TS. Nguyễn Hải Hà"
+author: "HST.AI"
 layout: single
 read_time: true
 toc: true

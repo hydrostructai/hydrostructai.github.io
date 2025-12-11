@@ -18,10 +18,15 @@ layout: default
   {% endunless %}
 {% endif %}
 
-<div id="main" role="main">
-  {% include sidebar.html %}
+<div id="main" role="main" class="post-grid-container">
+  
+  {%- comment -%} LEFT SIDEBAR (Sticky) {%- endcomment -%}
+  <div class="post-grid-sidebar-left">
+    {% include sidebar-left.html %}
+  </div>
 
-  <article class="page h-entry" itemscope itemtype="https://schema.org/Article">
+  {%- comment -%} MAIN ARTICLE CONTENT {%- endcomment -%}
+  <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
     {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
     {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
     {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
@@ -77,6 +82,11 @@ layout: default
       {% include comments.html %}
     {% endif %}
   </article>
+
+  {%- comment -%} RIGHT SIDEBAR (Scrollable) {%- endcomment -%}
+  <div class="post-grid-sidebar-right">
+    {% include sidebar-right.html %}
+  </div>
 
   {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}

@@ -1,7 +1,7 @@
 ---
 title: "Công cụ Trực quan hóa Tệp INP cho SWMM5 và EPANET"
 author_profile: true
-author_name: "TS. Nguyễn Hải Hà"
+author_name: "HST.AI"
 date: 2025-12-06 10:00:00 +0700
 layout: single
 # QUAN TRỌNG: Bật MathJax để hiển thị công thức

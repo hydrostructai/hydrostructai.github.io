@@ -2,6 +2,8 @@
 layout: single
 title: "Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng"
 date: 2025-11-11
+author_profile: true
+author_name: "HST.AI"
 lang: vi
 categories: [Hydraulics]
 tags: [Spillway, Tiêu năng, Nước nhảy, Thủy lực]

@@ -1,4 +1,29 @@
 prompts:
+    # Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 11: ADVANCED POST LAYOUT & STICKY SIDEBAR IMPLEMENTATION
+  # Mục tiêu: Sửa lỗi Taller Sidebar, áp dụng Grid 20:60:20, và làm sticky sidebar-left.
+  # =====================================================================
+  apply_modern_post_grid:
+    description: "Refactor the 'single' post layout to use a modern CSS Grid system with a fixed sidebar-left, ensuring horizontal alignment and the 20:60:20 column ratio."
+    references:
+      - "hydrostructai.github.io/_layouts/single.html"
+      - "hydrostructai.github.io/_includes/sidebar-left.html"
+      - "hydrostructai.github.io/_includes/sidebar-right.html"
+      - "assets/css/global.css" # Add custom CSS here
+      - "assets/css/main.scss" # For overriding Minimal Mistakes variables/mixins
+    steps:
+      - "Action 1 (HTML Structure): Verify or modify the HTML structure in `_layouts/single.html` to ensure the main container (`#main` or similar) wraps the left sidebar, the article content, and the right sidebar cleanly."
+      - "Action 2 (CSS Grid Implementation): Create or append custom CSS rules to a suitable location (e.g., `assets/css/global.css`) targeting the layout wrapper for single posts. Apply the following Grid rules for modern, responsive layout:"
+      - "  - `display: grid;`"
+      - "  - `grid-template-columns: 20% 60% 20%;` (For desktop screens)."
+      - "  - `gap: 1.5rem;` (Optional, for spacing)."
+      - "  - **Ensure responsiveness:** Implement a Media Query to revert to a single-column layout for screen widths below 1024px."
+      - "Action 3 (Sticky Sidebar-Left): Apply `position: sticky` to the left sidebar element (`.left-sidebar`) to fix it during vertical scrolling. Define a top offset (e.g., `top: 2em;`) to account for the header/masthead."
+      - "Action 4 (Sidebar-Right Behavior): Ensure the right sidebar remains scrollable with the main content, but is correctly positioned in the 20% right column."
+      - "Action 5 (Final Verification): Confirm that the code solves the 'taller sidebar' visual issue and implements the requested 20:60:20 split and sticky scrolling behavior for the left column."
+      
   # =====================================================================
   # TÁC VỤ 2: VIẾT BÀI ĐĂNG KỸ THUẬT (10/12/2025)
   # Chủ đề: Tính toán thủy lực dốc nước và tiêu năng sau dốc

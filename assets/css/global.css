@@ -240,3 +240,214 @@ div.highlighter-rouge pre.highlight {
 .btn-cta-primary i {
   margin-right: 8px;
 }
+
+/* =====================================================================
+   MODERN POST LAYOUT - CSS GRID (20:60:20) with STICKY LEFT SIDEBAR
+   Applied to: _layouts/single.html
+   ===================================================================== */
+
+/* Grid Container for Single Post Layout */
+.post-grid-container {
+  display: grid;
+  grid-template-columns: 20% 60% 20%;
+  gap: 1.5rem;
+  align-items: start; /* Prevent equal height stretching */
+  margin: 0 auto;
+  max-width: 100%;
+  padding: 1rem;
+}
+
+/* LEFT SIDEBAR - Sticky positioning */
+.post-grid-sidebar-left {
+  position: sticky;
+  top: 2em; /* Offset for masthead/header */
+  align-self: start; /* Prevents stretching to match tallest column */
+  max-height: calc(100vh - 4em); /* Prevent sidebar from being taller than viewport */
+  overflow-y: auto; /* Allow scrolling if content is too long */
+}
+
+/* MAIN ARTICLE - Center column */
+.post-grid-article {
+  /* Article flows naturally, scrolls with page */
+  min-width: 0; /* Prevent grid blowout from long content */
+}
+
+/* RIGHT SIDEBAR - Scrollable with content */
+.post-grid-sidebar-right {
+  /* Flows naturally with the main article content */
+  align-self: start;
+}
+
+/* Styling for sidebars (clean, modern appearance) */
+.left-sidebar,
+.right-sidebar {
+  background: var(--bg-sidebar);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--card-shadow);
+}
+
+.left-sidebar .sidebar-module,
+.right-sidebar .sidebar-module {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.left-sidebar .sidebar-module:last-child,
+.right-sidebar .sidebar-module:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.sidebar-heading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-heading.header-highlight {
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: 0.5rem;
+}
+
+/* Share/Recommendation Lists */
+.share-list,
+.rec-list,
+.latest-posts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.share-item,
+.rec-item,
+.latest-post-item {
+  margin-bottom: 0.5rem;
+}
+
+.share-link,
+.rec-link {
+  color: #333;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.share-link:hover,
+.rec-link:hover {
+  background-color: var(--bg-body);
+  color: var(--primary-color);
+}
+
+.share-link i,
+.rec-link i {
+  margin-right: 0.5rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* Latest Posts Styling (Right Sidebar) */
+.latest-post-item {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.latest-post-item:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.lp-date {
+  font-size: 0.75rem;
+  color: var(--secondary-color);
+  font-weight: 500;
+}
+
+.lp-title {
+  font-size: 0.95rem;
+  margin: 0.25rem 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.lp-title a {
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.lp-title a:hover {
+  color: var(--primary-color);
+}
+
+.lp-excerpt {
+  font-size: 0.85rem;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* =====================================================================
+   RESPONSIVE DESIGN - Mobile & Tablet
+   ===================================================================== */
+
+/* Tablet (below 1024px) - 2 columns: Content + Right Sidebar */
+@media (max-width: 1024px) {
+  .post-grid-container {
+    grid-template-columns: 70% 30%;
+    gap: 1rem;
+  }
+
+  /* Hide left sidebar on tablets */
+  .post-grid-sidebar-left {
+    display: none;
+  }
+
+  .post-grid-article {
+    grid-column: 1;
+  }
+
+  .post-grid-sidebar-right {
+    grid-column: 2;
+  }
+}
+
+/* Mobile (below 768px) - Single column, stack everything */
+@media (max-width: 768px) {
+  .post-grid-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 0.5rem;
+  }
+
+  /* Hide both sidebars on mobile for clean reading experience */
+  .post-grid-sidebar-left,
+  .post-grid-sidebar-right {
+    display: none;
+  }
+
+  .post-grid-article {
+    grid-column: 1;
+  }
+}
+
+/* Alternative: Show sidebars stacked below content on mobile */
+@media (max-width: 768px) {
+  /* Uncomment below if you want sidebars to appear below content on mobile
+  .post-grid-sidebar-left,
+  .post-grid-sidebar-right {
+    display: block;
+    position: relative;
+    top: auto;
+    max-height: none;
+  }
+  */
+}

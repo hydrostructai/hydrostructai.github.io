@@ -11,7 +11,7 @@ tags: [Visualization, Geometry, Đồ họa, JavaScript]
 # image: /assets/images/posts/hypocycloid-hero.png 
 ---
 
-### 1. Vẻ đẹp của Toán học Hình học
+### 1. Giới thiệu Hypocycloid
 
 Hypocycloid là một đường cong hình học kỳ thú được tạo ra bằng cách theo dõi một điểm trên chu vi của một vòng tròn nhỏ khi nó lăn bên trong một vòng tròn lớn hơn.
 
@@ -29,4 +29,4 @@ Bạn có thể:
 
 ### 3. Trải nghiệm ngay
 
-[**Khám phá Hypocycloid Generator**](/tools/hypocycloid/)
+[**Khám phá Hypocycloid**](/tools/hypocycloid/)

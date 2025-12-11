@@ -14,7 +14,7 @@ tags:
   - WebAssembly
   - FEM
 author_profile: true
-author_name: "TS. Nguyễn Hải Hà"
+author_name: "HST.AI"
 layout: single
 read_time: true
 toc: true
