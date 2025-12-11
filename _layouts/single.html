@@ -53,14 +53,6 @@ layout: default
       {% endunless %}
 
       <section class="page__content e-content" itemprop="articleBody">
-        {% if page.toc %}
-          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
-            <nav class="toc">
-              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
-              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
-            </nav>
-          </aside>
-        {% endif %}
         {{ content }}
         {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
@@ -83,10 +75,46 @@ layout: default
     {% endif %}
   </article>
 
-  {%- comment -%} RIGHT SIDEBAR (Scrollable) {%- endcomment -%}
+  {%- comment -%} RIGHT SIDEBAR (TOC Only) {%- endcomment -%}
   <div class="post-grid-sidebar-right">
     {% include sidebar-right.html %}
   </div>
+
+  {%- comment -%} LATEST POSTS SECTION (Below Article, Full Width) {%- endcomment -%}
+  {% if page.id %}
+  <div class="latest-posts-section">
+    <h2 class="latest-posts-title">
+      <i class="fas fa-newspaper"></i> Latest Posts
+    </h2>
+    <div class="latest-posts-grid">
+      {% assign post_count = 0 %}
+      {% for post in site.posts limit:10 %}
+        {% if post.id != page.id %}
+          {% assign post_count = post_count | plus: 1 %}
+          <div class="latest-post-card">
+            <span class="lp-date">
+              <i class="far fa-calendar-alt"></i> {{ post.date | date: "%d/%m/%Y" }}
+            </span>
+            <h3 class="lp-title">
+              <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+            </h3>
+            <div class="lp-excerpt">
+              {% if post.excerpt %}
+                {{ post.excerpt | strip_html | truncatewords: 25 }}
+              {% else %}
+                {{ post.content | strip_html | truncatewords: 25 }}
+              {% endif %}
+            </div>
+            <a href="{{ post.url | relative_url }}" class="lp-read-more">
+              Read more <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+          {% if post_count >= 6 %}{% break %}{% endif %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 
   {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}

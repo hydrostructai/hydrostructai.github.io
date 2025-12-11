@@ -1,6 +1,28 @@
 prompts:
     # Thêm vào cuối file cursor_prompts.yml
+# Thêm vào cuối file cursor_prompts.yml
 
+  # =====================================================================
+  # TASK 12: FINAL POST LAYOUT OPTIMIZATION (20:60:20 GRID & TOC RELOCATION)
+  # Mục tiêu: Mở rộng Main Content. Sidebar-Left: Sticky. Sidebar-Right: TOC. Latest Posts: Di chuyển xuống cuối.
+  # =====================================================================
+  optimize_post_layout_v3:
+    description: "Implement a modern CSS Grid layout for 'single' posts (20:60:20 ratio), make the left sidebar sticky, move TOC to the right sidebar, and move 'Latest Posts' below the article for maximum content width."
+    references:
+      - "hydrostructai.github.io/_layouts/single.html"
+      - "hydrostructai.github.io/_includes/sidebar-right.html"
+      - "hydrostructai.github.io/_includes/sidebar-left.html"
+      - "assets/css/global.css"
+    steps:
+      - "Action 1 (Relocate Latest Posts): Cut the 'Latest Posts' Liquid loop and associated HTML structure from `_includes/sidebar-right.html` and paste it into `_layouts/single.html` right before the final `{% endif %}` block (outside the `<article>` but inside `#main`)."
+      - "Action 2 (TOC to Sidebar-Right): Replace the original content of `_includes/sidebar-right.html` with the standard Minimal Mistakes Table of Contents (TOC) rendering logic (The logic previously found inside the `<section class='page__content'>` of `single.html`). This makes the right column exclusively the TOC."
+      - "Action 3 (Remove Redundant TOC): In `_layouts/single.html`, **DELETE** the redundant TOC generation block that currently appears inside the `<section class='page__content'>` element. This expands the main content area."
+      - "Action 4 (CSS Grid & Sticky): Add custom CSS rules to `assets/css/global.css` targeting the layout wrapper (`#main` or equivalent element in `single.html`). Apply the following rules to achieve the 3-column structure and sticky behavior (for desktop screens only):"
+      - "  - Set the wrapper to `display: grid`."
+      - "  - Define columns: `grid-template-columns: 20% 60% 20%;`."
+      - "  - Apply `position: sticky` and `top: 1em` to the left sidebar element (`.left-sidebar`) to fix it during scroll."
+      - "Action 5 (Final Verification): Ensure the layout maintains the 20:60:20 ratio, the main content is wide, the left sidebar is fixed, and the Latest Posts display correctly at the bottom of the page."
+      
   # =====================================================================
   # TASK 11: ADVANCED POST LAYOUT & STICKY SIDEBAR IMPLEMENTATION
   # Mục tiêu: Sửa lỗi Taller Sidebar, áp dụng Grid 20:60:20, và làm sticky sidebar-left.

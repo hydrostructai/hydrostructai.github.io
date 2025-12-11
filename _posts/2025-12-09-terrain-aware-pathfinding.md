@@ -1,6 +1,6 @@
 ---
 layout: single
-title: "Terrain-Aware Pathfinding: Thuật toán Tối ưu Tuyến Cống ngầm trên Địa hình Phức tạp"
+title: "Thuật toán Tối ưu Tuyến công trình trên địa hình phức tạp"
 author_profile: true
 author_name: "HST.AI"
 date: 2025-12-09 08:30:00 +0700
