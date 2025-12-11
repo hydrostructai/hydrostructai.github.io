@@ -20,10 +20,12 @@ layout: default
 
 <div id="main" role="main" class="post-grid-container">
   
+  {%- comment -%} LEFT SIDEBAR (Sticky) {%- endcomment -%}
   <div class="post-grid-sidebar-left">
     {% include sidebar-left.html %}
   </div>
 
+  {%- comment -%} MAIN ARTICLE CONTENT {%- endcomment -%}
   <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
     {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
     {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
@@ -51,8 +53,15 @@ layout: default
       {% endunless %}
 
       <section class="page__content e-content" itemprop="articleBody">
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
         {{ content }}
-        
         {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 
@@ -74,13 +83,12 @@ layout: default
     {% endif %}
   </article>
 
+  {%- comment -%} RIGHT SIDEBAR (Scrollable) {%- endcomment -%}
   <div class="post-grid-sidebar-right">
     {% include sidebar-right.html %}
   </div>
 
-  {% comment %}{% endcomment %}
-  </div>
-<div class="page__related-wrapper" style="max-width: 100%; padding: 0 1rem; margin: 0 auto;">
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}
     <div class="page__related">
       <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
@@ -90,6 +98,7 @@ layout: default
         {% endfor %}
       </div>
     </div>
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
   {% elsif page.id and page.related %}
     <div class="page__related">
       <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
@@ -143,3 +152,5 @@ layout: default
 }
 </script>
 {% endif %}
+
+

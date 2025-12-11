@@ -1,19 +1,22 @@
-{%- comment -%}
-  RIGHT SIDEBAR: Table of Contents (TOC)
-  Chỉ hiển thị khi bài viết có toc: true
-{%- endcomment -%}
-
-{% if page.toc %}
-  <div class="sidebar-module toc-module">
-    <nav class="toc">
-      <header>
-        <h4 class="sidebar-heading header-highlight">
-          <i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> 
-          {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}
-        </h4>
-      </header>
-      {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
-    </nav>
+<aside class="right-sidebar">
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Latest Posts</h4>
+    <ul class="latest-posts-list">
+      {% for post in site.posts limit:10 %}
+      <li class="latest-post-item">
+        <span class="lp-date">{{ post.date | date: "%d/%m/%Y" }}</span>
+        <h5 class="lp-title">
+          <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+        </h5>
+        <div class="lp-excerpt">
+          {% if post.excerpt %}
+            {{ post.excerpt | strip_html | truncatewords: 20 }}
+          {% else %}
+            {{ post.content | strip_html | truncatewords: 20 }}
+          {% endif %}
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
   </div>
-{% else %}
-  {% endif %}
+</aside>
