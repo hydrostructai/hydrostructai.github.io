@@ -14,7 +14,7 @@ tags: [Visualization, Parametric Equation, Đồ họa, JavaScript]
 #image: /assets/images/posts/hypocycloid-hero.png 
 ---
 
-### 1. Phép thuật của Phương trình Tham số
+### 1. Phương trình Tham số
 
 Các đường cong phức tạp và đẹp mắt thường có thể được mô tả bằng các phương trình tham số đơn giản. Đường cong hình trái tim này là một ví dụ tuyệt vời, được định nghĩa bởi một tham số `t` (thường chạy từ $0$ đến $2\pi$).
 
@@ -22,7 +22,7 @@ Trái tim trong ứng dụng này được vẽ bằng các phương trình:
 * $x(t) = A \cdot \sin^3(t)$
 * $y(t) = B \cdot \cos(t) - C \cdot \cos(2t) - D \cdot \cos(3t) - E \cdot \cos(4t)$
 
-### 2. Ứng dụng Web Tương tác
+### 2. Công cụ vẽ hình trái tim trên Web
 
 Công cụ này cho phép bạn "chơi" với các phương trình trên:
 * Thay đổi các hệ số **A, B, C, D, E** để xem hình dạng trái tim thay đổi như thế nào.

@@ -240,3 +240,29 @@ div.highlighter-rouge pre.highlight {
 .btn-cta-primary i {
   margin-right: 8px;
 }
+
+/* --- Layout Flex Fix --- */
+@media (min-width: 1024px) {
+  #main {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  #main > .left-sidebar,
+  #main > .right-sidebar {
+    flex: 0 0 var(--sidebar-width);
+    max-width: var(--sidebar-width);
+  }
+
+  #main > article {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #main > .left-sidebar {
+    margin-top: 0;
+  }
+}
