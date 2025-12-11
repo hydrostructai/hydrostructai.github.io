@@ -66,7 +66,7 @@ Chạy lệnh:
 bash
 **python -m http.server 8000**
 
-Truy cập: Mở trình duyệt và vào http://localhost:8088 hoặc http://127.0.0.1:8088. 
+Truy cập: Mở trình duyệt và vào http://localhost:8000 hoặc http://127.0.0.1:8088. 
 
 **Cách 2: Viết code tùy chỉnh với http.server**
 Tạo file server.py:

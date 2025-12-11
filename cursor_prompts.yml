@@ -47,3 +47,96 @@ prompts:
       - "Analyze `Gemfile` and `Gemfile.lock` for Ruby/Jekyll version conflicts."
       - "Check `_config.yml` for syntax errors or misconfigured plugins."
       - "Propose the correct `bundle install` and `bundle exec jekyll serve` commands for local environment fix."
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 5: DEPLOY HYDRAULIC SPILLWAY WEB APP & MATHJAX QA
+  # Yêu cầu: 1. Thêm app vào trang chủ. 2. Kiểm tra toàn bộ hiển thị công thức (MathJax).
+  # =====================================================================
+  deploy_hydraulic_spillway_content:
+    description: "Integrate the 'Hydraulic Spillway & Stilling Basin Calculator' web app onto the homepage and conduct a comprehensive site-wide MathJax rendering quality assurance check, focusing on the new post."
+    references:
+      - "hydrostructai.github.io/index.html"
+      - "hydrostructai.github.io/_includes/home-center.html" # Vị trí danh sách app
+      - "apps/hydraulicspillway/index.html" # Đường dẫn app
+      - "_posts/2025-12-11-thuy-luc-doc-nuoc-tieu-nang.md" # Bài viết cần kiểm tra công thức
+      - "hydrostructai.github.io/_includes/mathjax.html" # Config MathJax
+    steps:
+      - "Ensure the 'hydraulicspillway' web app folder is correctly placed under the `apps/` directory to be accessible at `/apps/hydraulicspillway/`."
+      - "In `_includes/home-center.html` or `index.html`, add a new Web App card/entry for the 'Hydraulic Spillway & Stilling Basin Calculator' at the very end of the app list, following the existing card style."
+      - "Card details: Title: 'Hydraulic Spillway & Stilling Basin Calculator'. Link: `/apps/hydraulicspillway/`. Description: 'Calculates the hydraulic profile for chute spillways and designs the stilling basin using the hydraulic jump method (Vietnamese standards).'"
+      - "Quality Check (QA): Review the new post `_posts/2025-12-11-thuy-luc-doc-nuoc-tieu-nang.md` to ensure all mathematical formulas, including the Hydraulic Jump formula, are rendered correctly by MathJax. Extend the check to other existing MathJax-enabled posts/pages to confirm site-wide rendering consistency."
+      - "If any formulas are not rendering, verify that `mathjax: true` is set in the front matter and that the formulas are correctly enclosed (e.g., `$$...$$` or `\\(...\\)`)."
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 6: ENHANCE SPILLWAY APP OUTPUT (TABLES & CHART)
+  # Mục tiêu: Tạo output.js để hiển thị kết quả tính toán chi tiết (bảng và biểu đồ).
+  # =====================================================================
+  add_spillway_output_visualization:
+    description: "Create 'output.js' for the Hydraulic Spillway app to display results in tables (chute profile & stilling basin) and a water surface profile chart."
+    references:
+      - "hydraulicspillway/index.html"
+      - "hydraulicspillway/calc.js"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD1-LuTK.csv" # Mẫu cấu trúc dữ liệu dốc nước
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf" # Thông số bể tiêu năng
+    steps:
+      - "Action 1 (Structure): Create a new JavaScript file `apps/hydraulicspillway/output.js`."
+      - "Action 2 (HTML Integration): Modify `apps/hydraulicspillway/index.html` to include necessary DOM elements for output: a `div` for the 'Water Profile Table', a `div` for the 'Stilling Basin Table', and a `<canvas>` element for the chart (e.g., using Chart.js or similar library)."
+      - "Action 3 (Table Logic - Chute Profile): Implement a function in `output.js` to accept profile data (Station/Lý trình, Bed Elevation/Cao trình đáy, Water Depth/h, Water Surface Elevation/Cao trình mặt nước) and dynamically generate an HTML table displaying the entire water surface profile along the chute (based on the structure observed in the CSVs)."
+      - "Action 4 (Table Logic - Stilling Basin): Implement a function in `output.js` to display the key stilling basin design parameters in a separate table: Incoming Flow ($Q$), Pre-Jump Depth ($h_1$), Froude Number ($Fr_1$), Conjugate Depth ($h_2$), Required Length ($L_b$), and Safety Check ($K$) (referencing formulas and parameters in the PDF)."
+      - "Action 5 (Visualization): Implement logic in `output.js` to render a **line chart** (e.g., using Chart.js, ensure library is included in `index.html`) displaying the **Water Surface Elevation** (Mặt nước) and **Chute Bed Elevation** (Đáy dốc) against **Station/Lý trình** (K/c cộng dồn) to visualize the profile and jump location."
+      - "Action 6 (Linkage): Ensure `calc.js` calls the functions in `output.js` upon successful calculation."
+      
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 8: FULL WEB APP UI REFACTORING AND STANDARDIZATION
+  # Mục tiêu: Tạo giao diện chung cho tất cả web apps (Modular, Modern, Scientific)
+  #           với logic kiểm tra License/WASM tích hợp.
+  # =====================================================================
+  refactor_standardize_all_apps:
+    description: "Implement a modern, scientific, single-page application (SPA) shell for all web apps under 'apps/' using a shared Liquid include and integrating advanced WASM/License control logic."
+    references:
+      - "hydrostructai.github.io/_includes/app_layout_standard.html" # Target Include File
+      - "apps/sheetpilefem/index.html" # WASM Example App for Refactoring
+      - "apps/pilegroup/pilegroup.wasm" # WASM Reference
+      - "apps/sheetpilefem/sheetpilefem.wasm" # WASM Reference
+      - "hydrostructai.github.io/_posts/" # Guide/Post Links
+      - "apps/lateralpile/validation-service.js" # Existing license check reference
+    steps:
+      - "Action 1 (Layout Creation): Create the main structural include file at `_includes/app_layout_standard.html`. This layout must load necessary global CSS/JS and define the overall wrapper for the standardized app interface."
+      - "Action 2 (Top Menu Definition): Implement a fixed, responsive top-level navigation bar (using modern CSS Flexbox/Grid for efficiency) with 5 Vietnamese-labeled buttons/tabs in the exact required order (HTML/Liquid structure only):"
+      - "  - **Về trang chủ** (Link to `{{ site.baseurl }}/`)"
+      - "  - **Hướng dẫn** (Link dynamically set via Front Matter: `{{ page.guide_post_url | relative_url }}`)"
+      - "  - **Số liệu** (Tab trigger for the data management section)"
+      - "  - **Tính toán** (Primary calculation trigger button)"
+      - "  - **Kết quả** (Tab trigger for the output section)"
+      - "Action 3 (Data & Results Structure): Within the main content area, implement the initial HTML/CSS for two primary sections: 'Số liệu' and 'Kết quả'. The 'Số liệu' section MUST contain three internal, toggleable tabs: **Quản lý tệp**, **Toàn bộ Số liệu (Dạng bảng/Textbox)**, and **License Status (Bao gồm thông tin đăng ký)**."
+      - "Action 4 (WASM/License JS Logic): Create a centralized, modular JavaScript file (e.g., `assets/js/app_core_logic.js`) responsible for handling the 'Tính toán' button click. This script must implement the following **critical logic**:"
+      - "  - **License Check Flow:** If the complexity/feature tier is unlicensed (Simulate this by checking an assumed global variable `window.appConfig.isLicensed`), the script must show a clear, polite alert/modal AND immediately switch the active tab to the **License Status Tab** within the 'Số liệu' section."
+      - "  - **WASM Call:** If licensed/free, proceed to call the appropriate app's WASM function (e.g., `Module.run_fem()` for sheetpile/pilegroup apps) while maintaining separation of concerns."
+      - "Action 5 (Footer Integration): Implement Liquid logic at the bottom of `_includes/app_layout_standard.html` to display a clean, small card/link for the **latest post** from `site.posts`."
+      - "Action 6 (Refactoring Example): Refactor the existing WASM app `apps/sheetpilefem/index.html` to switch its layout to use the new `app_layout_standard.html` include, setting a test `guide_post_url: /posts/2025-10-28-sheet-pile-fem-wasm-intro.md`."
+      - "Action 7 (Code Quality QA): Ensure all new code (Liquid, HTML, JS) is highly modular, follows modern ES6 standards, uses semantic HTML5 tags, and is clearly commented to ensure low maintenance cost and scientific integrity."
+      
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 10: FOCUSED UI REFACTORING (SIMPLIFIED CORE)
+  # Mục tiêu: Implement Option C - Giao diện chuẩn hóa đơn giản cho tất cả apps.
+  # =====================================================================
+  refactor_to_simplified_standard:
+    description: "Implement the Simplified Standard UI (Option C) across all existing web apps to achieve immediate consistency and modularity without WASM/License logic."
+    references:
+      - "hydrostructai.github.io/_includes/app_layout_standard.html"
+      - "assets/css/app-standard.css"
+      - "assets/js/app_core_logic.js"
+    steps:
+      - "Action 1 (Select Option): **CONFIRM selection of Option C (Simplified Version)** to prioritize low cost and fast implementation."
+      - "Action 2 (CSS/JS Core): Create `assets/css/app-standard.css` (minimal, modern styling for the app shell) and a simplified `assets/js/app_core_logic.js`."
+      - "Action 3 (Layout Implementation): Implement the final version of `_includes/app_layout_standard.html` containing the fixed, 5-button top menu structure (Về trang chủ -> Kết quả) and the latest post footer."
+      - "Action 4 (JS Functionality): The `app_core_logic.js` must **ONLY** handle tab switching (Số liệu, Kết quả) and the footer integration logic (Liquid for latest post)."
+      - "Action 5 (Exclusion): **EXPLICITLY OMIT/IGNORE** all JavaScript logic related to WASM loading, license checking, fee notifications, and 'free outside license' complexity from the core files."
+      - "Action 6 (Mass Refactoring): Immediately refactor **ALL** existing apps (SheetPileFEM, PileGroup, HydraulicSpillway, ShortCol 2D/3D, tools/circlearea, etc.) to use the new `app_layout_standard.html` include for their main structure."
+      - "Action 7 (Final Report): List the key files created/modified and confirm that all apps now share a unified, simplified interface."

@@ -22,7 +22,7 @@ Dốc nước (spillway chute) là một trong những công trình quan trọng
 
 ### 1.1. Thông số thiết kế
 
-Dự án được phân tích với các thông số sau:
+Ví dụ tính toán dốc nước với các thông số sau:
 
 **Thông số công trình:**
 - Cấp công trình: **Cấp II**
@@ -41,10 +41,6 @@ Dự án được phân tích với các thông số sau:
 - Đoạn 2 (không đổi): Độ dốc \\( i_2 = 20\% \\), chiều dài \\( L_2 = 45 \, \text{m} \\)
 - Hệ số nhám bê tông: \\( n = 0.017 \\)
 
-**Hệ số an toàn:**
-- Tổ hợp cơ bản: \\( [K] = 1.15 \\)
-- Tổ hợp đặc biệt: \\( [K] = 1.04 \\)
-- Hệ số an toàn ngập: \\( \sigma = 1.05 \\)
 
 ### 1.2. Sự cần thiết của bể tiêu năng
 

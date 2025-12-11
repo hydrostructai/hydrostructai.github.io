@@ -1,0 +1,311 @@
+<!-- 
+  Standard Application Layout for HydroStruct AI Web Apps
+  Features: Modern SPA-like interface, Tab navigation, WASM support, License management
+  Version: 1.0
+-->
+
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: 'vi' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ page.description | default: page.title }}">
+  
+  <!-- Standard App Styles -->
+  <link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app-standard.css">
+  
+  <!-- App-specific styles (optional) -->
+  {% if page.app_css %}
+  <link rel="stylesheet" href="{{ site.baseurl }}{{ page.app_css }}">
+  {% endif %}
+</head>
+
+<body class="app-body">
+  
+  <!-- ============================================
+       TOP NAVIGATION BAR
+       ============================================ -->
+  <nav class="app-navbar" role="navigation" aria-label="Main navigation">
+    <div class="app-navbar-container">
+      
+      <!-- App Title -->
+      <div class="app-navbar-brand">
+        <h1 class="app-title">{{ page.title | default: "HST.AI App" }}</h1>
+        <p class="app-subtitle">{{ page.subtitle | default: "" }}</p>
+      </div>
+      
+      <!-- Main Navigation Tabs -->
+      <ul class="app-nav-tabs" role="tablist">
+        <li role="presentation">
+          <a href="{{ site.baseurl }}/" class="nav-tab" title="Về trang chủ">
+            <i class="fas fa-home"></i>
+            <span>Về trang chủ</span>
+          </a>
+        </li>
+        
+        {% if page.guide_post_url %}
+        <li role="presentation">
+          <a href="{{ page.guide_post_url | relative_url }}" class="nav-tab" title="Hướng dẫn sử dụng">
+            <i class="fas fa-book"></i>
+            <span>Hướng dẫn</span>
+          </a>
+        </li>
+        {% endif %}
+        
+        <li role="presentation">
+          <button class="nav-tab" data-tab="data-section" title="Nhập số liệu">
+            <i class="fas fa-database"></i>
+            <span>Số liệu</span>
+          </button>
+        </li>
+        
+        <li role="presentation">
+          <button class="nav-tab nav-tab-primary" id="btn-calculate" title="Chạy tính toán">
+            <i class="fas fa-calculator"></i>
+            <span>Tính toán</span>
+          </button>
+        </li>
+        
+        <li role="presentation">
+          <button class="nav-tab" data-tab="results-section" title="Xem kết quả">
+            <i class="fas fa-chart-line"></i>
+            <span>Kết quả</span>
+          </button>
+        </li>
+      </ul>
+      
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- ============================================
+       MAIN CONTENT AREA
+       ============================================ -->
+  <main class="app-main-content" role="main">
+    
+    <!-- DATA INPUT SECTION -->
+    <section id="data-section" class="app-section active" role="tabpanel" aria-labelledby="tab-data">
+      
+      <!-- Sub-tabs for Data Section -->
+      <div class="sub-tabs" role="tablist">
+        <button class="sub-tab active" data-subtab="file-manager" role="tab" aria-selected="true">
+          <i class="fas fa-folder-open"></i> Quản lý tệp
+        </button>
+        <button class="sub-tab" data-subtab="data-input" role="tab" aria-selected="false">
+          <i class="fas fa-table"></i> Toàn bộ Số liệu
+        </button>
+        <button class="sub-tab" data-subtab="license-status" role="tab" aria-selected="false">
+          <i class="fas fa-key"></i> License Status
+        </button>
+      </div>
+      
+      <!-- Sub-content: File Manager -->
+      <div id="file-manager" class="sub-content active" role="tabpanel">
+        <div class="content-card">
+          <h3><i class="fas fa-folder-open"></i> Quản lý Tệp Dữ Liệu</h3>
+          
+          <div class="file-upload-zone">
+            <input type="file" id="file-input" accept=".json,.csv,.txt" hidden>
+            <button class="btn btn-secondary" onclick="document.getElementById('file-input').click()">
+              <i class="fas fa-upload"></i> Tải tệp lên
+            </button>
+            <p class="help-text">Hỗ trợ: JSON, CSV, TXT</p>
+          </div>
+          
+          <div id="file-list" class="file-list">
+            <!-- Dynamic file list will be inserted here -->
+            <p class="text-muted">Chưa có tệp nào được tải lên</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sub-content: Data Input -->
+      <div id="data-input" class="sub-content" role="tabpanel">
+        <div class="content-card">
+          <h3><i class="fas fa-table"></i> Nhập Số Liệu</h3>
+          
+          <!-- App-specific input form will be injected here -->
+          <div id="app-input-form">
+            {{ content }}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sub-content: License Status -->
+      <div id="license-status" class="sub-content" role="tabpanel">
+        <div class="content-card">
+          <h3><i class="fas fa-key"></i> Trạng Thái License</h3>
+          
+          <div class="license-info">
+            <div class="license-badge" id="license-badge">
+              <i class="fas fa-circle-check"></i>
+              <span id="license-type">Free Version</span>
+            </div>
+            
+            <div class="license-details">
+              <h4>Thông tin đăng ký</h4>
+              <table class="info-table">
+                <tr>
+                  <td>Loại license:</td>
+                  <td><strong id="license-tier">Free</strong></td>
+                </tr>
+                <tr>
+                  <td>Trạng thái:</td>
+                  <td><span class="status-active" id="license-status-text">Đang hoạt động</span></td>
+                </tr>
+                <tr>
+                  <td>Giới hạn tính năng:</td>
+                  <td id="license-limits">Không giới hạn cơ bản</td>
+                </tr>
+              </table>
+              
+              <div class="license-actions">
+                <button class="btn btn-primary" onclick="showUpgradeModal()">
+                  <i class="fas fa-arrow-up"></i> Nâng cấp License
+                </button>
+                <button class="btn btn-secondary" onclick="showActivateModal()">
+                  <i class="fas fa-key"></i> Kích hoạt License
+                </button>
+              </div>
+            </div>
+            
+            <div class="license-note">
+              <p><i class="fas fa-info-circle"></i> 
+                Phiên bản miễn phí hỗ trợ đầy đủ các tính năng cơ bản. 
+                Nâng cấp để sử dụng các tính năng nâng cao và nhận hỗ trợ ưu tiên.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </section>
+    
+    <!-- RESULTS SECTION -->
+    <section id="results-section" class="app-section" role="tabpanel" aria-labelledby="tab-results">
+      <div class="content-card">
+        <h3><i class="fas fa-chart-line"></i> Kết Quả Tính Toán</h3>
+        
+        <!-- Results will be dynamically generated here -->
+        <div id="app-results-container">
+          <div class="empty-state">
+            <i class="fas fa-calculator"></i>
+            <p>Nhấn nút "Tính toán" để xem kết quả</p>
+          </div>
+        </div>
+        
+        <!-- Export Options -->
+        <div class="results-actions" style="display: none;">
+          <button class="btn btn-secondary" onclick="exportResults('pdf')">
+            <i class="fas fa-file-pdf"></i> Xuất PDF
+          </button>
+          <button class="btn btn-secondary" onclick="exportResults('excel')">
+            <i class="fas fa-file-excel"></i> Xuất Excel
+          </button>
+          <button class="btn btn-secondary" onclick="exportResults('json')">
+            <i class="fas fa-file-code"></i> Xuất JSON
+          </button>
+        </div>
+      </div>
+    </section>
+    
+  </main>
+  
+  <!-- ============================================
+       FOOTER - LATEST POST CARD
+       ============================================ -->
+  <footer class="app-footer" role="contentinfo">
+    <div class="footer-container">
+      
+      {% if site.posts.size > 0 %}
+      {% assign latest_post = site.posts | first %}
+      <div class="latest-post-card">
+        <div class="post-icon">
+          <i class="fas fa-newspaper"></i>
+        </div>
+        <div class="post-info">
+          <h4>Bài viết mới nhất</h4>
+          <a href="{{ latest_post.url | relative_url }}" class="post-link">
+            {{ latest_post.title }}
+          </a>
+          <p class="post-date">{{ latest_post.date | date: "%d/%m/%Y" }}</p>
+        </div>
+      </div>
+      {% endif %}
+      
+      <div class="footer-links">
+        <a href="{{ site.baseurl }}/">Trang chủ</a>
+        <a href="{{ site.baseurl }}/apps/">Ứng dụng</a>
+        <a href="mailto:{{ site.author.email | default: 'ha.nguyen@hydrostructai.com' }}">Liên hệ</a>
+      </div>
+      
+      <p class="footer-copyright">
+        &copy; {{ 'now' | date: "%Y" }} HydroStruct AI. All rights reserved.
+      </p>
+    </div>
+  </footer>
+  
+  <!-- ============================================
+       MODALS
+       ============================================ -->
+  
+  <!-- License Upgrade Modal -->
+  <div id="upgrade-modal" class="modal" role="dialog" aria-labelledby="upgrade-title" aria-hidden="true">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('upgrade-modal')" aria-label="Close">&times;</button>
+      <h3 id="upgrade-title">Nâng cấp License</h3>
+      <p>Vui lòng liên hệ để biết thêm chi tiết về các gói license nâng cao.</p>
+      <p><strong>Email:</strong> ha.nguyen@hydrostructai.com</p>
+      <button class="btn btn-primary" onclick="closeModal('upgrade-modal')">Đóng</button>
+    </div>
+  </div>
+  
+  <!-- License Activation Modal -->
+  <div id="activate-modal" class="modal" role="dialog" aria-labelledby="activate-title" aria-hidden="true">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('activate-modal')" aria-label="Close">&times;</button>
+      <h3 id="activate-title">Kích hoạt License</h3>
+      <div class="form-group">
+        <label for="license-key">License Key:</label>
+        <input type="text" id="license-key" class="form-input" placeholder="Nhập mã license...">
+      </div>
+      <button class="btn btn-primary" onclick="activateLicense()">Kích hoạt</button>
+    </div>
+  </div>
+  
+  <!-- ============================================
+       JAVASCRIPT
+       ============================================ -->
+  
+  <!-- Font Awesome -->
+  <script src="https://kit.fontawesome.com/your-kit-id.js" crossorigin="anonymous"></script>
+  
+  <!-- Core App Logic -->
+  <script src="{{ site.baseurl }}/assets/js/app_core_logic.js"></script>
+  
+  <!-- App-specific scripts -->
+  {% if page.app_scripts %}
+    {% for script in page.app_scripts %}
+  <script src="{{ site.baseurl }}{{ script }}"></script>
+    {% endfor %}
+  {% endif %}
+  
+  <!-- Initialize App -->
+  <script>
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeApp({
+        appName: '{{ page.app_name | default: "generic" }}',
+        hasWASM: {{ page.has_wasm | default: false }},
+        wasmModule: '{{ page.wasm_module | default: "" }}',
+        requiresLicense: {{ page.requires_license | default: false }}
+      });
+    });
+  </script>
+  
+</body>
+</html>
+

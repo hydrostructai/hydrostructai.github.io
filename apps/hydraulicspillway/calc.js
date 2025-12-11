@@ -116,7 +116,7 @@ function calculateHydraulicJump() {
     const K = (h_h + deltaZ) / h2_basin;
 
     // HIỂN THỊ KẾT QUẢ
-    displayResults({
+    const calculationResults = {
       // Nối tiếp không có bể
       E0: E0_at_toe,
       h1: h1_no_basin,
@@ -137,7 +137,29 @@ function calculateHydraulicJump() {
       deltaZ: deltaZ,
       K: K,
       converged: converged
-    });
+    };
+    
+    // Display basic results
+    displayResults(calculationResults);
+    
+    // Display detailed results with tables and chart
+    const inputData = {
+      Q: Q,
+      B: B,
+      Z_tl: Z_tl,
+      Z_ng: Z_ng,
+      Z_dk: Z_dk,
+      h_h: h_h,
+      phi: phi,
+      alpha: alpha,
+      sigma: sigma
+    };
+    
+    // Generate simplified profile data for visualization
+    calculationResults.profileData = generateSimplifiedProfile(calculationResults, inputData);
+    
+    // Call detailed output visualization
+    displayDetailedResults(calculationResults, inputData);
 
   } catch (error) {
     console.error('Lỗi tính toán:', error);

@@ -1,0 +1,120 @@
+<!-- 
+  Simplified Standard Application Layout for HydroStruct AI Web Apps
+  Version: 1.0 - Simplified (No WASM/License complexity)
+  Features: Consistent UI, Tab navigation, Responsive design
+-->
+
+<link rel="stylesheet" href="{{ site.baseurl }}/assets/css/app-standard.css">
+
+<div class="app-container">
+  
+  <!-- TOP NAVIGATION BAR -->
+  <nav class="app-navbar">
+    <div class="navbar-content">
+      
+      <div class="navbar-brand">
+        <h1 class="app-title">{{ page.app_title | default: page.title }}</h1>
+      </div>
+      
+      <ul class="navbar-tabs">
+        <li>
+          <a href="{{ site.baseurl }}/" class="tab-link">
+            <i class="fas fa-home"></i>
+            <span>Trang chủ</span>
+          </a>
+        </li>
+        
+        {% if page.guide_url %}
+        <li>
+          <a href="{{ page.guide_url | relative_url }}" class="tab-link">
+            <i class="fas fa-book"></i>
+            <span>Hướng dẫn</span>
+          </a>
+        </li>
+        {% endif %}
+        
+        <li>
+          <button class="tab-btn active" data-tab="input">
+            <i class="fas fa-edit"></i>
+            <span>Số liệu</span>
+          </button>
+        </li>
+        
+        <li>
+          <button class="tab-btn tab-btn-calc" id="btn-calc">
+            <i class="fas fa-calculator"></i>
+            <span>Tính toán</span>
+          </button>
+        </li>
+        
+        <li>
+          <button class="tab-btn" data-tab="results">
+            <i class="fas fa-chart-bar"></i>
+            <span>Kết quả</span>
+          </button>
+        </li>
+      </ul>
+      
+      <button class="mobile-toggle" aria-label="Menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+  
+  <!-- MAIN CONTENT -->
+  <main class="app-main">
+    
+    <!-- INPUT SECTION -->
+    <section id="tab-input" class="tab-content active">
+      <div class="content-card">
+        {{ content }}
+      </div>
+    </section>
+    
+    <!-- RESULTS SECTION -->
+    <section id="tab-results" class="tab-content">
+      <div class="content-card">
+        <h3>📊 Kết Quả</h3>
+        <div id="results-container">
+          <div class="empty-results">
+            <i class="fas fa-calculator"></i>
+            <p>Nhấn "Tính toán" để xem kết quả</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+  </main>
+  
+  <!-- FOOTER WITH LATEST POST -->
+  <footer class="app-footer">
+    {% if site.posts.size > 0 %}
+    {% assign latest = site.posts | first %}
+    <div class="footer-post">
+      <i class="fas fa-newspaper"></i>
+      <div class="post-info">
+        <span class="post-label">Bài mới:</span>
+        <a href="{{ latest.url | relative_url }}">{{ latest.title }}</a>
+      </div>
+    </div>
+    {% endif %}
+    
+    <div class="footer-links">
+      <a href="{{ site.baseurl }}/">Trang chủ</a>
+      <span>•</span>
+      <a href="{{ site.baseurl }}/apps/">Ứng dụng</a>
+      <span>•</span>
+      <a href="mailto:ha.nguyen@hydrostructai.com">Liên hệ</a>
+    </div>
+  </footer>
+  
+</div>
+
+<!-- Core Logic -->
+<script src="{{ site.baseurl }}/assets/js/app_core_logic.js"></script>
+
+<!-- App-specific scripts -->
+{% if page.app_js %}
+<script src="{{ site.baseurl }}{{ page.app_js }}"></script>
+{% endif %}
+
