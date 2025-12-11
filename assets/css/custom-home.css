@@ -23,14 +23,14 @@
   flex-direction: column;
   gap: 30px;
 }
-/*
+
 @media (min-width: 1024px) {
   .left-sidebar {
     position: sticky;
-    top: 20px; 
+    top: 20px;
   }
 }
-*/
+
 .sidebar-module {
   margin-bottom: 15px;
 }
