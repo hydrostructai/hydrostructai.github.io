@@ -1,0 +1,37 @@
+/* ====================== 3 CỘT ĐỀU CHO CẢ TRANG CHỦ & BÀI VIẾT ====================== */
+.main-three-columns {
+  display: flex;
+  gap: 30px;
+  margin: 30px 0;
+}
+
+.sidebar-left-wrapper,
+.sidebar-right-wrapper {
+  flex: 0 0 260px;           /* cố định chiều rộng */
+}
+
+.content-wrapper {
+  flex: 1;
+  min-width: 0;              /* tránh tràn flex */
+  max-width: 800px;
+}
+
+/* Responsive: màn hình trung bình (tablet) */
+@media (max-width: 1024px) {
+  .main-three-columns {
+    flex-direction: column;
+  }
+  .sidebar-left-wrapper,
+  .sidebar-right-wrapper {
+    flex: none;
+    max-width: 100%;
+  }
+  .sidebar-left-wrapper  { order: 2; }
+  .content-wrapper       { order: 1; }
+  .sidebar-right-wrapper { order: 3; }
+}
+
+/* Đảm bảo sidebar cũ không bị lỗi ở các trang khác */
+.left-sidebar, .right-sidebar {
+  width: 100%;
+}
