@@ -52,74 +52,70 @@ const AppCal = ({
   }, [steel.d_bar]);
 
   // Hàm tạo tọa độ cốt thép (Logic sinh tự động)
+// Hàm tạo tọa độ cốt thép (Logic rải đều theo chu vi - Perimeter Walking)
   const generateBarLayout = () => {
     const bars = [];
     const As = Number(steel.As_bar);
     const N = Math.max(4, Number(steel.Nb)); // Tối thiểu 4 thanh
 
     if (colType === "rect") {
-      // Logic: Bố trí đều chu vi hình chữ nhật
+      // 1. Xác định kích thước lồng thép (Core dimensions)
+      // W, H là kích thước từ tâm cốt thép bên này sang tâm cốt thép bên kia
       const W = Number(geo.B) - 2 * Number(geo.cover);
       const H = Number(geo.H) - 2 * Number(geo.cover);
+      
+      // 2. Tính chu vi đường tim cốt thép
+      const perimeter = 2 * (W + H);
+      
+      // 3. Khoảng cách giữa các thanh nếu rải đều tuyệt đối
+      const spacing = perimeter / N;
 
-      // 4 thanh góc bắt buộc
-      bars.push({ x: -W / 2, y: -H / 2, As }); // Góc dưới trái
-      bars.push({ x: W / 2, y: -H / 2, As }); // Góc dưới phải
-      bars.push({ x: W / 2, y: H / 2, As }); // Góc trên phải
-      bars.push({ x: -W / 2, y: H / 2, As }); // Góc trên trái
+      // 4. Thuật toán "Đi bộ dọc chu vi"
+      // Bắt đầu từ góc dưới trái (-W/2, -H/2) và đi ngược chiều kim đồng hồ
+      // Thứ tự đi: Đáy (Trái->Phải) -> Phải (Dưới->Trên) -> Đỉnh (Phải->Trái) -> Trái (Trên->Dưới)
+      
+      for (let i = 0; i < N; i++) {
+        // Vị trí của thanh thứ i trên chu vi đã duỗi thẳng (từ 0 đến perimeter)
+        let currentDist = i * spacing; 
+        
+        let x = 0, y = 0;
 
-      const remain = N - 4;
-      if (remain > 0) {
-        // Chia số thanh còn lại cho các cạnh
-        // Đơn giản hóa: Chia đều cho 4 cạnh (mỗi cạnh thêm n thanh)
-        // Lưu ý: Đây là logic sơ bộ, thực tế user có thể cần chỉnh từng thanh
-        // Ở đây ta dùng thuật toán rải đều theo chu vi
-        const perimeter = 2 * (W + H);
-        const spacing = perimeter / N;
-
-        // Reset và chạy lại thuật toán rải đều (chính xác hơn)
-        bars.length = 0; // Clear
-
-        // Rải điểm trên chu vi hình chữ nhật (đi từ góc dưới trái, ngược chiều kim đồng hồ)
-        // Cạnh đáy (-W/2, -H/2) -> (W/2, -H/2)
-        // Cạnh phải (W/2, -H/2) -> (W/2, H/2)
-        // Cạnh trên (W/2, H/2) -> (-W/2, H/2)
-        // Cạnh trái (-W/2, H/2) -> (-W/2, -H/2)
-
-        // Cách đơn giản cho demo: Chia đều 2 phương X và Y
-        // Số khoảng chia phương X và Y dựa trên tỷ lệ cạnh
-        const nX = Math.round((W / (W + H)) * N);
-        const nY = Math.round((H / (W + H)) * N);
-
-        // Code rải đều đơn giản (Fallback về cách chia cạnh thủ công nếu cần chính xác cao)
-        // Ở đây dùng lại phương pháp rải điểm đơn giản cho Rect:
-        // Chỉ rải thanh giữa các cạnh (không tối ưu 100% nhưng đủ dùng cho demo)
-        const n_side_x = Math.floor(remain / 2); // Số thanh thêm vào 2 cạnh ngang
-        // Chưa xử lý chi tiết chia lẻ, dùng logic 4 góc + trung điểm tạm thời cho demo
-        // *Để code gọn, ta dùng logic phân bố lại 4 góc và các thanh giữa*
-
-        // Re-add 4 corners
-        bars.push({ x: -W / 2, y: -H / 2, As });
-        bars.push({ x: W / 2, y: -H / 2, As });
-        bars.push({ x: W / 2, y: H / 2, As });
-        bars.push({ x: -W / 2, y: H / 2, As });
-
-        // Thêm các thanh giữa (giả định đối xứng)
-        if (remain >= 2) {
-          bars.push({ x: 0, y: -H / 2, As }); // Giữa đáy
-          bars.push({ x: 0, y: H / 2, As }); // Giữa đỉnh
+        // Xác định thanh nằm trên cạnh nào
+        if (currentDist <= W) {
+          // --- Cạnh Đáy (Bottom) ---
+          x = -W/2 + currentDist;
+          y = -H/2;
+        } else if (currentDist <= W + H) {
+          // --- Cạnh Phải (Right) ---
+          x = W/2;
+          y = -H/2 + (currentDist - W);
+        } else if (currentDist <= 2*W + H) {
+          // --- Cạnh Đỉnh (Top) --- Đi ngược từ Phải sang Trái
+          x = W/2 - (currentDist - (W + H));
+          y = H/2;
+        } else {
+          // --- Cạnh Trái (Left) --- Đi ngược từ Trên xuống Dưới
+          x = -W/2;
+          y = H/2 - (currentDist - (2*W + H));
         }
-        if (remain >= 4) {
-          bars.push({ x: -W / 2, y: 0, As }); // Giữa trái
-          bars.push({ x: W / 2, y: 0, As }); // Giữa phải
-        }
-        // Nếu > 8 thanh, code này cần nâng cấp thuật toán chia loop
+        
+        // 5. Snap vào góc (Khử sai số số học)
+        // Nếu tọa độ rất gần góc, ép nó vào đúng góc để hình vẽ đẹp hơn
+        const tolerance = 0.1;
+        if (Math.abs(x - -W/2) < tolerance) x = -W/2;
+        if (Math.abs(x - W/2) < tolerance) x = W/2;
+        if (Math.abs(y - -H/2) < tolerance) y = -H/2;
+        if (Math.abs(y - H/2) < tolerance) y = H/2;
+
+        bars.push({ x, y, As });
       }
+
     } else {
-      // Logic: Bố trí tròn đều (Polar Array)
+      // Logic cho cột Tròn: Bố trí đều (Polar Array)
       const R_bars = Number(geo.D) / 2 - Number(geo.cover);
       for (let i = 0; i < N; i++) {
         const theta = (i * 2 * Math.PI) / N;
+        // Bắt đầu từ góc 0 (bên phải) và xoay đều
         bars.push({
           x: R_bars * Math.cos(theta),
           y: R_bars * Math.sin(theta),
@@ -585,7 +581,8 @@ const AppCal = ({
               <div className="row g-2">
                 <div className="col-6">
                   <label className="form-label small">
-                    {getStandardLabels().c}
+                    /*{getStandardLabels().c}*/
+					{lbl.c}  {/* <-- SỬA THÀNH lbl.c */}
                   </label>
                   <input
                     type="number"
@@ -597,7 +594,7 @@ const AppCal = ({
                 </div>
                 <div className="col-6">
                   <label className="form-label small">
-                    {getStandardLabels().s}
+                    /*{getStandardLabels().s}*/
                   </label>
                   <input
                     type="number"
