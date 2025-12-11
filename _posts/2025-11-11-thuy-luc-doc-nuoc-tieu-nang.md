@@ -18,7 +18,7 @@ excerpt: "Phân tích chi tiết tính toán thủy lực dốc nước và thi�
 
 ## 1. Giới thiệu
 
-Dốc nước (spillway chute) là một trong những công trình quan trọng trong hệ thống xả lũ của đập. Khi nước chảy xuống dốc với vận tốc cao, năng lượng động của dòng chảy tăng lên đáng kể, có thể gây xói lở nghiêm trọng cho kênh hạ lưu nếu không được tiêu tán đúng cách. Bể tiêu năng (stilling basin) được thiết kế để tạo ra hiện tượng nước nhảy thủy lực (hydraulic jump), chuyển hóa năng lượng động thành năng lượng rối và nhiệt, bảo vệ kênh hạ lưu khỏi xói lở.
+Dốc nước (chute spillway) là một trong những công trình quan trọng trong hệ thống xả lũ của đập. Khi nước chảy xuống dốc với vận tốc cao, năng lượng động của dòng chảy tăng lên đáng kể, có thể gây xói lở nghiêm trọng cho kênh hạ lưu nếu không được tiêu tán đúng cách. Bể tiêu năng (stilling basin) được thiết kế để tạo ra hiện tượng nước nhảy thủy lực (hydraulic jump), chuyển hóa năng lượng động thành năng lượng rối và nhiệt, bảo vệ kênh hạ lưu khỏi xói lở.
 
 ### 1.1. Thông số thiết kế
 
@@ -291,7 +291,7 @@ Lấy giá trị bao trùm cho cả hai trường hợp:
 
 Để hỗ trợ tính toán nhanh và kiểm tra các phương án thiết kế khác nhau, tôi đã phát triển một ứng dụng web:
 
-**🔗 [Hydraulic Spillway Calculator](/apps/hydraulicspillway/)**
+**🔗 [TÍNH TOÁN THỦY LỰC DỐC NƯỚC](/apps/hydraulicspillway/)**
 
 Ứng dụng cung cấp:
 - Tính toán tự động các thông số thủy lực
