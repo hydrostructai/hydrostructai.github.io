@@ -1,7 +1,32 @@
 prompts:
     # Thêm vào cuối file cursor_prompts.yml
 # Thêm vào cuối file cursor_prompts.yml
-
+# =====================================================================
+  # TASK 13: REFACTOR HYDRAULIC SPILLWAY (UI TABS & VISUALIZATION)
+  # Mục tiêu: Chuẩn hóa UI theo style consmcc-test, dọn dẹp file thừa,
+  #           và nâng cấp output.js để hiển thị bảng/biểu đồ chuẩn kỹ thuật.
+  # =====================================================================
+  refactor_hydraulic_spillway_ui_viz:
+    description: "Refactor the Hydraulic Spillway app to use a clean Tabbed UI (Input/Result), cleanup redundant logic files, and implement detailed hydraulic tables and charts in output.js."
+    references:
+      - "apps/hydraulicspillway/index.html"
+      - "apps/hydraulicspillway/calc.js"
+      - "apps/hydraulicspillway/calc-v2.js"
+      - "apps/hydraulicspillway/output.js"
+      - "consmcc-test.html" # UI Reference
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf" # Formulas & Chart logic
+    steps:
+      - "Action 1 (Cleanup): Check `index.html` to see which script is active (`calc.js` or `calc-v2.js`). Keep the active/newer one, rename it to `app-cal.js`, and **DELETE** the other one to remove redundancy. Update `index.html` script source accordingly."
+      - "Action 2 (UI Refactor): Rewrite `apps/hydraulicspillway/index.html` to implement the Tab logic found in `consmcc-test.html`, BUT simplified:"
+      - "  - Create 2 Tabs: **'Số liệu đầu vào'** (id: `input-sec`) and **'Kết quả tính toán'** (id: `result-sec`)."
+      - "  - Use simple CSS/JS to toggle visibility (active/hidden classes). Remove all logic related to 'Logs' or 'Download Logs'."
+      - "  - Ensure the 'Tính toán' button automatically switches the active tab to 'Kết quả tính toán' upon success."
+      - "Action 3 (Output Upgrade): Rewrite `apps/hydraulicspillway/output.js` to render specific hydraulic engineering data:"
+      - "  - **Table 1 (Chute Profile):** Iterate through calculation steps to show columns: Station (Lý trình), Bed Elevation ($Z_{day}$), Depth ($h$), Velocity ($V$), Froude ($Fr$), Water Elevation ($Z_{nuoc}$)."
+      - "  - **Table 2 (Stilling Basin):** Display calculated params for the Stilling Basin: $h_1, h_2$ (Conjugate depth), $L_{basin}$ (Length), and $K$ (Safety factor)."
+      - "  - **Chart (Water Profile):** Use Chart.js (add CDN to index.html if missing) to draw a line chart. X-axis: Distance. Y-axis: Elevation. Plot two lines: 'Chute Bed' and 'Water Surface'. Add a visual marker for the Hydraulic Jump location."
+      - "Action 4 (Final Check): Ensure `app-cal.js` returns data in a format that `output.js` can consume (e.g., an object containing `profileData` array and `basinParams` object)."
+      
   # =====================================================================
   # TASK 12: FINAL POST LAYOUT OPTIMIZATION (20:60:20 GRID & TOC RELOCATION)
   # Mục tiêu: Mở rộng Main Content. Sidebar-Left: Sticky. Sidebar-Right: TOC. Latest Posts: Di chuyển xuống cuối.
