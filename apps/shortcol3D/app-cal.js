@@ -35,7 +35,7 @@ const AppCal = ({ onCalculate, isComputing }) => {
 
   // Tải trọng (Danh sách các tổ hợp)
   const [loads, setLoads] = useState([
-    { id: 1, P: 1000, Mx: 50, My: 20, note: "TH1: Tĩnh + Hoạt" },
+    { id: 1, P: 1000, Mx: 50, My: 20, note: "TH1: Tổ hợp tải trọng" },
   ]);
 
   // --- 2. EFFECT & LOGIC ---

@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const tr = document.createElement("tr");
   tr.innerHTML = `
         <td class="text-center">1</td>
-        <td><input type="text" class="form-control form-control-sm" value="Tĩnh tải"></td>
+        <td><input type="text" class="form-control form-control-sm" value="Tổ hợp tải trọng"></td>
         <td><input type="number" class="form-control form-control-sm text-end" value="50"></td>
         <td><input type="number" class="form-control form-control-sm text-end" value="1000"></td>
         <td class="text-center"><button class="btn btn-sm btn-outline-danger border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button></td>
