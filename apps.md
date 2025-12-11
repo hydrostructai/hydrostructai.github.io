@@ -222,7 +222,7 @@ header:
 
       <div class="app-card">
         <div class="app-card-image">
-          <img src="/assets/images/app-icons/hydraulic-spillway.png" alt="Hydraulic Spillway" onerror="this.src='/assets/images/app-icons/pile-group2.png'">
+          <img src="/assets/images/app-icons/hydraulic-spillway.png" alt="Hydraulic Spillway" onerror="this.src='/assets/images/app-icons/chute-spillway.png'">
         </div>
         <div class="app-card-body">
           <h3 class="app-card-title">Dốc Nước & Tiêu Năng</h3>
