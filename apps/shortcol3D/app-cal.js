@@ -572,42 +572,35 @@ const AppCal = ({
             </div>
           </div>
 
-          {/* 2. Material Section */}
-          <div className="card shadow-sm mb-3">
-            <div className="card-body p-2">
-              <label className="small fw-bold text-dark d-block mb-2">
-                <i className="bi bi-arrow-bar-up"></i> Vật liệu (MPa)
-              </label>
-              <div className="row g-2">
-                <div className="col-6">
-				  <label className="form-label small">
-					{lbl.c}
-				  </label>
-				  <input
-					type="number"
-					value={mat.fck}
-					onChange={(e) => setMat({ ...mat, fck: e.target.value })}
-					className="form-control form-control-sm"
-					step="0.5"
-				  />
+			{/* 2. Material Section */}
+			<div className="card shadow-sm mb-3">
+			  <div className="card-body p-2">
+				<div className="d-flex justify-content-between align-items-center mb-2">
+				  <label className="small fw-bold text-dark mb-0">Vật liệu</label>
+				  <span className="badge bg-warning text-dark small">{lbl.t}</span>
 				</div>
-                </div>
-
-				<div className="col-6">
-				  <label className="form-label small">
-					{lbl.s}
-				  </label>
-				  <input
-					type="number"
-					value={mat.fyk}
-					onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
-					className="form-control form-control-sm"
-					step="10"
-				  />
-				
-              </div>
-            </div>
-          </div>
+				<div className="row g-2">
+				  <div className="col-6">
+					<label className="form-label small">{lbl.c}</label>
+					<input
+					  type="number"
+					  value={mat.fck}
+					  onChange={(e) => setMat({ ...mat, fck: e.target.value })}
+					  className="form-control form-control-sm fw-bold"
+					/>
+				  </div>
+				  <div className="col-6">
+					<label className="form-label small">{lbl.s}</label>
+					<input
+					  type="number"
+					  value={mat.fyk}
+					  onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
+					  className="form-control form-control-sm fw-bold"
+					/>
+				  </div>
+				</div>
+			  </div>
+			</div>
 
           {/* 3. Reinforcement Section */}
           <div className="card shadow-sm mb-3">

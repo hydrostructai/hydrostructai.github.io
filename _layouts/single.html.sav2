@@ -19,91 +19,60 @@ layout: default
 {% endif %}
 
 <style>
-  /* 1. Cấu hình lưới 3 cột */
+  /* Ghi đè cấu hình 3 cột cũ thành 2 cột: 280px (Trái) - Tự động (Nội dung) */
   .post-grid-container {
     display: grid !important;
-    /* Sidebar Trái: 240px (Thu nhỏ xíu để nhường chỗ)
-       Nội dung Giữa: 1fr (Tự động chiếm hết khoảng trống còn lại)
-       Sidebar Phải: 240px 
-    */
-    grid-template-columns: 240px minmax(0, 1fr) 240px !important;
+    grid-template-columns: 280px 1fr !important; 
     gap: 30px !important;
     align-items: start;
-    
-    /* 2. Tăng chiều rộng tổng thể lên ~20% (từ 1280px -> 1600px) */
-    max-width: 1600px !important; 
-    margin: 0 auto !important;
-    padding: 0 1rem !important;
   }
-
-  /* Sidebar Trái */
+  
+  /* Đảm bảo sidebar trái hiện đúng */
   .post-grid-sidebar-left {
     display: block !important;
     grid-column: 1 / 2 !important;
-    position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
   }
 
-  /* Sidebar Phải (Mục lục) - Hiển thị lại */
-  .post-grid-sidebar-right {
-    display: block !important;
-    grid-column: 3 / 4 !important;
-    position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
+  /* Ẩn sidebar phải (nếu có class cũ sót lại) */
+  .post-grid-sidebar-right, 
+  .sidebar__right {
+    display: none !important;
   }
 
-  /* Nội dung bài viết (Ở giữa) */
+  /* Nội dung bài viết chiếm cột 2 */
   .post-grid-article {
-    grid-column: 2 / 3 !important;
+    grid-column: 2 / -1 !important; /* Chiếm hết phần còn lại bên phải */
     width: 100% !important;
-    min-width: 0; /* Tránh vỡ layout khi có ảnh to */
+    max-width: 100% !important;
   }
 
-  /* Bài viết liên quan (Full width dưới cùng) */
-  .page__related-wrapper {
-    max-width: 1600px !important; /* Đồng bộ độ rộng với grid trên */
-    margin: 2rem auto;
-    padding: 0 1rem;
-  }
+  /* Bài viết liên quan nằm dưới cùng, tràn full chiều ngang */
   .page__related {
+    grid-column: 1 / -1 !important;
+    margin-top: 2rem;
     border-top: 1px solid #eee;
     padding-top: 2rem;
   }
 
-  /* --- RESPONSIVE --- */
-  
-  /* Laptop nhỏ/Tablet (Ẩn cột phải, dồn không gian cho nội dung) */
-  @media (max-width: 1200px) {
-    .post-grid-container {
-      grid-template-columns: 220px 1fr !important; /* 2 Cột */
-    }
-    .post-grid-sidebar-right {
-      display: none !important; /* Tạm ẩn TOC bên phải để không chật */
-    }
-  }
-
-  /* Mobile (1 Cột dọc) */
-  @media (max-width: 768px) {
+  /* Responsive Mobile: Chuyển về 1 cột dọc */
+  @media (max-width: 1024px) {
     .post-grid-container {
       grid-template-columns: 1fr !important;
     }
-    .post-grid-sidebar-left, 
-    .post-grid-sidebar-right {
-      display: none !important;
+    .post-grid-sidebar-left {
+      display: none !important; /* Ẩn sidebar trái trên mobile để rộng chỗ đọc */
     }
   }
 </style>
 
 <div id="main" role="main" class="post-grid-container">
   
+  {%- comment -%} LEFT SIDEBAR (Sticky) {%- endcomment -%}
   <div class="post-grid-sidebar-left">
     {% include sidebar-left.html %}
   </div>
 
+  {%- comment -%} MAIN ARTICLE CONTENT {%- endcomment -%}
   <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
     {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
     {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
@@ -117,11 +86,23 @@ layout: default
             <a href="{{ page.url | absolute_url }}" class="u-url" itemprop="url">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</a>
           </h1>{% endif %}
           {% include page__meta.html %}
+          
+          {%- comment -%} Hit Counter Badge {%- endcomment -%}
+          {% if page.layout == "single" and page.id %}
+          <div class="page__meta-counter" style="margin-top: 0.5em; margin-bottom: 1em;">
+            <i class="far fa-eye" aria-hidden="true"></i>
+            <span style="margin-left: 0.25em; font-size: 0.85em; color: #666;">
+              <script type="text/javascript" src="https://www.hitwebcounter.com/counter/counter.php?page={{ page.id | slugify }}&style=0007&nbdigits=5&type=page&initCount=0"></script>
+            </span>
+          </div>
+          {% endif %}
         </header>
       {% endunless %}
 
       <section class="page__content e-content" itemprop="articleBody">
+        
         {{ content }}
+        
         {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 
@@ -134,6 +115,7 @@ layout: default
       </footer>
 
       {% if page.share %}{% include social-share.html %}{% endif %}
+
       {% include post_pagination.html %}
     </div>
 
@@ -142,12 +124,8 @@ layout: default
     {% endif %}
   </article>
 
-  <div class="post-grid-sidebar-right">
-    {% include sidebar-right.html %}
-  </div>
 
-</div>
-<div class="page__related-wrapper">
+  {% comment %}{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}
     <div class="page__related">
       <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
