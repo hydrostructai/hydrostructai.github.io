@@ -270,114 +270,67 @@ div.highlighter-rouge pre.highlight {
 
 .btn-cta-primary i { margin-right: 8px; }
 
-/* ============================================================
-   *** FIX CHÍNH THỨC – GRID 3 CỘT CHO TOÀN BỘ BLOG ***
-   ============================================================ */
 
-@media (min-width: 1024px) {
 
-  #main {
-    display: grid !important;
-    grid-template-columns: 260px 1fr 300px;
-    gap: 2rem;
-    align-items: start;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-
-  /* LEFT SIDEBAR (bạn thêm thủ công ngoài article) */
-  #main > aside.left-sidebar {
-    grid-column: 1;
-    background: var(--bg-sidebar);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: var(--card-shadow);
-    position: sticky;
-    top: 20px;
-    height: fit-content;
-  }
-
-  /* CONTENT */
-  #main > article.page {
-    grid-column: 2;
-    min-width: 0;
-  }
-
-  /* RIGHT SIDEBAR (TOC của Minimal Mistakes) */
-  #main article .sidebar__right {
-    grid-column: 3;
-    background: var(--bg-sidebar);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: var(--card-shadow);
-    position: sticky;
-    top: 20px;
-    height: fit-content;
-  }
-
-  .sidebar__right .toc {
-    max-width: 100%;
-    overflow: hidden;
-  }
-}
-
-/* ---------------- RESPONSIVE ---------------- */
-@media (max-width: 1023px) {
-  #main {
-    display: block;
-    padding: 1rem;
-  }
-  .left-sidebar {
-    width: 100%;
-    margin-bottom: 1.5rem;
-  }
-  .sidebar__right {
-    display: none; /* hoặc đưa xuống */
-  }
-}
-
-@media (max-width: 768px) {
-  #main { padding: 0.5rem; }
-}
-
-/* ============== 3 CỘT ĐỀU NHAU CHO LAYOUT SINGLE ============== */
+/* ============== 3 CỘT ĐẸP + SIDEBAR TRÁI DÍNH (STICKY) ============== */
 .main-three-columns {
   display: flex;
-  gap: 20px;
-  margin: 0 auto;
+  gap: 30px;
   max-width: 1400px;
+  margin:  20px auto;
   padding: 0 15px;
+  align-items: flex-start;        /* RẤT QUAN TRỌNG: để sidebar sticky hoạt động đúng */
 }
 
-.sidebar-left-wrapper,
+/* === SIDEBAR TRÁI: CỐ ĐỊNH KHI CUỘN === */
+.sidebar-left-wrapper {
+  flex: 0 0 260px;
+  position: sticky;
+  top: 20px;              /* cách đỉnh trình duyệt 20px khi dính */
+  align-self: flex-start; /* không bị kéo dài theo nội dung */
+  max-height: calc(100vh - 40px); /* không tràn màn hình */
+  overflow-y: auto;       /* nếu nội dung sidebar quá dài thì có thanh cuộn riêng */
+}
+
+/* === SIDEBAR PHẢI: CUỘN BÌNH THƯỜNG (cùng với nội dung giữa) === */
 .sidebar-right-wrapper {
-  flex: 1;
-  min-width: 240px;
-  max-width: 300px;
+  flex: 0 0 260px;
 }
 
+/* === NỘI DUNG GIỮA: CHIẾM NHIỀU NHẤT === */
 .content-wrapper {
-  flex: 2;                    /* nội dung chiếm gấp đôi */
-  min-width: 0;               /* tránh overflow trong flex */
+  flex: 1;
+  min-width: 0;
+  max-width: 800px;
 }
 
-/* Khi màn hình nhỏ hơn 1024px → chuyển về 1 cột */
+/* ================================== RESPONSIVE ================================== */
 @media (max-width: 1024px) {
   .main-three-columns {
     flex-direction: column;
   }
+
   .sidebar-left-wrapper,
   .sidebar-right-wrapper,
   .content-wrapper {
+    flex: none;
     max-width: 100%;
   }
+
+  /* Mobile: thứ tự hiển thị đẹp */
   .sidebar-left-wrapper   { order: 2; }
   .content-wrapper        { order: 1; }
   .sidebar-right-wrapper  { order: 3; }
+
+  /* Tắt sticky trên mobile (không cần nữa) */
+  .sidebar-left-wrapper {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 
-/* Đảm bảo sidebar trái/phải cũ không bị ảnh hưởng ở các trang khác */
+/* Đảm bảo các sidebar cũ (trong trang khác) không bị lỗi */
 aside.left-sidebar,
 aside.right-sidebar {
   width: 100%;
