@@ -5,7 +5,7 @@
 {%- endcomment -%}
 
 {% if page.toc %}
-<aside class="right-sidebar">
+
   <div class="sidebar-module toc-module">
     <nav class="toc">
       <header>
@@ -17,18 +17,18 @@
       {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
     </nav>
   </div>
-</aside>
+
 {% else %}
 {%- comment -%}
   If no TOC, the right sidebar can be hidden or show alternative content.
   For now, we'll keep it empty to maintain grid structure.
 {%- endcomment -%}
-<aside class="right-sidebar right-sidebar-empty">
+
   <div class="sidebar-module">
     <p class="text-muted" style="font-size: 0.85rem; text-align: center; padding: 2rem 1rem;">
       <i class="fas fa-list"></i><br>
       Enable TOC by adding<br><code>toc: true</code><br>to front matter
     </p>
   </div>
-</aside>
+
 {% endif %}

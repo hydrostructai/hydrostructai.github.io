@@ -1,0 +1,11 @@
+<script src="{{ '/assets/js/global.js' | relative_url }}"></script>
+
+<script src="{{ '/assets/js/app_core_logic.js' | relative_url }}"></script>
+
+{% if page.mathjax or layout.mathjax %}
+  {% include mathjax.html %}
+{% endif %}
+
+{% if site.analytics.provider == "google-gtag" and site.analytics.google.tracking_id %}
+  {% include analytics-providers/google-gtag.html %}
+{% endif %}
