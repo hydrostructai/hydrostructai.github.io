@@ -508,6 +508,127 @@ const AppCal = ({ onCalculate, isComputing }) => {
           </div>
         </div>
 
+        {/* 3.5. Section Preview (SVG Visualization) */}
+        <div className="card shadow-sm mb-3">
+          <div className="card-body p-2">
+            <label className="small fw-bold text-dark d-block mb-2">
+              <i className="bi bi-diagram-3 me-1"></i> Minh họa tiết diện
+            </label>
+            <svg
+              width="100%"
+              height="200"
+              viewBox="-250 -250 500 500"
+              style={{
+                border: "1px solid #e0e0e0",
+                borderRadius: "4px",
+                backgroundColor: "#fafafa",
+              }}
+            >
+              {/* Section outline */}
+              {colType === "rect" ? (
+                <>
+                  {/* Concrete boundary */}
+                  <rect
+                    x={-Number(geo.B) / 2}
+                    y={-Number(geo.H) / 2}
+                    width={Number(geo.B)}
+                    height={Number(geo.H)}
+                    fill="#e8e8e8"
+                    stroke="#666"
+                    strokeWidth="2"
+                  />
+
+                  {/* Cover zone (lighter) */}
+                  <rect
+                    x={-Number(geo.B) / 2 + Number(geo.cover)}
+                    y={-Number(geo.H) / 2 + Number(geo.cover)}
+                    width={Number(geo.B) - 2 * Number(geo.cover)}
+                    height={Number(geo.H) - 2 * Number(geo.cover)}
+                    fill="#f5f5f5"
+                    stroke="#999"
+                    strokeWidth="1"
+                    strokeDasharray="4"
+                    opacity="0.6"
+                  />
+
+                  {/* Rebar circles */}
+                  {generateBarLayout().map((bar, idx) => (
+                    <circle
+                      key={idx}
+                      cx={bar.x}
+                      cy={bar.y}
+                      r={Math.sqrt(bar.As / Math.PI)}
+                      fill="none"
+                      stroke="#d32f2f"
+                      strokeWidth="1.5"
+                    />
+                  ))}
+                </>
+              ) : (
+                <>
+                  {/* Concrete boundary (circle) */}
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={Number(geo.D) / 2}
+                    fill="#e8e8e8"
+                    stroke="#666"
+                    strokeWidth="2"
+                  />
+
+                  {/* Cover zone (lighter) */}
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r={Number(geo.D) / 2 - Number(geo.cover)}
+                    fill="none"
+                    stroke="#999"
+                    strokeWidth="1"
+                    strokeDasharray="4"
+                    opacity="0.6"
+                  />
+
+                  {/* Rebar circles */}
+                  {generateBarLayout().map((bar, idx) => (
+                    <circle
+                      key={idx}
+                      cx={bar.x}
+                      cy={bar.y}
+                      r={Math.sqrt(bar.As / Math.PI)}
+                      fill="none"
+                      stroke="#d32f2f"
+                      strokeWidth="1.5"
+                    />
+                  ))}
+                </>
+              )}
+
+              {/* Axes */}
+              <line
+                x1="-100"
+                y1="0"
+                x2="100"
+                y2="0"
+                stroke="#ccc"
+                strokeWidth="0.5"
+              />
+              <line
+                x1="0"
+                y1="-100"
+                x2="0"
+                y2="100"
+                stroke="#ccc"
+                strokeWidth="0.5"
+              />
+            </svg>
+            <div className="small text-muted mt-2" style={{ fontSize: "10px" }}>
+              <i className="bi bi-info-circle me-1"></i>
+              Xám nhạt: Lớp bê tông | Đường ngang: Lớp bảo vệ | Tròn đỏ: Cốt
+              thép chủ
+            </div>
+          </div>
+        </div>
+
         {/* 4. Loads Section */}
         <div className="card shadow-sm mb-3">
           <div className="card-body p-2">
