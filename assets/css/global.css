@@ -340,3 +340,48 @@ div.highlighter-rouge pre.highlight {
 @media (max-width: 768px) {
   #main { padding: 0.5rem; }
 }
+
+
+/* ============================================================
+   3-COLUMN LAYOUT FOR HOME PAGE (index.html)
+   ============================================================ */
+@media (min-width: 1024px) {
+
+  .home-wrapper {
+    display: grid;
+    grid-template-columns: 260px 1fr 300px; /* Same as posts */
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 2rem 3rem;
+    align-items: start;
+  }
+
+  .home-wrapper > aside.left-sidebar {
+    grid-column: 1;
+    position: sticky;
+    top: 30px;
+    height: fit-content;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+  }
+
+  .home-wrapper > .home-center {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .home-wrapper > aside.right-sidebar,
+  .home-wrapper > aside.sidebar__right {
+    grid-column: 3;
+    position: sticky;
+    top: 30px;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 10px;
+    box-shadow: var(--card-shadow);
+    height: fit-content;
+  }
+}

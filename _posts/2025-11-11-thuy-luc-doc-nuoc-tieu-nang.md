@@ -1,5 +1,5 @@
 ---
-layout: single
+layout: single-three-column-layout
 title: "Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng"
 date: 2025-11-11
 lang: vi
