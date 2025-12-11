@@ -1,0 +1,337 @@
+/* ============================================================
+   GLOBAL.CSS – HydroStruct AI
+   Version: Fixed Layout (3 Columns)
+   ============================================================ */
+
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --bg-body: #f4f6f9;
+    --bg-sidebar: #ffffff;
+    --border-color: #e9ecef;
+    --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    --sidebar-width: 300px;
+}
+
+body {
+    background-color: var(--bg-body);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: #333;
+}
+
+/* ---------------- CARD ---------------- */
+.card {
+    border: 1px solid var(--border-color);
+    box-shadow: var(--card-shadow);
+    border-radius: 8px;
+    background: #fff;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+}
+
+/* --------------- SIDEBAR --------------- */
+.sidebar-card {
+    background-color: var(--bg-sidebar);
+    border-left: 4px solid var(--primary-color);
+}
+
+.sidebar-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.sidebar-heading.header-highlight {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Sidebar lists */
+.share-list,
+.rec-list,
+.latest-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.share-item,
+.rec-item,
+.latest-post-item {
+    margin-bottom: 0.75rem;
+}
+
+.share-link,
+.rec-link,
+.post-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #495057;
+    text-decoration: none;
+    transition: color 0.2s, transform 0.2s;
+    font-size: 0.9rem;
+}
+
+.share-link:hover,
+.rec-link:hover,
+.post-link:hover {
+    color: var(--primary-color);
+    transform: translateX(3px);
+}
+
+.share-link i,
+.rec-link i {
+    width: 20px;
+    text-align: center;
+    opacity: 0.7;
+}
+
+/* ---------------- NAV TABS ---------------- */
+.nav-tabs {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-tabs .nav-link {
+    color: var(--secondary-color);
+    border: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary-color);
+    isolation: isolate;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary-color);
+    background: none;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* ---------------- TABLES ---------------- */
+.table-scroll-container {
+    max-height: 450px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.table-scroll-container thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 10;
+    box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
+}
+
+td input[type="number"],
+td input[type="text"] {
+    width: 100%;
+    border: 1px solid #dee2e6;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: 0.15s;
+    font-size: 0.9rem;
+}
+
+td input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(13,110,253,0.15);
+}
+
+table td.text-center,
+table th.text-center {
+    vertical-align: middle;
+}
+
+/* ---------------- WASM LOADING SCREEN ---------------- */
+#loading-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(5px);
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+#loading-overlay .spinner {
+    width: 60px; height: 60px;
+    border: 5px solid #e9ecef;
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+#loading-overlay .loading-text {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-top: 20px;
+    font-weight: 500;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ---------------- CODE BLOCK (MODERN) ---------------- */
+div.highlighter-rouge {
+  background: #282c34;
+  border-radius: 8px;
+  margin-bottom: 1.5em;
+  position: relative;
+  padding-top: 30px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+div.highlighter-rouge:before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 15px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: #ff5f56;
+  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
+}
+
+div.highlighter-rouge:after {
+  content: attr(class);
+  position: absolute;
+  top: 5px; right: 15px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #abb2bf;
+}
+
+.language-vba.highlighter-rouge:after { content: "VBA (Excel)"; color: #207245; }
+.language-apdl.highlighter-rouge:after { content: "ANSYS APDL"; color: #ffb700; }
+.language-cpp.highlighter-rouge:after { content: "C++ / WASM"; color: #00599C; }
+.language-js.highlighter-rouge:after  { content: "JavaScript";  color: #f7df1e; }
+
+div.highlighter-rouge pre.highlight {
+  margin: 0; padding: 15px;
+  background: transparent;
+  color: #abb2bf;
+  font-family: Consolas, Monaco, monospace;
+  font-size: 0.9em;
+  line-height: 1.5;
+  overflow-x: auto;
+}
+
+.highlight .c,
+.highlight .cm,
+.highlight .c1 { color: #7f848e; font-style: italic; }
+
+.highlight .s,
+.highlight .s1,
+.highlight .s2 { color: #98c379; }
+
+.highlight .k,
+.highlight .kd,
+.highlight .kp { color: #c678dd; font-weight: bold; }
+
+/* ---------------- CTA BUTTON ---------------- */
+.btn-cta-primary {
+  display: inline-block;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #0d6efd, #0056b3);
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(13,110,253,0.3);
+  text-decoration: none;
+  transition: 0.2s;
+}
+
+.btn-cta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(13,110,253,0.4);
+}
+
+.btn-cta-primary i { margin-right: 8px; }
+
+
+
+/* ============== 3 CỘT ĐẸP + SIDEBAR TRÁI DÍNH (STICKY) ============== */
+.main-three-columns {
+  display: flex;
+  gap: 30px;
+  max-width: 1400px;
+  margin:  20px auto;
+  padding: 0 15px;
+  align-items: flex-start;        /* RẤT QUAN TRỌNG: để sidebar sticky hoạt động đúng */
+}
+
+/* === SIDEBAR TRÁI: CỐ ĐỊNH KHI CUỘN === */
+.sidebar-left-wrapper {
+  flex: 0 0 260px;
+  position: sticky;
+  top: 20px;              /* cách đỉnh trình duyệt 20px khi dính */
+  align-self: flex-start; /* không bị kéo dài theo nội dung */
+  max-height: calc(100vh - 40px); /* không tràn màn hình */
+  overflow-y: auto;       /* nếu nội dung sidebar quá dài thì có thanh cuộn riêng */
+}
+
+/* === SIDEBAR PHẢI: CUỘN BÌNH THƯỜNG (cùng với nội dung giữa) === */
+.sidebar-right-wrapper {
+  flex: 0 0 260px;
+}
+
+/* === NỘI DUNG GIỮA: CHIẾM NHIỀU NHẤT === */
+.content-wrapper {
+  flex: 1;
+  min-width: 0;
+  max-width: 800px;
+}
+
+/* ================================== RESPONSIVE ================================== */
+@media (max-width: 1024px) {
+  .main-three-columns {
+    flex-direction: column;
+  }
+
+  .sidebar-left-wrapper,
+  .sidebar-right-wrapper,
+  .content-wrapper {
+    flex: none;
+    max-width: 100%;
+  }
+
+  /* Mobile: thứ tự hiển thị đẹp */
+  .sidebar-left-wrapper   { order: 2; }
+  .content-wrapper        { order: 1; }
+  .sidebar-right-wrapper  { order: 3; }
+
+  /* Tắt sticky trên mobile (không cần nữa) */
+  .sidebar-left-wrapper {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
+/* Đảm bảo các sidebar cũ (trong trang khác) không bị lỗi */
+aside.left-sidebar,
+aside.right-sidebar {
+  width: 100%;
+}
