@@ -18,53 +18,6 @@ layout: default
   {% endunless %}
 {% endif %}
 
-<style>
-  /* Ghi đè cấu hình 3 cột cũ thành 2 cột: 280px (Trái) - Tự động (Nội dung) */
-  .post-grid-container {
-    display: grid !important;
-    grid-template-columns: 280px 1fr !important; 
-    gap: 30px !important;
-    align-items: start;
-  }
-  
-  /* Đảm bảo sidebar trái hiện đúng */
-  .post-grid-sidebar-left {
-    display: block !important;
-    grid-column: 1 / 2 !important;
-  }
-
-  /* Ẩn sidebar phải (nếu có class cũ sót lại) */
-  .post-grid-sidebar-right, 
-  .sidebar__right {
-    display: none !important;
-  }
-
-  /* Nội dung bài viết chiếm cột 2 */
-  .post-grid-article {
-    grid-column: 2 / -1 !important; /* Chiếm hết phần còn lại bên phải */
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* Bài viết liên quan nằm dưới cùng, tràn full chiều ngang */
-  .page__related {
-    grid-column: 1 / -1 !important;
-    margin-top: 2rem;
-    border-top: 1px solid #eee;
-    padding-top: 2rem;
-  }
-
-  /* Responsive Mobile: Chuyển về 1 cột dọc */
-  @media (max-width: 1024px) {
-    .post-grid-container {
-      grid-template-columns: 1fr !important;
-    }
-    .post-grid-sidebar-left {
-      display: none !important; /* Ẩn sidebar trái trên mobile để rộng chỗ đọc */
-    }
-  }
-</style>
-
 <div id="main" role="main" class="post-grid-container">
   
   {%- comment -%} LEFT SIDEBAR (Sticky) {%- endcomment -%}
@@ -100,9 +53,15 @@ layout: default
       {% endunless %}
 
       <section class="page__content e-content" itemprop="articleBody">
-        
+        {% if page.toc %}
+          <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
+            <nav class="toc">
+              <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> {{ page.toc_label | default: site.data.ui-text[site.locale].toc_label | default: "On this page" }}</h4></header>
+              {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" skip_no_ids=true %}
+            </nav>
+          </aside>
+        {% endif %}
         {{ content }}
-        
         {% if page.link %}<div><a href="{{ page.link }}" class="btn btn--primary">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 
@@ -124,8 +83,12 @@ layout: default
     {% endif %}
   </article>
 
+  {%- comment -%} RIGHT SIDEBAR (Scrollable) {%- endcomment -%}
+  <div class="post-grid-sidebar-right">
+    {% include sidebar-right.html %}
+  </div>
 
-  {% comment %}{% endcomment %}
+  {% comment %}<!-- only show related on a post page when `related: true` -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}
     <div class="page__related">
       <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
@@ -135,6 +98,7 @@ layout: default
         {% endfor %}
       </div>
     </div>
+  {% comment %}<!-- otherwise show recent posts if no related when `related: true` -->{% endcomment %}
   {% elsif page.id and page.related %}
     <div class="page__related">
       <h2 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
@@ -188,3 +152,5 @@ layout: default
 }
 </script>
 {% endif %}
+
+

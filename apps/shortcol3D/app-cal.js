@@ -580,30 +580,31 @@ const AppCal = ({
               </label>
               <div className="row g-2">
                 <div className="col-6">
-                  <label className="form-label small">
-                    /*{getStandardLabels().c}*/
-					{lbl.c}  {/* <-- SỬA THÀNH lbl.c */}
-                  </label>
-                  <input
-                    type="number"
-                    value={mat.fck}
-                    onChange={(e) => setMat({ ...mat, fck: e.target.value })}
-                    className="form-control form-control-sm"
-                    step="0.5"
-                  />
+				  <label className="form-label small">
+					{lbl.c}
+				  </label>
+				  <input
+					type="number"
+					value={mat.fck}
+					onChange={(e) => setMat({ ...mat, fck: e.target.value })}
+					className="form-control form-control-sm"
+					step="0.5"
+				  />
+				</div>
                 </div>
-                <div className="col-6">
-                  <label className="form-label small">
-                    /*{getStandardLabels().s}*/
-                  </label>
-                  <input
-                    type="number"
-                    value={mat.fyk}
-                    onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
-                    className="form-control form-control-sm"
-                    step="10"
-                  />
-                </div>
+
+				<div className="col-6">
+				  <label className="form-label small">
+					{lbl.s}
+				  </label>
+				  <input
+					type="number"
+					value={mat.fyk}
+					onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
+					className="form-control form-control-sm"
+					step="10"
+				  />
+				
               </div>
             </div>
           </div>
