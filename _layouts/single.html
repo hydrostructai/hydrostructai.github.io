@@ -2,40 +2,42 @@
 layout: default
 ---
 
-{% comment %}=== Hero Header (nếu có) ==={% endcomment %}
 {% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
   {% include page__hero.html %}
 {% elsif page.header.video.id and page.header.video.provider %}
   {% include page__hero_video.html %}
 {% endif %}
 
-{% comment %}=== Breadcrumbs (chỉ hiện khi không phải trang phân trang) ==={% endcomment %}
-{% assign breadcrumbs_enabled = site.breadcrumbs %}
-{% if page.breadcrumbs != null %}
-  {% assign breadcrumbs_enabled = page.breadcrumbs %}
-{% endif %}
+{% comment %}Breadcrumbs{% endcomment %}
+{% assign breadcrumbs_enabled = site.breadcrumbs | default: false %}
+{% if page.breadcrumbs != nil %}{% assign breadcrumbs_enabled = page.breadcrumbs %}{% endif %}
 {% if breadcrumbs_enabled %}
   {% unless paginator %}
     {% include breadcrumbs.html %}
   {% endunless %}
 {% endif %}
 
-{% comment %}=== BẮT ĐẦU 3 CỘT ĐẸP NHƯ TRANG CHỦ ==={% endcomment %}
-<div class="home-wrapper" style="max-width: 1400px; margin: 0 auto; padding: 20px 15px 40px;">
+<div class="home-wrapper" style="max-width: 1400px; margin: 0 auto; padding: 20px 15px;">
   <div class="main-three-columns">
 
-    {% comment %}=== CỘT TRÁI – Luôn hiện ==={% endcomment %}
+    <!-- CỘT TRÁI -->
     <aside class="sidebar-left-wrapper">
       {% include sidebar-left.html %}
     </aside>
 
-    {% comment %}=== CỘT GIỮA – Nội dung bài viết ==={% endcomment %}
+    <!-- CỘT GIỮA - NỘI DUNG CHÍNH -->
     <div class="content-wrapper">
 
       <article class="page h-entry" itemscope itemtype="https://schema.org/Article">
-        <meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">
-        <meta itemprop="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | escape_once }}">
-        {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
+        {% if page.title %}
+          <meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">
+        {% endif %}
+        {% if page.excerpt %}
+          <meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">
+        {% endif %}
+        {% if page.date %}
+          <meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">
+        {% endif %}
         {% if page.last_modified_at %}
           <meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">
         {% else %}
@@ -51,14 +53,12 @@ layout: default
                   {{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}
                 </h1>
               {% endif %}
-
               {% include page__meta.html %}
 
-              {% comment %}Hit Counter{% endcomment %}
               {% if page.layout == "single" and page.id %}
                 <div class="page__meta-counter" style="margin:0.8em 0;">
                   <i class="far fa-eye" aria-hidden="true"></i>
-                  <span style="margin-left:0.3em; font-size:0.9em; color:#666;">
+                  <span style="margin-left:0.4em;font-size:0.9em;color:#666;">
                     <script src="https://www.hitwebcounter.com/counter/counter.php?page={{ page.id | slugify }}&style=0007&nbdigits=5&type=page&initCount=0"></script>
                   </span>
                 </div>
@@ -67,8 +67,6 @@ layout: default
           {% endunless %}
 
           <section class="page__content e-content" itemprop="articleBody">
-
-            {% comment %}Mục lục bên phải (nếu bật TOC){% endcomment %}
             {% if page.toc %}
               <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
                 <nav class="toc">
@@ -81,11 +79,10 @@ layout: default
             {{ content }}
 
             {% if page.link %}
-              <p style="text-align:center; margin-top:3rem;">
+              <p style="text-align:center;margin:3rem 0;">
                 <a href="{{ page.link }}" class="btn btn--primary btn--large">Mở liên kết ngoài</a>
               </p>
             {% endif %}
-
           </section>
 
           <footer class="page__meta">
@@ -97,26 +94,56 @@ layout: default
           {% include post_pagination.html %}
         </div>
 
-        {% comment %}Bình luận{% endcomment %}
         {% if jekyll.environment == 'production' and site.comments.provider and page.comments %}
           {% include comments.html %}
         {% endif %}
       </article>
 
-      {% comment %}Bài viết liên quan{% endcomment %}
-      {% include related-posts.html %}
+      {% comment %}=== PHẦN BÀI VIẾT LIÊN QUAN (giữ nguyên logic gốc của Minimal Mistakes) ==={% endcomment %}
+      {% if page.id and page.related %}
+        <div class="page__related">
+          <h2 class="page__related-title">Bạn có thể thích</h2>
+          <div class="grid__wrapper">
+            {% for post in site.related_posts limit:4 %}
+              {% include archive-single.html type="grid" %}
+            {% endfor %}
+            {% if site.related_posts.size < 1 %}
+              {% for post in site.posts limit:4 %}
+                {% if post.id == page.id %}{% continue %}{% endif %}
+                {% include archive-single.html type="grid" %}
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
 
     </div>
-    {% comment %}=== Kết thúc cột giữa ==={% endcomment %}
+    <!-- Hết cột giữa -->
 
-    {% comment %}=== CỘT PHẢI – Luôn hiện ==={% endcomment %}
+    <!-- CỘT PHẢI -->
     <aside class="sidebar-right-wrapper">
       {% include sidebar-right.html %}
     </aside>
 
   </div>
 </div>
-{% comment %}=== KẾT THÚC 3 CỘT ==={% endcomment %}
 
-{% comment %}=== JSON-LD SEO ==={% endcomment %}
-{% include json-ld-article.html %}
+{% comment %}JSON-LD{% endcomment %}
+{% if page.id %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "{{ page.title | escape }}",
+  "author": {"@type": "Person", "name": "{{ site.author.name | default: site.title }}"},
+  "datePublished": "{{ page.date | date_to_xmlschema }}",
+  "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
+  "publisher": {"@type": "Organization", "name": "{{ site.title }}", "logo": {"@type": "ImageObject", "url": "{{ site.logo | absolute_url }}"}},
+  "description": "{{ page.excerpt | default: page.description | strip_html | normalize_whitespace | escape }}",
+  {% if page.header.image or page.header.overlay_image %}
+  "image": "{{ page.header.image | default: page.header.overlay_image | absolute_url }}",
+  {% endif %}
+  "mainEntityOfPage": {"@type": "WebPage", "@id": "{{ page.url | absolute_url }}"}
+}
+</script>
+{% endif %}
