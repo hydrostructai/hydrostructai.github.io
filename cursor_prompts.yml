@@ -1,33 +1,49 @@
 prompts:
-  new_post:
-    description: "Tạo bài viết blog tiêu chuẩn kỹ thuật"
+  # =====================================================================
+  # TÁC VỤ 2: VIẾT BÀI ĐĂNG KỸ THUẬT (10/12/2025)
+  # Chủ đề: Tính toán thủy lực dốc nước và tiêu năng sau dốc
+  # Reference: 4 CSV Files (LuTK/LuKT), 1 PDF (2.3.3 PLTT...)
+  # =====================================================================
+  new_post_hydraulic_spillway:
+    description: "Tính toán thủy lực dốc nước và tiêu năng sau dốc."
+    references:
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD1-LuTK.csv"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD1-LuKT.csv"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD2-LuTK.csv"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD2-LuKT.csv"
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf"
+      - "hydrostructai.github.io/apps.md" # Để thêm link vào trang chủ
+      - "hydrostructai.github.io/_config.yml" # Tham khảo cấu hình path
     steps:
-      - "Xác định ngày giờ hiện tại (YYYY-MM-DD)."
-      - "Tạo file trong `_posts/YYYY-MM-DD-title-slug.md`."
-      - "Front Matter bắt buộc: title, date, categories, tags, toc: true, classes: wide."
-      - "Cấu trúc bài viết: Introduction -> Technical Analysis -> Code/Math Implementation -> Conclusion."
-      - "Yêu cầu: Dùng placeholder image từ Unsplash cho header."
+      - "Create file `_posts/2025-12-10-thuy-luc-doc-nuoc-tieu-nang.md`."
+      - "Front Matter: Set `date: 2025-12-10`, `lang: vi`, `categories: [Hydraulics]`, `tags: [Spillway, Tiêu năng]`, `toc: true`, `mathjax: true`."
+      - "Section 1: **Introduction (Giới thiệu):** Summarize the design parameters from the PDF and the necessity of the stilling basin."
+      - "Section 2: **Hydraulic Analysis (Phân tích):** Create a clean Markdown table comparing Velocity (V), Water Depth (h), and Froude Number (Fr) at the end of the chute for all four data sets ( GDD1/GDD2, LuTK/LuKT) using data from the 4 CSV files."
+      - "Section 3: **Energy Dissipation (Tiêu năng):** Explain the calculation for the stilling basin (Bể tiêu năng) using the conjugate depth (h2) formula and the safety check (K) based on the PDF. Use LaTeX/MathJax syntax for formulas."
 
+  # =====================================================================
+  # TÁC VỤ 3: TẠO WEB APP TÍNH TOÁN THỦY LỰC
+  # App Name: HydroSpillwayCalc
+  # Yêu cầu: Đặt ở apps/hydraulicspillway, tích hợp lên trang chủ.
+  # Reference: All CSVs & PDF (cho công thức tiêu năng)
+  # =====================================================================
+  create_hydraulic_spillway_app:
+    description: "Develop a Web App for Chute Spillway Hydraulic Jump/Energy Dissipation calculation."
+    references:
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf"
+    steps:
+      - "Action 1 (Structure): Create a new folder `apps/hydraulicspillway/`."
+      - "Action 2 (Layout): Create `apps/hydraulicspillway/index.html` with Minimal Mistakes `layout: single`, integrating the app UI."
+      - "Action 3 (UI/CSS): Design a clean, responsive HTML form UI using Bootstrap/Minimal Mistakes SCSS/CSS conventions. Inputs: $Q$, $B$ (Chute width), $h1$ (pre-jump depth), and $\alpha$ (momentum correction factor)."
+      - "Action 4 (JS Logic): Create `apps/hydraulicspillway/calc.js`. Implement the **Hydraulic Jump (Nối tiếp)** calculation using the formula for conjugate depth ($h_2$) and the Froude number ($Fr_1$) derived from the PDF (Section TÍNH TOÁN NỐI TIẾP). The core formula is $h_2 = 0.5 \cdot h_1 \cdot (\sqrt{1+8 \cdot Fr_1^2} - 1)$."
+      - "Action 5 (Integration): Add a card/link for this new app to the main `apps.md` page and the homepage (`hydrostructai.github.io/index.html`)."
+
+  # =====================================================================
+  # TÁC VỤ 4: DEBUG CHUNG (Giữ lại để sử dụng nhanh)
+  # =====================================================================
   debug_build:
-    description: "Tự động tìm lỗi khi jekyll serve thất bại"
+    description: "General diagnosis for build failure or dependency issues."
     steps:
-      - "Đọc file `Gemfile` và `_config.yml`."
-      - "Chạy lệnh giả lập: Kiểm tra dependencies."
-      - "Phân tích lỗi phổ biến: webrick dependency (Ruby 3.0+), kramdown version, hoặc lỗi syntax Liquid."
-      - "Đề xuất lệnh terminal để fix."
-
-  create_tool:
-    description: "Tạo Web App tính toán thủy lực dốc nước và tiêu năng sau dốc"
-    steps:
-      - "User input: Tên tool và công thức toán học."
-      - "Action 1: Tạo `_layouts/tool_layout.html` kế thừa `default`."
-      - "Action 2: Tạo `assets/js/apps/[tool_name].js` chứa logic tính toán (Clean function, no UI logic mixed)."
-      - "Action 3: Tạo giao diện HTML form có ID rõ ràng để JS hook vào."
-      - "Action 4: Tạo trang `.md` để hiển thị tool."
-
-  optimize_seo:
-    description: "Tối ưu hóa SEO cho toàn site"
-    steps:
-      - "Kiểm tra `_config.yml`: Đảm bảo `title`, `description`, `url` đã set."
-      - "Kiểm tra `sitemap` plugin có được bật không."
-      - "Review 5 bài post gần nhất: Kiểm tra thẻ description trong Front Matter."
+      - "Analyze `Gemfile` and `Gemfile.lock` for Ruby/Jekyll version conflicts."
+      - "Check `_config.yml` for syntax errors or misconfigured plugins."
+      - "Propose the correct `bundle install` and `bundle exec jekyll serve` commands for local environment fix."

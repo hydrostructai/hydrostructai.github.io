@@ -220,6 +220,31 @@ header:
         </div>
       </div>
 
+      <div class="app-card">
+        <div class="app-card-image">
+          <img src="/assets/images/app-icons/hydraulic-spillway.png" alt="Hydraulic Spillway" onerror="this.src='/assets/images/app-icons/pile-group2.png'">
+        </div>
+        <div class="app-card-body">
+          <h3 class="app-card-title">Dốc Nước & Tiêu Năng</h3>
+          <div class="app-card-badges">
+            <span class="badge bg-primary">Thủy lực</span>
+            <span class="badge bg-success">Hydraulic Jump</span>
+          </div>
+          <p class="app-card-desc">
+            Tính toán thủy lực dốc nước và bể tiêu năng dựa trên lý thuyết nước nhảy thủy lực.
+          </p>
+          <div class="app-features-list">
+            <h6>Tính năng:</h6>
+            <ul>
+              <li>Tính toán nối tiếp sau dốc</li>
+              <li>Thiết kế bể tiêu năng</li>
+              <li>Kiểm tra hệ số ngập an toàn</li>
+            </ul>
+          </div>
+          <a href="/apps/hydraulicspillway/" class="btn--app">Mở Ứng Dụng</a>
+        </div>
+      </div>
+
     </div>
 
     <div class="wasm-box">
