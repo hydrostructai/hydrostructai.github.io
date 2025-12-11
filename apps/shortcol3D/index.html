@@ -194,9 +194,7 @@
                   <i className="bi bi-box-seam fs-5"></i>
                 </div>
                 <div>
-                  <h1 className="mb-0 fs-6 fw-bold text-dark">
-                    ShortCol 3D
-                  </h1>
+                  <h1 className="mb-0 fs-6 fw-bold text-dark">ShortCol 3D</h1>
                   <p className="mb-0 text-muted small">
                     Biểu độ tương tác 3D | P-Mx-My
                   </p>
@@ -207,27 +205,63 @@
               </div>
             </div>
 
-            {/* Main Layout Grid */}
+            {/* Main Layout Grid: 3 columns */}
             <div
               className="container-fluid flex-grow-1"
-              style={{ display: "grid", gridTemplateColumns: "3fr 9fr" }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "300px 1fr 1fr",
+                gridTemplateRows: "auto 1fr",
+              }}
             >
-              {/* LEFT SIDEBAR: INPUT */}
+              {/* LEFT SIDEBAR: SECTION & PREVIEW (Row 1-2, Col 1) */}
               <div
                 className="border-end bg-light"
-                style={{ overflowY: "auto", maxHeight: "calc(100vh - 65px)" }}
+                style={{
+                  overflowY: "auto",
+                  maxHeight: "calc(100vh - 65px)",
+                  gridColumn: "1",
+                  gridRow: "1 / -1",
+                }}
               >
-                {/* Component Nhập liệu */}
+                {/* Component Nhập liệu - Only Sidebar Content */}
                 <AppCal
                   onCalculate={handleCalculate}
                   isComputing={isComputing}
+                  sidebarOnly={true}
                 />
               </div>
 
-              {/* RIGHT CONTENT: OUTPUT */}
+              {/* MIDDLE TOP: FORM INPUT (Row 1, Col 2-3) */}
+              <div
+                className="bg-white border-bottom"
+                style={{
+                  overflowY: "auto",
+                  maxHeight: "40vh",
+                  gridColumn: "2 / -1",
+                  gridRow: "1",
+                  borderRight: "1px solid #dee2e6",
+                }}
+              >
+                {/* Component Nhập liệu - Form Content */}
+                <AppCal
+                  onCalculate={handleCalculate}
+                  isComputing={isComputing}
+                  formOnly={true}
+                />
+              </div>
+
+              {/* MIDDLE BOTTOM: 3D CHART + RESULTS (Row 2, Col 2-3) */}
               <div
                 className="bg-white"
-                style={{ overflowY: "auto", maxHeight: "calc(100vh - 65px)" }}
+                style={{
+                  overflowY: "auto",
+                  maxHeight: "calc(100vh - 65px - 40vh)",
+                  gridColumn: "2 / -1",
+                  gridRow: "2",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
               >
                 {/* Component Kết quả */}
                 <AppOut results={calcResults} input={inputData} />

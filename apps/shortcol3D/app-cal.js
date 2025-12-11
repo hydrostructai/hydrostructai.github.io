@@ -5,7 +5,12 @@
 
 const { useState, useEffect, useMemo } = React;
 
-const AppCal = ({ onCalculate, isComputing }) => {
+const AppCal = ({
+  onCalculate,
+  isComputing,
+  sidebarOnly = false,
+  formOnly = false,
+}) => {
   // --- 1. STATE MANAGEMENT ---
 
   // Tiêu chuẩn thiết kế
@@ -273,6 +278,498 @@ const AppCal = ({ onCalculate, isComputing }) => {
 
   // --- 5. UI RENDER ---
 
+  // SIDEBAR ONLY MODE: Show section preview and file/standard controls
+  if (sidebarOnly) {
+    return (
+      <div
+        className="d-flex flex-column h-100"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
+        {/* Header */}
+        <div
+          className="p-3 bg-white border-bottom sticky-top"
+          style={{ zIndex: 10 }}
+        >
+          <h4 className="small fw-bold text-muted text-uppercase mb-3">
+            <i className="bi bi-sliders me-1"></i> Dữ liệu & Tác vụ
+          </h4>
+
+          {/* File Operations */}
+          <div className="btn-group w-100 mb-3" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-primary btn-sm"
+              title="Tạo mới"
+              onClick={handleNewFile}
+            >
+              <i className="bi bi-file-earmark-plus"></i> New
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-success btn-sm"
+              title="Mở file"
+              onClick={handleOpenFile}
+            >
+              <i className="bi bi-folder-open"></i> Open
+            </button>
+            <button
+              type="button"
+              className="btn btn-outline-warning btn-sm"
+              title="Lưu file"
+              onClick={handleSaveFile}
+            >
+              <i className="bi bi-save"></i> Save
+            </button>
+          </div>
+          <input
+            type="file"
+            id="file-input-hidden"
+            accept=".json"
+            style={{ display: "none" }}
+            onChange={handleFileSelect}
+          />
+
+          {/* Standard Selector */}
+          <div className="mb-3">
+            <label className="form-label small fw-bold">
+              TIÊU CHUẨN TÍNH TOÁN
+            </label>
+            <select
+              value={standard}
+              onChange={(e) => setStandard(e.target.value)}
+              className="form-select form-select-sm"
+            >
+              <option value="TCVN">TCVN 5574:2018 (Việt Nam)</option>
+              <option value="EC2">EC2:2004/2015 (Châu Âu)</option>
+              <option value="ACI">ACI 318-19 (Mỹ)</option>
+            </select>
+            <small className="form-text text-muted d-block mt-1">
+              <i className="bi bi-info-circle"></i> Chọn chuẩn thiết kế để tính
+              toán biểu đồ tương tác
+            </small>
+          </div>
+        </div>
+
+        {/* Section Preview */}
+        <div className="p-3">
+          <div className="card border-0 bg-light">
+            <div className="card-body p-2">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <small className="fw-bold text-muted">MINH HỌA TIẾT DIỆN</small>
+                <span className="badge bg-secondary">
+                  {colType === "rect" ? "Rect" : "Circ"}
+                </span>
+              </div>
+              <div id="svg-preview-container" style={{ height: "250px" }}>
+                <svg
+                  width="200"
+                  height="200"
+                  viewBox="-120 -120 240 240"
+                  style={{ background: "#f9f9f9" }}
+                >
+                  {/* Bê tông */}
+                  {colType === "rect" ? (
+                    <rect
+                      x={-geo.B / 2}
+                      y={-geo.H / 2}
+                      width={geo.B}
+                      height={geo.H}
+                      fill="#ddd"
+                      stroke="#999"
+                      strokeWidth="1"
+                    />
+                  ) : (
+                    <circle
+                      cx="0"
+                      cy="0"
+                      r={geo.D / 2}
+                      fill="#ddd"
+                      stroke="#999"
+                      strokeWidth="1"
+                    />
+                  )}
+
+                  {/* Lớp bảo vệ */}
+                  {colType === "rect" && (
+                    <>
+                      <rect
+                        x={-geo.B / 2 + geo.cover}
+                        y={-geo.H / 2 + geo.cover}
+                        width={geo.B - 2 * geo.cover}
+                        height={geo.H - 2 * geo.cover}
+                        fill="none"
+                        stroke="#ccc"
+                        strokeWidth="0.5"
+                        strokeDasharray="2,2"
+                      />
+                    </>
+                  )}
+
+                  {/* Cốt thép */}
+                  {generateBarLayout().map((bar, i) => (
+                    <circle
+                      key={i}
+                      cx={bar.x}
+                      cy={bar.y}
+                      r="3"
+                      fill="#c41e3a"
+                      stroke="#fff"
+                      strokeWidth="1.5"
+                    />
+                  ))}
+
+                  {/* Axes */}
+                  <line
+                    x1="-100"
+                    y1="0"
+                    x2="100"
+                    y2="0"
+                    stroke="#ccc"
+                    strokeWidth="0.5"
+                  />
+                  <line
+                    x1="0"
+                    y1="-100"
+                    x2="0"
+                    y2="100"
+                    stroke="#ccc"
+                    strokeWidth="0.5"
+                  />
+                </svg>
+              </div>
+              <div
+                className="small text-muted mt-2"
+                style={{ fontSize: "10px" }}
+              >
+                <i className="bi bi-info-circle me-1"></i>
+                Xám nhạt: Lớp bê tông | Đường ngang: Lớp bảo vệ | Tròn đỏ: Cốt
+                thép chủ
+              </div>
+            </div>
+          </div>
+
+          {/* Reinforcement Info */}
+          <div className="text-center mt-2">
+            <small className="text-muted">
+              As tổng = {(Number(steel.Nb) * Number(steel.As_bar)).toFixed(0)}{" "}
+              mm² (
+              {(
+                ((Number(steel.Nb) * Number(steel.As_bar)) /
+                  (colType === "rect"
+                    ? Number(geo.B) * Number(geo.H)
+                    : Math.PI * Math.pow(Number(geo.D) / 2, 2))) *
+                100
+              ).toFixed(2)}
+              %)
+            </small>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // FORM ONLY MODE: Show form and calculate button
+  if (formOnly) {
+    return (
+      <div
+        className="d-flex flex-column h-100"
+        style={{ backgroundColor: "#f8f9fa" }}
+      >
+        {/* Scrollable Form Content */}
+        <div className="flex-grow-1 overflow-auto p-3">
+          {/* 1. Geometry Section */}
+          <div className="card shadow-sm mb-3">
+            <div className="card-body p-2">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="small fw-bold text-dark mb-0">
+                  Tiết diện
+                </label>
+                <div className="btn-group btn-group-sm" role="group">
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="colType"
+                    id="rect-type"
+                    value="rect"
+                    checked={colType === "rect"}
+                    onChange={() => setColType("rect")}
+                  />
+                  <label
+                    className="btn btn-outline-primary"
+                    htmlFor="rect-type"
+                  >
+                    <i className="bi bi-square"></i> Chữ nhật
+                  </label>
+                  <input
+                    type="radio"
+                    className="btn-check"
+                    name="colType"
+                    id="circ-type"
+                    value="circ"
+                    checked={colType === "circ"}
+                    onChange={() => setColType("circ")}
+                  />
+                  <label
+                    className="btn btn-outline-primary"
+                    htmlFor="circ-type"
+                  >
+                    <i className="bi bi-circle"></i> Tròn
+                  </label>
+                </div>
+              </div>
+
+              <div className="row g-2">
+                {colType === "rect" ? (
+                  <>
+                    <div className="col-6">
+                      <label className="form-label small">Rộng B (mm)</label>
+                      <input
+                        type="number"
+                        value={geo.B}
+                        onChange={(e) => setGeo({ ...geo, B: e.target.value })}
+                        className="form-control form-control-sm"
+                      />
+                    </div>
+                    <div className="col-6">
+                      <label className="form-label small">Cao H (mm)</label>
+                      <input
+                        type="number"
+                        value={geo.H}
+                        onChange={(e) => setGeo({ ...geo, H: e.target.value })}
+                        className="form-control form-control-sm"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  <div className="col-12">
+                    <label className="form-label small">
+                      Đường kính D (mm)
+                    </label>
+                    <input
+                      type="number"
+                      value={geo.D}
+                      onChange={(e) => setGeo({ ...geo, D: e.target.value })}
+                      className="form-control form-control-sm"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="row g-2 mt-1">
+                <div className="col-12">
+                  <label className="form-label small">
+                    Lớp bảo vệ (Cover) a:
+                  </label>
+                  <div className="input-group input-group-sm">
+                    <input
+                      type="number"
+                      value={geo.cover}
+                      onChange={(e) =>
+                        setGeo({ ...geo, cover: e.target.value })
+                      }
+                      className="form-control"
+                    />
+                    <span className="input-group-text">mm</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Material Section */}
+          <div className="card shadow-sm mb-3">
+            <div className="card-body p-2">
+              <label className="small fw-bold text-dark d-block mb-2">
+                <i className="bi bi-arrow-bar-up"></i> Vật liệu (MPa)
+              </label>
+              <div className="row g-2">
+                <div className="col-6">
+                  <label className="form-label small">
+                    {getStandardLabels().c}
+                  </label>
+                  <input
+                    type="number"
+                    value={mat.fck}
+                    onChange={(e) => setMat({ ...mat, fck: e.target.value })}
+                    className="form-control form-control-sm"
+                    step="0.5"
+                  />
+                </div>
+                <div className="col-6">
+                  <label className="form-label small">
+                    {getStandardLabels().s}
+                  </label>
+                  <input
+                    type="number"
+                    value={mat.fyk}
+                    onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
+                    className="form-control form-control-sm"
+                    step="10"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Reinforcement Section */}
+          <div className="card shadow-sm mb-3">
+            <div className="card-body p-2">
+              <label className="small fw-bold text-dark d-block mb-2">
+                <i className="bi bi-shield-check"></i> Cốt thép chủ
+              </label>
+              <div className="row g-2">
+                <div className="col-6">
+                  <label className="form-label small">Số thanh Nb</label>
+                  <input
+                    type="number"
+                    value={steel.Nb}
+                    onChange={(e) => setSteel({ ...steel, Nb: e.target.value })}
+                    className="form-control form-control-sm"
+                    min="4"
+                    step="1"
+                  />
+                </div>
+                <div className="col-6">
+                  <label className="form-label small">Đường kính ∅ (mm)</label>
+                  <input
+                    type="number"
+                    value={steel.d_bar}
+                    onChange={(e) =>
+                      setSteel({ ...steel, d_bar: e.target.value })
+                    }
+                    className="form-control form-control-sm"
+                    step="2"
+                  />
+                </div>
+              </div>
+              <small className="text-muted d-block mt-2">
+                As/thanh: {steel.As_bar.toFixed(1)} mm² | As tổng:{" "}
+                {(Number(steel.Nb) * Number(steel.As_bar)).toFixed(0)} mm²
+              </small>
+            </div>
+          </div>
+
+          {/* 4. Loads Section */}
+          <div className="card shadow-sm mb-3">
+            <div className="card-body p-2">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <label className="small fw-bold text-dark mb-0">
+                  Tải trọng tính toán
+                </label>
+                <button
+                  onClick={addLoad}
+                  className="btn btn-sm btn-outline-success"
+                >
+                  <i className="bi bi-plus-circle"></i> Thêm
+                </button>
+              </div>
+
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "0.75rem",
+                }}
+              >
+                {loads.map((l, index) => (
+                  <div
+                    key={l.id}
+                    className="border rounded p-2"
+                    style={{ backgroundColor: "#f8f9fa" }}
+                  >
+                    <div className="d-flex justify-content-between align-items-center mb-2">
+                      <input
+                        type="text"
+                        value={l.note}
+                        onChange={(e) =>
+                          updateLoad(l.id, "note", e.target.value)
+                        }
+                        className="form-control form-control-sm fw-bold text-primary"
+                        placeholder="Tên tổ hợp..."
+                        style={{ flex: 1 }}
+                      />
+                      <button
+                        onClick={() => removeLoad(l.id)}
+                        className="btn btn-sm btn-link text-danger ms-2"
+                        style={{ padding: "0.25rem" }}
+                      >
+                        <i className="bi bi-x-circle-fill"></i>
+                      </button>
+                    </div>
+
+                    <div className="row g-1">
+                      <div className="col-4">
+                        <label className="form-label small">P (kN)</label>
+                        <input
+                          type="number"
+                          value={l.P}
+                          onChange={(e) =>
+                            updateLoad(l.id, "P", e.target.value)
+                          }
+                          className="form-control form-control-sm text-end"
+                        />
+                      </div>
+                      <div className="col-4">
+                        <label className="form-label small">Mx (kNm)</label>
+                        <input
+                          type="number"
+                          value={l.Mx}
+                          onChange={(e) =>
+                            updateLoad(l.id, "Mx", e.target.value)
+                          }
+                          className="form-control form-control-sm text-end"
+                        />
+                      </div>
+                      <div className="col-4">
+                        <label className="form-label small">My (kNm)</label>
+                        <input
+                          type="number"
+                          value={l.My}
+                          onChange={(e) =>
+                            updateLoad(l.id, "My", e.target.value)
+                          }
+                          className="form-control form-control-sm text-end"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Action */}
+        <div className="p-3 bg-white border-top mt-auto">
+          <button
+            onClick={handleRunAnalysis}
+            disabled={isComputing}
+            className={`btn w-100 fw-bold ${
+              isComputing ? "btn-secondary" : "btn-primary"
+            }`}
+            style={{ fontSize: "0.9rem" }}
+          >
+            {isComputing ? (
+              <span>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Đang xử lý...
+              </span>
+            ) : (
+              <span>
+                <i className="bi bi-lightning-charge-fill me-2"></i> TÍNH TOÁN
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // FULL MODE: Original layout (if neither sidebarOnly nor formOnly)
   return (
     <div
       className="d-flex flex-column h-100"

@@ -221,133 +221,118 @@ const AppOut = ({ results, input }) => {
   // --- 4. RENDER GIAO DIỆN KẾT QUẢ ---
   return (
     <div className="d-flex flex-column h-100 bg-white">
-      {/* Header Kết quả */}
+      {/* Results Summary Header */}
       <div
         className="px-4 py-3 border-bottom d-flex justify-content-between align-items-center bg-white sticky-top"
-        style={{ zIndex: 10 }}
+        style={{ zIndex: 20 }}
       >
         <h4 className="small fw-bold text-dark text-uppercase mb-0">
-          <i className="bi bi-graph-up-arrow text-primary me-2"></i> Kết quả
-          phân tích
+          <i className="bi bi-check-circle me-2 text-success"></i>Kết quả Kiểm
+          tra
         </h4>
+
         <div className="d-flex gap-2">
           <span className="d-flex align-items-center small fw-bold px-2 py-1 bg-success bg-opacity-25 text-success rounded border border-success border-opacity-25">
             <span
               className="badge bg-success rounded-circle me-1"
               style={{ width: "6px", height: "6px" }}
             ></span>{" "}
-            Đạt
+            Đạt ({Object.values(safetyFactors).filter((s) => s.isSafe).length})
           </span>
           <span className="d-flex align-items-center small fw-bold px-2 py-1 bg-danger bg-opacity-25 text-danger rounded border border-danger border-opacity-25">
             <span
               className="badge bg-danger rounded-circle me-1"
               style={{ width: "6px", height: "6px" }}
             ></span>{" "}
-            Không đạt
+            Không đạt (
+            {Object.values(safetyFactors).filter((s) => !s.isSafe).length})
           </span>
         </div>
       </div>
 
-      {/* Vùng chứa Biểu đồ & Bảng (Scrollable) */}
-      <div className="flex-grow-1 overflow-auto">
-        <div className="p-4">
-          {/* A. 3D Chart Container */}
-          <div className="card shadow-sm mb-4 position-relative">
-            {/* Div này để Plotly mount vào */}
-            <div
-              ref={chartRef}
-              className="w-100"
-              style={{ height: "500px" }}
-            ></div>
-
-            {/* Hướng dẫn thao tác */}
-            <div
-              className="position-absolute top-0 start-0 m-2 bg-white bg-opacity-90 px-2 py-1 rounded small text-muted"
-              style={{ pointerEvents: "none", backdropFilter: "blur(4px)" }}
+      {/* Quick Results Table (above chart) */}
+      <div
+        className="border-bottom"
+        style={{ maxHeight: "200px", overflowY: "auto" }}
+      >
+        <div className="table-responsive">
+          <table className="table table-hover table-sm mb-0">
+            <thead
+              className="table-light small text-muted text-uppercase"
+              style={{ position: "sticky", top: 0 }}
             >
-              <i className="bi bi-mouse me-1"></i> Xoay: Chuột trái | Zoom: Cuộn
-            </div>
-          </div>
+              <tr>
+                <th className="fw-bold">Tổ hợp</th>
+                <th className="fw-bold text-end">P (kN)</th>
+                <th className="fw-bold text-end">Mx (kNm)</th>
+                <th className="fw-bold text-end">My (kNm)</th>
+                <th
+                  className="fw-bold text-center"
+                  title="Hệ số an toàn K = R/S"
+                >
+                  K
+                </th>
+                <th className="fw-bold text-center">Trạng thái</th>
+              </tr>
+            </thead>
+            <tbody className="small">
+              {input &&
+                input.loads &&
+                input.loads.map((l, idx) => {
+                  const result = safetyFactors[l.id] || { k: 0, isSafe: false };
+                  const kVal = result.k === 999 ? "∞" : result.k.toFixed(2);
 
-          {/* B. Results Table */}
-          <div className="card shadow-sm">
-            <div className="card-header bg-light border-bottom py-2">
-              <h5 className="small fw-bold text-secondary text-uppercase mb-0">
-                Chi tiết kiểm tra
-              </h5>
-            </div>
-            <div className="table-responsive">
-              <table className="table table-hover table-sm mb-0">
-                <thead className="table-light small text-muted text-uppercase">
-                  <tr>
-                    <th className="fw-bold">Tổ hợp</th>
-                    <th className="fw-bold text-end">P (kN)</th>
-                    <th className="fw-bold text-end">Mx (kNm)</th>
-                    <th className="fw-bold text-end">My (kNm)</th>
-                    <th
-                      className="fw-bold text-center"
-                      title="Hệ số an toàn K = R/S"
+                  return (
+                    <tr
+                      key={idx}
+                      className={
+                        result.isSafe ? "" : "table-danger table-opacity-50"
+                      }
                     >
-                      Hệ số K
-                    </th>
-                    <th className="fw-bold text-center">Trạng thái</th>
-                  </tr>
-                </thead>
-                <tbody className="small">
-                  {input.loads.map((l, idx) => {
-                    const result = safetyFactors[l.id] || {
-                      k: 0,
-                      isSafe: false,
-                    };
-                    const kVal = result.k === 999 ? "∞" : result.k.toFixed(2);
-
-                    return (
-                      <tr key={idx}>
-                        <td className="fw-bold">{l.note}</td>
-                        <td className="text-end font-monospace">{l.P}</td>
-                        <td className="text-end font-monospace">{l.Mx}</td>
-                        <td className="text-end font-monospace">{l.My}</td>
-
-                        {/* Cột Hệ số K */}
-                        <td className="text-center">
-                          <span
-                            className={`fw-bold ${
-                              result.isSafe ? "text-success" : "text-danger"
-                            }`}
-                          >
-                            {kVal}
+                      <td className="fw-bold small">{l.note}</td>
+                      <td className="text-end font-monospace small">{l.P}</td>
+                      <td className="text-end font-monospace small">{l.Mx}</td>
+                      <td className="text-end font-monospace small">{l.My}</td>
+                      <td className="text-center">
+                        <span
+                          className={`fw-bold small ${
+                            result.isSafe ? "text-success" : "text-danger"
+                          }`}
+                        >
+                          {kVal}
+                        </span>
+                      </td>
+                      <td className="text-center">
+                        {result.isSafe ? (
+                          <span className="badge bg-success small">
+                            <i className="bi bi-check-circle-fill"></i> OK
                           </span>
-                        </td>
+                        ) : (
+                          <span className="badge bg-danger small">
+                            <i className="bi bi-x-circle-fill"></i> NG
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-                        {/* Cột Trạng thái (Badge) */}
-                        <td className="text-center">
-                          {result.isSafe ? (
-                            <span className="badge bg-success">
-                              <i className="bi bi-check-circle-fill me-1"></i>{" "}
-                              Đạt
-                            </span>
-                          ) : (
-                            <span className="badge bg-danger">
-                              <i className="bi bi-x-circle-fill me-1"></i> K.Đạt
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
+      {/* 3D Chart (Main Content) */}
+      <div className="flex-grow-1 overflow-auto position-relative">
+        {/* Plotly Chart */}
+        <div ref={chartRef} className="w-100" style={{ height: "100%" }}></div>
 
-          {/* C. Stats Info */}
-          <div className="small text-muted text-center py-3">
-            * Hệ số an toàn K được tính theo phương pháp tỷ số bán kính vector
-            trong không gian (Radial Path).
-            <br />
-            Mesh Nodes: {results.meshStats?.concreteNodes || 0} | Rebar Nodes:{" "}
-            {results.meshStats?.steelNodes || 0}
-          </div>
+        {/* Controls Tooltip */}
+        <div
+          className="position-absolute bottom-0 start-0 m-3 bg-white bg-opacity-90 px-3 py-2 rounded small text-muted"
+          style={{ pointerEvents: "none", backdropFilter: "blur(4px)" }}
+        >
+          <i className="bi bi-mouse me-1"></i> Xoay: Chuột trái | Zoom: Cuộn |
+          Pan: Chuột phải
         </div>
       </div>
     </div>
