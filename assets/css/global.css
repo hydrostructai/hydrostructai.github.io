@@ -40,6 +40,62 @@ body {
     border-left: 4px solid var(--primary-color); /* Điểm nhấn bên trái */
 }
 
+/* Sidebar headings */
+.sidebar-heading {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.sidebar-heading.header-highlight {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+}
+
+/* Sidebar lists */
+.share-list,
+.rec-list,
+.latest-posts-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.share-item,
+.rec-item,
+.latest-post-item {
+    margin-bottom: 0.75rem;
+}
+
+.share-link,
+.rec-link,
+.post-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #495057;
+    text-decoration: none;
+    transition: color 0.2s, transform 0.2s;
+    font-size: 0.9rem;
+}
+
+.share-link:hover,
+.rec-link:hover,
+.post-link:hover {
+    color: var(--primary-color);
+    transform: translateX(3px);
+}
+
+.share-link i,
+.rec-link i {
+    width: 20px;
+    text-align: center;
+    opacity: 0.7;
+}
+
 /* --- Navigation Tabs --- */
 .nav-tabs {
     border-bottom: 1px solid var(--border-color);
@@ -241,28 +297,96 @@ div.highlighter-rouge pre.highlight {
   margin-right: 8px;
 }
 
-/* --- Layout Flex Fix --- */
+/* ==========================================================================
+   LAYOUT FIX: Sidebar Height Alignment
+   ========================================================================== */
+
+/* 
+  Problem: Left sidebar appears taller than main content/right sidebar
+  Solution: Flexbox layout with align-items: stretch
+*/
+
 @media (min-width: 1024px) {
+  /* Main wrapper becomes flex container */
   #main {
     display: flex;
     flex-direction: row;
-    align-items: stretch;
-    gap: 1.5rem;
+    align-items: stretch; /* CRITICAL: All children stretch to match tallest */
+    gap: 2rem;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
   }
 
+  /* Left/Right sidebars have fixed width */
   #main > .left-sidebar,
-  #main > .right-sidebar {
+  #main > .right-sidebar,
+  #main > aside.left-sidebar,
+  #main > aside.right-sidebar {
     flex: 0 0 var(--sidebar-width);
     max-width: var(--sidebar-width);
+    min-width: 250px;
+    align-self: stretch; /* Stretch to full height */
   }
 
-  #main > article {
-    flex: 1;
+  /* Article takes remaining space */
+  #main > article,
+  #main > article.page {
+    flex: 1 1 auto;
+    min-width: 0; /* Prevent flex item overflow */
     display: flex;
     flex-direction: column;
   }
 
-  #main > .left-sidebar {
-    margin-top: 0;
+  /* Ensure article inner content also uses flex */
+  #main > article .page__inner-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Ensure sidebars have proper background and padding */
+  .left-sidebar,
+  .right-sidebar {
+    background: var(--bg-sidebar);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+  }
+  
+  /* Sidebar modules within sidebars */
+  .sidebar-module {
+    margin-bottom: 2rem;
+  }
+  
+  .sidebar-module:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* Tablet responsive */
+@media (max-width: 1023px) {
+  #main {
+    display: block;
+    padding: 1rem;
+  }
+  
+  .left-sidebar,
+  .right-sidebar {
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+}
+
+/* Mobile optimization */
+@media (max-width: 768px) {
+  #main {
+    padding: 0.5rem;
+  }
+  
+  .left-sidebar,
+  .right-sidebar {
+    margin-bottom: 1rem;
   }
 }
