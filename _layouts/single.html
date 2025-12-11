@@ -1,47 +1,64 @@
-{% comment %} ====================== SINGLE.HTML – 3 CỘT NHƯ TRANG CHỦ ====================== {% endcomment %}
 ---
 layout: default
 ---
 
+{% comment %}=== Hero Header (nếu có) ==={% endcomment %}
 {% if page.header.overlay_color or page.header.overlay_image or page.header.image %}
   {% include page__hero.html %}
 {% elsif page.header.video.id and page.header.video.provider %}
   {% include page__hero_video.html %}
 {% endif %}
 
-{% include breadcrumbs.html unless paginator %}
+{% comment %}=== Breadcrumbs (chỉ hiện khi không phải trang phân trang) ==={% endcomment %}
+{% assign breadcrumbs_enabled = site.breadcrumbs %}
+{% if page.breadcrumbs != null %}
+  {% assign breadcrumbs_enabled = page.breadcrumbs %}
+{% endif %}
+{% if breadcrumbs_enabled %}
+  {% unless paginator %}
+    {% include breadcrumbs.html %}
+  {% endunless %}
+{% endif %}
 
-{% comment %} ================== 3 CỘT ĐỀU NHAU – GIỐNG HẾT index.html ================== {% endcomment %}
-<div class="home-wrapper" style="max-width: 1400px; margin: 0 auto; padding: 0 15px;">
+{% comment %}=== BẮT ĐẦU 3 CỘT ĐẸP NHƯ TRANG CHỦ ==={% endcomment %}
+<div class="home-wrapper" style="max-width: 1400px; margin: 0 auto; padding: 20px 15px 40px;">
   <div class="main-three-columns">
 
-    {% comment %} CỘT TRÁI – luôn hiện {% endcomment %}
+    {% comment %}=== CỘT TRÁI – Luôn hiện ==={% endcomment %}
     <aside class="sidebar-left-wrapper">
       {% include sidebar-left.html %}
     </aside>
 
-    {% comment %} CỘT GIỮA – nội dung bài viết {% endcomment %}
+    {% comment %}=== CỘT GIỮA – Nội dung bài viết ==={% endcomment %}
     <div class="content-wrapper">
+
       <article class="page h-entry" itemscope itemtype="https://schema.org/Article">
-        {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
-        {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
+        <meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">
+        <meta itemprop="description" content="{{ page.excerpt | default: site.description | strip_html | normalize_whitespace | escape_once }}">
         {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date_to_xmlschema }}">{% endif %}
-        {% if page.last_modified_at %}<meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">{% endif %}
+        {% if page.last_modified_at %}
+          <meta itemprop="dateModified" content="{{ page.last_modified_at | date_to_xmlschema }}">
+        {% else %}
+          <meta itemprop="dateModified" content="{{ page.date | date_to_xmlschema }}">
+        {% endif %}
 
         <div class="page__inner-wrap">
-          {% unless page.header.overlay_color or page.header.overlay_image %}
+
+          {% unless page.header.overlay_color or page.header.overlay_image or page.header.image %}
             <header>
               {% if page.title %}
                 <h1 id="page-title" class="page__title p-name" itemprop="headline">
                   {{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}
                 </h1>
               {% endif %}
+
               {% include page__meta.html %}
 
+              {% comment %}Hit Counter{% endcomment %}
               {% if page.layout == "single" and page.id %}
-                <div class="page__meta-counter" style="margin:0.5em 0 1em;">
+                <div class="page__meta-counter" style="margin:0.8em 0;">
                   <i class="far fa-eye" aria-hidden="true"></i>
-                  <span style="margin-left:0.25em;font-size:0.85em;color:#666;">
+                  <span style="margin-left:0.3em; font-size:0.9em; color:#666;">
                     <script src="https://www.hitwebcounter.com/counter/counter.php?page={{ page.id | slugify }}&style=0007&nbdigits=5&type=page&initCount=0"></script>
                   </span>
                 </div>
@@ -50,10 +67,12 @@ layout: default
           {% endunless %}
 
           <section class="page__content e-content" itemprop="articleBody">
+
+            {% comment %}Mục lục bên phải (nếu bật TOC){% endcomment %}
             {% if page.toc %}
               <aside class="sidebar__right {% if page.toc_sticky %}sticky{% endif %}">
                 <nav class="toc">
-                  <header><h4 class="nav__title"><i class="fas fa-{{ page.toc_icon | default: 'file-alt' }}"></i> Mục lục</h4></header>
+                  <header><h4 class="nav__title"><i class="fas fa-file-alt"></i> Mục lục</h4></header>
                   {% include toc.html sanitize=true html=content h_min=1 h_max=6 class="toc__menu" %}
                 </nav>
               </aside>
@@ -62,10 +81,11 @@ layout: default
             {{ content }}
 
             {% if page.link %}
-              <div style="text-align:center;margin-top:2rem;">
-                <a href="{{ page.link }}" class="btn btn--primary btn--large">Link ngoài</a>
-              </div>
+              <p style="text-align:center; margin-top:3rem;">
+                <a href="{{ page.link }}" class="btn btn--primary btn--large">Mở liên kết ngoài</a>
+              </p>
             {% endif %}
+
           </section>
 
           <footer class="page__meta">
@@ -77,21 +97,26 @@ layout: default
           {% include post_pagination.html %}
         </div>
 
+        {% comment %}Bình luận{% endcomment %}
         {% if jekyll.environment == 'production' and site.comments.provider and page.comments %}
           {% include comments.html %}
         {% endif %}
       </article>
 
+      {% comment %}Bài viết liên quan{% endcomment %}
       {% include related-posts.html %}
-    </div>
 
-    {% comment %} CỘT PHẢI – luôn hiện {% endcomment %}
+    </div>
+    {% comment %}=== Kết thúc cột giữa ==={% endcomment %}
+
+    {% comment %}=== CỘT PHẢI – Luôn hiện ==={% endcomment %}
     <aside class="sidebar-right-wrapper">
       {% include sidebar-right.html %}
     </aside>
 
   </div>
 </div>
-{% comment %} ============================== KẾT THÚC 3 CỘT ============================== {% endcomment %}
+{% comment %}=== KẾT THÚC 3 CỘT ==={% endcomment %}
 
+{% comment %}=== JSON-LD SEO ==={% endcomment %}
 {% include json-ld-article.html %}
