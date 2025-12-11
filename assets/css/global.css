@@ -1,13 +1,16 @@
-/* assets/css/global.css */
+/* ============================================================
+   GLOBAL.CSS – HydroStruct AI
+   Version: Fixed Layout (3 Columns)
+   ============================================================ */
 
 :root {
     --primary-color: #0d6efd;
     --secondary-color: #6c757d;
     --success-color: #198754;
-    --bg-body: #f4f6f9; /* Màu nền xám xanh hiện đại */
+    --bg-body: #f4f6f9;
     --bg-sidebar: #ffffff;
     --border-color: #e9ecef;
-    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    --card-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
     --sidebar-width: 300px;
 }
 
@@ -17,7 +20,7 @@ body {
     color: #333;
 }
 
-/* --- Card Styling --- */
+/* ---------------- CARD ---------------- */
 .card {
     border: 1px solid var(--border-color);
     box-shadow: var(--card-shadow);
@@ -33,14 +36,12 @@ body {
     font-weight: 600;
 }
 
-/* --- Sidebar Styling --- */
-/* Override class cũ .sidebar-card để trông chuyên nghiệp hơn */
+/* --------------- SIDEBAR --------------- */
 .sidebar-card {
     background-color: var(--bg-sidebar);
-    border-left: 4px solid var(--primary-color); /* Điểm nhấn bên trái */
+    border-left: 4px solid var(--primary-color);
 }
 
-/* Sidebar headings */
 .sidebar-heading {
     font-size: 1rem;
     font-weight: 700;
@@ -96,7 +97,7 @@ body {
     opacity: 0.7;
 }
 
-/* --- Navigation Tabs --- */
+/* ---------------- NAV TABS ---------------- */
 .nav-tabs {
     border-bottom: 1px solid var(--border-color);
 }
@@ -111,7 +112,7 @@ body {
 
 .nav-tabs .nav-link:hover {
     color: var(--primary-color);
-    isolation: isolate; /* Fix lỗi render border */
+    isolation: isolate;
 }
 
 .nav-tabs .nav-link.active {
@@ -120,8 +121,7 @@ body {
     border-bottom: 2px solid var(--primary-color);
 }
 
-/* --- Tables & Inputs (Engineering Focus) --- */
-/* Container cuộn cho bảng dài */
+/* ---------------- TABLES ---------------- */
 .table-scroll-container {
     max-height: 450px;
     overflow-y: auto;
@@ -132,44 +132,40 @@ body {
 .table-scroll-container thead th {
     position: sticky;
     top: 0;
-    background-color: #f8f9fa; /* Màu nền header bảng */
+    background-color: #f8f9fa;
     z-index: 10;
-    box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 2px -1px rgba(0,0,0,0.1);
 }
 
-/* Input trong bảng nhìn gọn gàng hơn */
-td input[type="number"], 
+td input[type="number"],
 td input[type="text"] {
     width: 100%;
     border: 1px solid #dee2e6;
     padding: 4px 8px;
     border-radius: 4px;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    transition: 0.15s;
     font-size: 0.9rem;
 }
 
 td input:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.15);
+    box-shadow: 0 0 0 2px rgba(13,110,253,0.15);
 }
 
-/* Căn giữa nội dung cột STT và Thao tác */
-table td.text-center, 
+table td.text-center,
 table th.text-center {
     vertical-align: middle;
 }
 
-/* --- Loading Overlay (WASM Loader) --- */
+/* ---------------- WASM LOADING SCREEN ---------------- */
 #loading-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.85); /* Nền trắng mờ hiện đại hơn đen */
-    backdrop-filter: blur(5px); /* Hiệu ứng mờ nền phía sau */
-    display: none; /* Mặc định ẩn, JS sẽ bật lên khi cần (display: flex) */
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(5px);
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
@@ -178,8 +174,7 @@ table th.text-center {
 }
 
 #loading-overlay .spinner {
-    width: 60px;
-    height: 60px;
+    width: 60px; height: 60px;
     border: 5px solid #e9ecef;
     border-top: 5px solid var(--primary-color);
     border-radius: 50%;
@@ -198,195 +193,150 @@ table th.text-center {
     100% { transform: rotate(360deg); }
 }
 
-/* --- Utility Classes --- */
-.cursor-pointer { cursor: pointer; }
-.fw-medium { font-weight: 500; }
-
-/* Ẩn spinner trong nút khi chưa chạy */
-.btn .spinner-border { display: none; }
-.btn.loading .spinner-border { display: inline-block; }
-.btn.loading i { display: none; }
-
-/* --- MODERN CODE BLOCK STYLING --- */
-
-/* 1. Khung bao quanh code */
+/* ---------------- CODE BLOCK (MODERN) ---------------- */
 div.highlighter-rouge {
-  background: #282c34; /* Màu nền tối giống VS Code */
+  background: #282c34;
   border-radius: 8px;
   margin-bottom: 1.5em;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
   position: relative;
-  padding-top: 30px; /* Chừa chỗ cho thanh header giả */
-  overflow: hidden;
+  padding-top: 30px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* 2. Thanh Header giả lập cửa sổ (Mac Style) */
 div.highlighter-rouge:before {
   content: "";
   position: absolute;
   top: 12px;
   left: 15px;
-  width: 12px;
-  height: 12px;
+  width: 12px; height: 12px;
   border-radius: 50%;
-  background: #ff5f56; /* Nút đỏ */
-  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f; /* Nút vàng và xanh */
-  z-index: 2;
+  background: #ff5f56;
+  box-shadow: 20px 0 0 #ffbd2e, 40px 0 0 #27c93f;
 }
 
-/* 3. Hiển thị Label ngôn ngữ (VBA, APDL, C++) */
 div.highlighter-rouge:after {
-  content: attr(class); /* Fallback */
+  content: attr(class);
   position: absolute;
-  top: 5px;
-  right: 15px;
-  font-family: sans-serif;
+  top: 5px; right: 15px;
   font-size: 0.75rem;
   font-weight: bold;
   color: #abb2bf;
-  text-transform: uppercase;
 }
 
-/* Định nghĩa Label cụ thể cho từng ngôn ngữ */
 .language-vba.highlighter-rouge:after { content: "VBA (Excel)"; color: #207245; }
 .language-apdl.highlighter-rouge:after { content: "ANSYS APDL"; color: #ffb700; }
 .language-cpp.highlighter-rouge:after { content: "C++ / WASM"; color: #00599C; }
-.language-js.highlighter-rouge:after { content: "JavaScript"; color: #f7df1e; }
+.language-js.highlighter-rouge:after  { content: "JavaScript";  color: #f7df1e; }
 
-/* 4. Tinh chỉnh nội dung code */
 div.highlighter-rouge pre.highlight {
-  margin: 0;
-  padding: 15px;
-  background: transparent; /* Để lộ màu nền của div cha */
-  color: #abb2bf; /* Màu chữ chính */
-  font-family: "Consolas", "Monaco", monospace;
+  margin: 0; padding: 15px;
+  background: transparent;
+  color: #abb2bf;
+  font-family: Consolas, Monaco, monospace;
   font-size: 0.9em;
   line-height: 1.5;
   overflow-x: auto;
 }
 
-/* 5. Highlight màu (Nếu theme chưa hỗ trợ tốt Rouge) */
-/* Comment màu xám xanh */
-.highlight .c, .highlight .cm, .highlight .c1 { color: #7f848e; font-style: italic; }
-/* String màu xanh lá */
-.highlight .s, .highlight .s1, .highlight .s2 { color: #98c379; }
-/* Keyword màu tím */
-.highlight .k, .highlight .kd, .highlight .kp { color: #c678dd; font-weight: bold; }
+.highlight .c,
+.highlight .cm,
+.highlight .c1 { color: #7f848e; font-style: italic; }
 
-/* Nút CTA chuẩn hiện đại */
+.highlight .s,
+.highlight .s1,
+.highlight .s2 { color: #98c379; }
+
+.highlight .k,
+.highlight .kd,
+.highlight .kp { color: #c678dd; font-weight: bold; }
+
+/* ---------------- CTA BUTTON ---------------- */
 .btn-cta-primary {
   display: inline-block;
   padding: 12px 24px;
-  background: linear-gradient(135deg, #0d6efd 0%, #0056b3 100%);
-  color: white !important;
+  background: linear-gradient(135deg, #0d6efd, #0056b3);
+  color: #fff !important;
   font-weight: 600;
+  border-radius: 50px;
+  box-shadow: 0 4px 15px rgba(13,110,253,0.3);
   text-decoration: none;
-  border-radius: 50px; /* Bo tròn hoàn toàn */
-  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
-  text-align: center;
-  margin-top: 20px;
+  transition: 0.2s;
 }
 
 .btn-cta-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.4);
+  box-shadow: 0 6px 20px rgba(13,110,253,0.4);
 }
 
-.btn-cta-primary i {
-  margin-right: 8px;
-}
+.btn-cta-primary i { margin-right: 8px; }
 
-/* ==========================================================================
-   LAYOUT FIX: Sidebar Height Alignment
-   ========================================================================== */
-
-/* 
-  Problem: Left sidebar appears taller than main content/right sidebar
-  Solution: Flexbox layout with align-items: stretch
-*/
+/* ============================================================
+   *** FIX CHÍNH THỨC – GRID 3 CỘT CHO TOÀN BỘ BLOG ***
+   ============================================================ */
 
 @media (min-width: 1024px) {
-  /* Main wrapper becomes flex container */
+
   #main {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch; /* CRITICAL: All children stretch to match tallest */
+    display: grid !important;
+    grid-template-columns: 260px 1fr 300px;
     gap: 2rem;
-    width: 100%;
+    align-items: start;
     max-width: 1400px;
     margin: 0 auto;
     padding: 2rem;
   }
 
-  /* Left/Right sidebars have fixed width */
-  #main > .left-sidebar,
-  #main > .right-sidebar,
-  #main > aside.left-sidebar,
-  #main > aside.right-sidebar {
-    flex: 0 0 var(--sidebar-width);
-    max-width: var(--sidebar-width);
-    min-width: 250px;
-    align-self: stretch; /* Stretch to full height */
-  }
-
-  /* Article takes remaining space */
-  #main > article,
-  #main > article.page {
-    flex: 1 1 auto;
-    min-width: 0; /* Prevent flex item overflow */
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Ensure article inner content also uses flex */
-  #main > article .page__inner-wrap {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  /* Ensure sidebars have proper background and padding */
-  .left-sidebar,
-  .right-sidebar {
+  /* LEFT SIDEBAR (bạn thêm thủ công ngoài article) */
+  #main > aside.left-sidebar {
+    grid-column: 1;
     background: var(--bg-sidebar);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: var(--card-shadow);
+    position: sticky;
+    top: 20px;
+    height: fit-content;
   }
-  
-  /* Sidebar modules within sidebars */
-  .sidebar-module {
-    margin-bottom: 2rem;
+
+  /* CONTENT */
+  #main > article.page {
+    grid-column: 2;
+    min-width: 0;
   }
-  
-  .sidebar-module:last-child {
-    margin-bottom: 0;
+
+  /* RIGHT SIDEBAR (TOC của Minimal Mistakes) */
+  #main article .sidebar__right {
+    grid-column: 3;
+    background: var(--bg-sidebar);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    position: sticky;
+    top: 20px;
+    height: fit-content;
+  }
+
+  .sidebar__right .toc {
+    max-width: 100%;
+    overflow: hidden;
   }
 }
 
-/* Tablet responsive */
+/* ---------------- RESPONSIVE ---------------- */
 @media (max-width: 1023px) {
   #main {
     display: block;
     padding: 1rem;
   }
-  
-  .left-sidebar,
-  .right-sidebar {
+  .left-sidebar {
     width: 100%;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .sidebar__right {
+    display: none; /* hoặc đưa xuống */
   }
 }
 
-/* Mobile optimization */
 @media (max-width: 768px) {
-  #main {
-    padding: 0.5rem;
-  }
-  
-  .left-sidebar,
-  .right-sidebar {
-    margin-bottom: 1rem;
-  }
+  #main { padding: 0.5rem; }
 }

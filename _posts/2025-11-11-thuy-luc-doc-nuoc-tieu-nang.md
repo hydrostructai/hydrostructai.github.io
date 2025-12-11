@@ -1,7 +1,7 @@
 ---
 layout: single
 title: "Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng"
-date: 2025-12-11
+date: 2025-11-11
 lang: vi
 categories: [Hydraulics]
 tags: [Spillway, Tiêu năng, Nước nhảy, Thủy lực]
@@ -12,7 +12,7 @@ mathjax: true
 header:
   overlay_color: "#0073e6"
   overlay_filter: "0.5"
-  teaser: /assets/images/spillway-design.jpg
+  teaser: /assets/images/chute-spillway.jpg
 excerpt: "Phân tích chi tiết tính toán thủy lực dốc nước và thiết kế bể tiêu năng dựa trên lý thuyết nước nhảy thủy lực, áp dụng cho công trình thực tế."
 ---
 
@@ -217,7 +217,7 @@ $$
 d_1 = h_2 - h_h - \Delta Z
 $$
 
-**Bước 7:** Kiểm tra \\( |d_1 - d_0| < \epsilon \\). Nếu không, lặp lại từ Bước 2.
+**Bước 7:** Kiểm tra $$ \\( |d_1 - d_0| < \epsilon \\ $$). Nếu không, lặp lại từ Bước 2.
 
 #### 3.2.3. Chiều dài bể tiêu năng
 
