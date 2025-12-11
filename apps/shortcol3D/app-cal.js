@@ -28,7 +28,7 @@ const AppCal = ({ onCalculate, isComputing }) => {
 
   // Cốt thép
   const [steel, setSteel] = useState({
-    Nb: 4, // Tổng số thanh
+    Nb: 8, // Tổng số thanh
     d_bar: 20, // Đường kính (mm)
     As_bar: 314, // Diện tích 1 thanh (mm2)
   });
