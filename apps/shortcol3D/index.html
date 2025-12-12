@@ -277,22 +277,22 @@
           window.AppInp &&
           window.AppOut &&
           window.CalculationEngine &&
-          window.ShortCol3D
-        ) {
-          console.log("All modules loaded. Rendering App...");
-          const root = ReactDOM.createRoot(document.getElementById("root"));
-          root.render(<MainApp />);
+			) {
+				console.log("All modules loaded. Rendering App...");
+				const root = ReactDOM.createRoot(document.getElementById("root"));
+				root.render(<MainApp />);
 
-          // Khởi tạo icon sau khi render
-          setTimeout(() => {
-            if (window.lucide) window.lucide.createIcons();
-          }, 500);
-        } else {
-          console.log("Waiting for modules...");
-          // Nếu chưa có, thử lại sau 50ms
-          setTimeout(mountApp, 50);
-        }
-      };
+				// Khởi tạo icon
+				setTimeout(() => {
+				  if (window.lucide) window.lucide.createIcons();
+				}, 500);
+			  } else {
+				console.log("Waiting for modules...");
+				// Debug xem thiếu cái gì (tùy chọn)
+				// console.log("Missing:", !window.AppInp?"Inp":"", !window.AppOut?"Out":"", !window.CalculationEngine?"Calc":"");
+				setTimeout(mountApp, 50);
+			  }
+			};
 
       // Bắt đầu quy trình mount
       mountApp();
