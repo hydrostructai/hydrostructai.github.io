@@ -12,8 +12,7 @@ description: "Đi sâu vào thuật toán tìm đường A* cải tiến, tích 
 excerpt: "Làm thế nào để tìm đường đi ngắn nhất nhưng chi phí thấp nhất trên một địa hình gồ ghề? Bài viết này chia sẻ mã nguồn và thuật toán Terrain-aware A*."
 ---
 
-**Mức độ:** Chuyên gia (Expert)  
-**Repository:** *Link Github - Coming Soon*
+**Mức độ:** Chuyên gia (Expert)
 
 ---
 
@@ -41,16 +40,16 @@ $$f(n) = g(n) + h(n) + C_{terrain}(n) + C_{hydraulic}(n)$$
 
 Trong đó:
 
-- **$g(n)$** – chi phí thực từ điểm đầu đến node hiện tại  
-- **$h(n)$** – heuristic đến đích  
-- **$C_{terrain}$** – phạt khi đào đắp lớn  
+- **$g(n)$** – chi phí thực từ điểm đầu đến node hiện tại
+- **$h(n)$** – heuristic đến đích
+- **$C_{terrain}$** – phạt khi đào đắp lớn
 - **$C_{hydraulic}$** – phạt khi không đảm bảo điều kiện thủy lực
 
 Ràng buộc thủy lực quan trọng:
 
 - $i < i_{min}$ → nước không chảy → **phạt vô cực**
 - $i > i_{max}$ → xói lở → **phạt lớn**
-- Đi *ngược dốc* → **phạt vô cực** (trừ khi có bơm)
+- Đi _ngược dốc_ → **phạt vô cực** (trừ khi có bơm)
 
 ---
 
@@ -100,24 +99,24 @@ def terrain_astar(grid, start_node, end_node):
     open_list = []
     heapq.heappush(open_list, (0, start_node))
     start_node.g = 0
-    
+
     while open_list:
         current_cost, current = heapq.heappop(open_list)
-        
+
         if current == end_node:
             return reconstruct_path(end_node)
-            
+
         for neighbor in get_neighbors(current, grid):
             movement_cost = calculate_hydraulic_cost(current, neighbor)
             tentative_g = current.g + movement_cost
-            
+
             if tentative_g < neighbor.g:
                 neighbor.parent = current
                 neighbor.g = tentative_g
                 neighbor.h = heuristic(neighbor, end_node)
                 f_score = neighbor.g + neighbor.h
                 heapq.heappush(open_list, (f_score, neighbor))
-                
+
     return None
 
 
@@ -130,20 +129,20 @@ Sau khi Python/C# tính toán ra tuyến tối ưu gồm các điểm (x, y, z_i
 Tạo tuyến ống từ danh sách điểm:
 
 public void CreateOptimizedPipeNetwork(
-    Document doc, 
-    List<XYZ> pathPoints, 
-    ElementId pipeTypeId, 
+    Document doc,
+    List<XYZ> pathPoints,
+    ElementId pipeTypeId,
     ElementId levelId)
 {
     using (Transaction t = new Transaction(doc, "Create Terrain-Aware Pipes"))
     {
         t.Start();
-        
+
         for (int i = 0; i < pathPoints.Count - 1; i++)
         {
             XYZ p1 = pathPoints[i];
             XYZ p2 = pathPoints[i + 1];
-            
+
             // Tạo pipe
             Pipe pipe = Pipe.Create(
                 doc, pipeTypeId, levelId, p1, p2
@@ -156,7 +155,7 @@ public void CreateOptimizedPipeNetwork(
                 slopeParam.Set(0.01); // 1%
             }
         }
-        
+
         t.Commit();
     }
 }
@@ -167,9 +166,6 @@ Revit không tạo Connector trực tiếp từ XYZ. Đoạn trên là pseudo-co
 Tạo Pipe bằng Pipe.Create(doc, systemTypeId, pipeTypeId, levelId, p1, p2)
 
 Raytrace địa hình bằng ReferenceIntersector để lấy cao độ chính xác từng node.
-
-
-
 ---
 
 5. Kết luận
@@ -184,7 +180,6 @@ Tránh các khu vực địa hình nguy hiểm
 
 Tự động hóa quyết định tuyến cống tối ưu
 
-
 Đây là bước nền cho hệ thống Tự động hóa hạ tầng Revit/Civil 3D sử dụng AI + thuật toán tính toán.
 
 
@@ -192,3 +187,4 @@ Tự động hóa quyết định tuyến cống tối ưu
 
 Tags:
 #AStar #Pathfinding #RevitAPI #ThuyLoi #Automation #CivilEngineering
+```

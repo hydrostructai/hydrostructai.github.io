@@ -1,21 +1,16 @@
 /**
- * APP INPUT & INTERACTION MODULE (app-inp.js)
+ * APP INPUT & INTERACTION MODULE (UNIFIED VERSION)
  * Responsibility: Handle ALL user interface interactions
  * - Read values from HTML inputs
  * - Handle button/form events
  * - Draw section illustration (SVG)
- * - Pass validated data to app-cal-math.js for calculation
- * - Trigger display updates via app-out.js
+ * - Pass validated data to app-cal.js for calculation
+ * - Single unified panel combining preview + tabbed form
  */
 
 const { useState, useEffect, useMemo, useRef } = React;
 
-const AppInp = ({
-  onCalculate,
-  isComputing,
-  sidebarOnly = false,
-  formOnly = false,
-}) => {
+const AppInp = ({ onCalculate, isComputing }) => {
   // --- STATE MANAGEMENT ---
   const [standard, setStandard] = useState("TCVN");
   const [colType, setColType] = useState("rect");
@@ -102,10 +97,13 @@ const AppInp = ({
       rect.setAttribute("stroke-width", "2");
       svg.appendChild(rect);
 
-      // Draw reinforcement bars
+      // Draw reinforcement bars (radius increased 150% for better visibility)
       const Nb = steel.Nb || 8;
       const d_bar = steel.d_bar || 20;
-      const barRadius = Math.max(2, (d_bar * scale) / (2 * Math.max(w, h)));
+      const barRadius = Math.max(
+        2,
+        (d_bar * scale * 1.5) / (2 * Math.max(w, h))
+      );
 
       // Generate bar positions (perimeter layout, in mm from center)
       const barPositions = generateBarPositions(Nb, w, h, geo.cover);
@@ -195,7 +193,7 @@ const AppInp = ({
       // Draw reinforcement bars arranged in circle
       const Nb = steel.Nb || 8;
       const d_bar = steel.d_bar || 20;
-      const barRadius = (d_bar * scale) / (2 * d);
+      const barRadius = (d_bar * scale * 1.5) / (2 * d);
       const barsRadius = radius - (geo.cover * scale) / d;
 
       for (let i = 0; i < Nb; i++) {
@@ -342,169 +340,147 @@ const AppInp = ({
     onCalculate(inputData);
   };
 
-  // --- RENDER: SIDEBAR ONLY ---
-  if (sidebarOnly) {
-    return (
-      <div className="p-3">
-        <h5 className="mb-3">
-          <i className="bi bi-gear"></i> Dữ liệu & Tác vụ
-        </h5>
-
-        <div className="btn-group w-100 mb-3" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm"
-            title="Tạo mới"
-            onClick={() => window.location.reload()}
-          >
-            <i className="bi bi-file-earmark-plus"></i> New
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-success btn-sm"
-            title="Mở file"
-          >
-            <i className="bi bi-folder-open"></i> Open
-          </button>
-          <button
-            type="button"
-            className="btn btn-outline-warning btn-sm"
-            title="Lưu file"
-          >
-            <i className="bi bi-save"></i> Save
-          </button>
+  // --- UNIFIED RENDER (No sidebarOnly or formOnly props) ---
+  return (
+    <div className="d-flex flex-column h-100">
+      {/* SECTION PREVIEW (Top) */}
+      <div className="p-3 border-bottom bg-light">
+        <div className="d-flex justify-content-between align-items-center mb-2">
+          <h5 className="mb-0">
+            <i className="bi bi-bounding-box"></i> Minh họa tiết diện
+          </h5>
+          <span className="badge bg-secondary">
+            {colType === "rect" ? "Chữ nhật" : "Tròn"}
+          </span>
         </div>
-
-        <div className="mb-3">
-          <label className="form-label fw-bold small text-muted">
-            TIÊU CHUẨN TÍNH TOÁN
-          </label>
-          <select
-            className="form-select form-select-sm"
-            value={standard}
-            onChange={(e) => setStandard(e.target.value)}
-          >
-            <option value="TCVN">TCVN 5574:2018</option>
-            <option value="EC2">EC2:2004/2015</option>
-            <option value="ACI">ACI 318-19</option>
-          </select>
-        </div>
-
-        <button
-          className="btn btn-lg btn-primary w-100 mb-3 shadow-sm"
-          onClick={handleRunAnalysis}
-          disabled={isComputing}
-        >
-          <i className="bi bi-lightning-charge-fill"></i> TÍNH TOÁN
-        </button>
-
-        <div className="card border-0 bg-light">
-          <div className="card-body p-2">
-            <div className="d-flex justify-content-between align-items-center mb-2">
-              <small className="fw-bold text-muted">MINH HỌA TIẾT DIỆN</small>
-              <span className="badge bg-secondary">
-                {colType === "rect" ? "Rect" : "Circ"}
-              </span>
-            </div>
-            <div
-              ref={svgRef}
-              style={{
-                height: "200px",
-                background: "#fff",
-                border: "1px dashed #ced4da",
-                borderRadius: "4px",
-              }}
-            ></div>
-            <div className="text-center mt-2">
-              <small className="text-muted">
-                {steel.Nb} cốt ∅{steel.d_bar} mm (As = {steel.As_bar} mm²)
-              </small>
-            </div>
-          </div>
+        <div
+          ref={svgRef}
+          style={{
+            height: "180px",
+            background: "#fff",
+            border: "1px dashed #ced4da",
+            borderRadius: "4px",
+            marginBottom: "0.5rem",
+          }}
+        ></div>
+        <div className="text-center small text-muted">
+          {steel.Nb} cốt ∅{steel.d_bar} mm (As = {steel.As_bar} mm²)
         </div>
       </div>
-    );
-  }
 
-  // --- RENDER: FORM ONLY ---
-  if (formOnly) {
-    return (
-      <div className="p-3">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4>Cột Chịu Nén Lệch Tâm (ShortCol 3D)</h4>
-          <div className="btn-group btn-group-sm" role="group">
-            <input
-              type="radio"
-              className="btn-check"
-              name="colType"
-              id="type-rect"
-              value="rect"
-              checked={colType === "rect"}
-              onChange={(e) => setColType(e.target.value)}
-            />
-            <label className="btn btn-outline-primary" htmlFor="type-rect">
-              <i className="bi bi-square"></i> Chữ nhật
-            </label>
+      {/* TABBED INPUT FORM (Bottom) */}
+      <div className="flex-grow-1 d-flex flex-column" style={{ minHeight: 0 }}>
+        {/* Header + Type toggle + Compute button */}
+        <div className="p-3 border-bottom bg-white">
+          <div className="d-flex justify-content-between align-items-center mb-2">
+            <h5 className="mb-0">
+              <i className="bi bi-gear-fill"></i> Thông số & Tải trọng
+            </h5>
+            <div className="btn-group btn-group-sm" role="group">
+              <input
+                type="radio"
+                className="btn-check"
+                name="colType"
+                id="type-rect"
+                value="rect"
+                checked={colType === "rect"}
+                onChange={(e) => setColType(e.target.value)}
+              />
+              <label className="btn btn-outline-primary" htmlFor="type-rect">
+                <i className="bi bi-square"></i> Rect
+              </label>
 
-            <input
-              type="radio"
-              className="btn-check"
-              name="colType"
-              id="type-circ"
-              value="circ"
-              checked={colType === "circ"}
-              onChange={(e) => setColType(e.target.value)}
-            />
-            <label className="btn btn-outline-primary" htmlFor="type-circ">
-              <i className="bi bi-circle"></i> Tròn
-            </label>
+              <input
+                type="radio"
+                className="btn-check"
+                name="colType"
+                id="type-circ"
+                value="circ"
+                checked={colType === "circ"}
+                onChange={(e) => setColType(e.target.value)}
+              />
+              <label className="btn btn-outline-primary" htmlFor="type-circ">
+                <i className="bi bi-circle"></i> Circ
+              </label>
+            </div>
+          </div>
+
+          {/* Standard + Compute Row */}
+          <div className="row g-2">
+            <div className="col-md-8">
+              <select
+                className="form-select form-select-sm"
+                value={standard}
+                onChange={(e) => setStandard(e.target.value)}
+              >
+                <option value="TCVN">TCVN 5574:2018</option>
+                <option value="EC2">EC2:2004/2015</option>
+                <option value="ACI">ACI 318-19</option>
+              </select>
+            </div>
+            <div className="col-md-4">
+              <button
+                className="btn btn-primary w-100"
+                onClick={handleRunAnalysis}
+                disabled={isComputing}
+              >
+                <i className="bi bi-lightning-charge-fill"></i> Tính toán
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Tabs */}
-        <ul className="nav nav-tabs" role="tablist">
+        <ul
+          className="nav nav-tabs px-3 pt-2"
+          role="tablist"
+          style={{ borderBottom: "1px solid #dee2e6" }}
+        >
           <li className="nav-item">
             <button
-              className="nav-link active"
+              className="nav-link active small"
               data-bs-toggle="tab"
               data-bs-target="#tab-geometry"
             >
-              1. Tiết diện & Vật liệu
+              <i className="bi bi-arrows-fullscreen"></i> Tiết diện
             </button>
           </li>
           <li className="nav-item">
             <button
-              className="nav-link"
+              className="nav-link small"
               data-bs-toggle="tab"
               data-bs-target="#tab-reinforcement"
             >
-              2. Cốt thép
+              <i className="bi bi-link"></i> Cốt thép
             </button>
           </li>
           <li className="nav-item">
             <button
-              className="nav-link"
+              className="nav-link small"
               data-bs-toggle="tab"
               data-bs-target="#tab-loads"
             >
-              3. Tải trọng
+              <i className="bi bi-arrow-down-up"></i> Tải trọng
             </button>
           </li>
         </ul>
 
-        <div className="tab-content p-3 border border-top-0">
+        {/* Tab Content (Scrollable) */}
+        <div className="tab-content flex-grow-1 overflow-auto">
           {/* Tab 1: Geometry & Material */}
-          <div className="tab-pane fade show active" id="tab-geometry">
+          <div className="tab-pane fade show active p-3" id="tab-geometry">
             <div className="row g-3">
               <div className="col-md-6">
                 <h6 className="text-secondary border-bottom pb-2">
-                  <i className="bi bi-arrows-fullscreen"></i> Kích thước (mm)
+                  Kích thước (mm)
                 </h6>
 
                 {colType === "rect" ? (
                   <>
                     <div className="mb-2">
-                      <label className="form-label small">Cạnh B:</label>
+                      <label className="form-label small fw-bold">
+                        Cạnh B:
+                      </label>
                       <input
                         type="number"
                         className="form-control form-control-sm"
@@ -514,7 +490,9 @@ const AppInp = ({
                       />
                     </div>
                     <div className="mb-2">
-                      <label className="form-label small">Cạnh H:</label>
+                      <label className="form-label small fw-bold">
+                        Cạnh H:
+                      </label>
                       <input
                         type="number"
                         className="form-control form-control-sm"
@@ -526,7 +504,9 @@ const AppInp = ({
                   </>
                 ) : (
                   <div className="mb-2">
-                    <label className="form-label small">Đường kính D:</label>
+                    <label className="form-label small fw-bold">
+                      Đường kính D:
+                    </label>
                     <input
                       type="number"
                       className="form-control form-control-sm"
@@ -538,7 +518,9 @@ const AppInp = ({
                 )}
 
                 <div className="mb-2">
-                  <label className="form-label small">Cover (mm):</label>
+                  <label className="form-label small fw-bold">
+                    Lớp bảo vệ:
+                  </label>
                   <input
                     type="number"
                     className="form-control form-control-sm"
@@ -551,11 +533,11 @@ const AppInp = ({
 
               <div className="col-md-6">
                 <h6 className="text-secondary border-bottom pb-2">
-                  <i className="bi bi-bricks"></i> Vật liệu (MPa)
+                  Vật liệu (MPa)
                 </h6>
                 <div className="mb-2">
-                  <label className="form-label small">
-                    Cường độ Bê tông (Rb):
+                  <label className="form-label small fw-bold">
+                    Bê tông (Rb):
                   </label>
                   <input
                     type="number"
@@ -566,9 +548,7 @@ const AppInp = ({
                   />
                 </div>
                 <div className="mb-2">
-                  <label className="form-label small">
-                    Cường độ Thép (Rs):
-                  </label>
+                  <label className="form-label small fw-bold">Thép (Rs):</label>
                   <input
                     type="number"
                     className="form-control form-control-sm"
@@ -582,13 +562,13 @@ const AppInp = ({
           </div>
 
           {/* Tab 2: Reinforcement */}
-          <div className="tab-pane fade" id="tab-reinforcement">
-            <h6 className="text-secondary border-bottom pb-2">
-              <i className="bi bi-link"></i> Cốt thép dọc
-            </h6>
+          <div className="tab-pane fade p-3" id="tab-reinforcement">
+            <h6 className="text-secondary border-bottom pb-2">Cốt thép dọc</h6>
             <div className="row g-2 mb-3">
               <div className="col-md-4">
-                <label className="form-label small">Số thanh thép (Nb):</label>
+                <label className="form-label small fw-bold">
+                  Số thanh (Nb):
+                </label>
                 <input
                   type="number"
                   className="form-control form-control-sm"
@@ -600,7 +580,9 @@ const AppInp = ({
                 />
               </div>
               <div className="col-md-4">
-                <label className="form-label small">Đường kính (mm):</label>
+                <label className="form-label small fw-bold">
+                  Đường kính (mm):
+                </label>
                 <input
                   type="number"
                   className="form-control form-control-sm"
@@ -610,7 +592,7 @@ const AppInp = ({
                 />
               </div>
               <div className="col-md-4">
-                <label className="form-label small">As (mm²):</label>
+                <label className="form-label small fw-bold">As (mm²):</label>
                 <input
                   type="number"
                   className="form-control form-control-sm"
@@ -622,17 +604,17 @@ const AppInp = ({
           </div>
 
           {/* Tab 3: Loads */}
-          <div className="tab-pane fade" id="tab-loads">
+          <div className="tab-pane fade p-3 d-flex flex-column" id="tab-loads">
             <h6 className="text-secondary border-bottom pb-2 mb-3">
-              <i className="bi bi-arrow-down-up"></i> Tổ hợp tải trọng
+              Tổ hợp tải trọng
             </h6>
 
-            <div style={{ maxHeight: "300px", overflowY: "auto" }}>
+            <div style={{ flex: 1, overflowY: "auto", marginBottom: "0.5rem" }}>
               {loads.map((load, idx) => (
                 <div key={load.id} className="card mb-2 shadow-sm">
                   <div className="card-body p-2">
                     <div className="d-flex justify-content-between align-items-center mb-2">
-                      <strong className="small">TH {load.id}:</strong>
+                      <strong className="small">TH {load.id}</strong>
                       {loads.length > 1 && (
                         <button
                           className="btn btn-sm btn-outline-danger"
@@ -644,7 +626,7 @@ const AppInp = ({
                     </div>
                     <div className="row g-1">
                       <div className="col-4">
-                        <small>P (kN):</small>
+                        <small className="text-muted">P (kN):</small>
                         <input
                           type="number"
                           className="form-control form-control-sm"
@@ -655,7 +637,7 @@ const AppInp = ({
                         />
                       </div>
                       <div className="col-4">
-                        <small>Mx (kNm):</small>
+                        <small className="text-muted">Mx (kNm):</small>
                         <input
                           type="number"
                           className="form-control form-control-sm"
@@ -666,7 +648,7 @@ const AppInp = ({
                         />
                       </div>
                       <div className="col-4">
-                        <small>My (kNm):</small>
+                        <small className="text-muted">My (kNm):</small>
                         <input
                           type="number"
                           className="form-control form-control-sm"
@@ -683,7 +665,7 @@ const AppInp = ({
             </div>
 
             <button
-              className="btn btn-outline-success btn-sm w-100 mt-2"
+              className="btn btn-outline-success btn-sm w-100"
               onClick={addLoad}
             >
               <i className="bi bi-plus-circle"></i> Thêm tổ hợp
@@ -691,11 +673,8 @@ const AppInp = ({
           </div>
         </div>
       </div>
-    );
-  }
-
-  // Default: return null (handled by parent layout)
-  return null;
+    </div>
+  );
 };
 
 // Expose to global scope

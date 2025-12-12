@@ -1,6 +1,88 @@
 prompts:
 
 # =====================================================================
+  # TASK 23: STANDARDIZE POSTS & WRITE DEEP-DIVE SHORTCOL 3D
+  # Mục tiêu: 1. Chuẩn hóa bài 12/12 theo format bài 07/12.
+  #           2. Viết bài 13/12 chuyên sâu về Biểu đồ tương tác 3D & 3 Tiêu chuẩn.
+  # =====================================================================
+  write_shortcol3d_development_series:
+    description: "Standardize existing ShortCol posts and generate a new in-depth technical article on 3D Interaction Diagrams (P-Mx-My) comparing TCVN, EC2, and ACI algorithms."
+    references:
+      - "_posts/2025-12-07-shortcol.md"                  # Style Reference (Format chuẩn)
+      - "_posts/2025-12-12-shortcol-standard.md"         # Target to Refactor
+      - "apps/shortcol3D/Prompt-shortcol 3D.md"          # Core Math/Physics Source
+      - "apps/shortcol3D/FINALIZATION_REPORT.md"         # Dev Story Source
+      - "apps/shortcol3D/COMPLETE_FIX_SUMMARY.md"        # Safety Factors Source
+    steps:
+      - "Action 1 (Style Standardization): Read `_posts/2025-12-07-shortcol.md`. apply layout: single and format (not change content) to `_posts/2025-12-12-shortcol-standard.md`. Ensure consistent use of LaTeX ($...$) and clear headings."
+      - "Action 2 (Create New Post): Create file `_posts/2025-12-13-shortcol3d-development.md`."
+      - "Action 3 (Front Matter): Set title 'Phát triển Thuật toán Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương', date '2025-12-13', tags [Structural Engineering, 3D Analysis, Fiber Integration, TCVN 5574, ACI 318, Eurocode 2], layout single, mathjax true."
+      - "Action 4 (Content - The 'Why'): Explain why 2D diagrams are insufficient for biaxial bending (Lệch tâm xiên). Discuss the limitations of approximate methods like Bresler's Load Contour vs. the precision of the 'Fiber Integration Method' (Phương pháp Tích phân Sợi) implemented in ShortCol 3D."
+      - "Action 5 (Content - 3 Standards Comparison): Compare how the 3 standards define the 3D failure surface:"
+      - "  - **TCVN 5574:2018:** Uses Parabola-Rectangle stress block, ε_cu = 0.0035. Mention the safety factors (γb=1.3)."
+      - "  - **Eurocode 2:** Similar to TCVN but with explicit material factors (γc=1.5). Discuss how this results in a smaller safety volume."
+      - "  - **ACI 318-19:** Uses Whitney Stress Block (Rectangular), ε_cu = 0.003 (more conservative strain). Explain how Beta1 varies with f'c."
+      - "  - **Nuance:** Discuss how the 'Neutral Axis Angle Sweep' (Quét góc trục trung hòa) algorithm creates the 3D mesh."
+      - "Action 6 (Content - Implementation): Describe the transition from legacy code to the unified `CalculationEngine` in `app-cal.js`. Highlight the use of Plotly.js for 3D visualization."
+      - "Constraint: Write ~2000 words in professional Vietnamese engineering tone. Use data from provided summaries."
+
+# =====================================================================
+  # TASK 22: WRITE TECHNICAL BLOG POST - 3 STANDARDS INTERACTION DIAGRAM
+  # Mục tiêu: Viết bài chuyên sâu về lý thuyết P-M Diagram theo TCVN/EC2/ACI.
+  # Nguồn: Dữ liệu từ thư mục shortcol2D (đã upload).
+  # =====================================================================
+  write_post_shortcol_standards:
+    description: "Generate a comprehensive 2000-word technical blog post comparing P-M Interaction Diagram construction methods across TCVN 5574:2018, Eurocode 2, and ACI 318-19."
+    references:
+      - "shortcol2D/CALCULATION_LOGIC_3STANDARDS.md"      # Nguồn thuật toán & công thức
+      - "shortcol2D/STANDARDS_COMPARISON_VISUAL.md"     # Nguồn bảng so sánh & thông số
+      - "shortcol2D/SHORTCOL_3STANDARDS_SUMMARY.md"     # Nguồn tổng quan
+      - "shortcol2D/DETAILED_LOGIC_EXPLANATION.md"      # Nguồn giải thích chi tiết
+    steps:
+      - "Action 1 (Setup): Create file `_posts/2025-12-12-shortcol-standard.md`."
+      - "Action 2 (Front Matter): Set `title: 'Xây dựng Biểu đồ Tương tác Cột (P-M) theo 3 Tiêu chuẩn: TCVN, EC2 và ACI'`, `date: 2025-12-12`, `categories: [Structural Engineering, Algorithms]`, `tags: [ShortCol, Interaction Diagram, TCVN 5574, Eurocode 2, ACI 318]`, `mathjax: true`, `toc: true`."
+      - "Action 3 (Content - Introduction): Define the 'Column Interaction Diagram' concept. State the problem: Calculating safety factors for eccentric compression. Introduce the 3 standards being compared."
+      - "Action 4 (Content - Methodology): Explain the 'Strain Compatibility Method' (Tương thích biến dạng) used in the algorithm. Describe the 5-step process: Geometry -> Layout -> Neutral Axis Sweep -> Force Integration -> Curve Generation."
+      - "Action 5 (Content - Deep Dive Comparison): Create a detailed Markdown comparison table based on and. Columns must include: Material Strength Formulas (Rb/fcd/0.85f'c), Ultimate Concrete Strain (epsilon_cu), Stress Block Factors (beta), and Safety Factors philosophy (Partial factors vs Reduction factors)."
+      - "Action 6 (Content - Safety Factor Calculation): Explain the 'Ray Casting Method' (Phương pháp tia) used to calculate k = R/S (Capacity/Load). Discuss how k >= 1.0 implies safety."
+      - "Action 7 (Content - Key Differences): Highlight specific nuances: ACI's lower ultimate strain (0.003) vs TCVN/EC2 (0.0035), and how EC2 explicitly uses gamma_c (1.5) while TCVN integrates it into Rb."
+      - "Action 8 (Conclusion): Summarize why automated tools like ShortCol are essential for handling these complex differences accurately."
+      - "Constraint: Write in professional Vietnamese (Kỹ sư xây dựng tone). Use LaTeX for all math formulas ($...$). Length ~2000 words."
+
+# =====================================================================
+  # TASK 21: FIX SHORTCOL 3D COMPLETE (PHYSICS, LOGIC, UI OVERHAUL)
+  # Mục tiêu: 1. Sửa lỗi hệ số an toàn vật liệu & hở biểu đồ 3D.
+  #           2. Sửa logic bố trí thép & tăng kích thước hiển thị thép 150%.
+  #           3. Hợp nhất giao diện Input/Output liền mạch (bỏ Sidebar/Form split).
+  # =====================================================================
+  fix_shortcol3d_complete:
+    description: "Comprehensive fix for ShortCol 3D: Implement material safety factors, fix 3D mesh closure, correct rebar logic/visualization, and unify the UI layout to match ShortCol 2D patterns."
+    references:
+      - "apps/shortcol3D/app-cal.js"
+      - "apps/shortcol3D/app-inp.js"
+      - "apps/shortcol3D/app-out.js"
+      - "apps/shortcol3D/index.html"
+      - "apps/shortcol2D/index.html" # UI Reference
+    steps:
+      - "Action 1 (Engineering Physics - app-cal.js):"
+      - "  - Restore `getDesignCoefficients(standard)` logic inside `FiberEngine` (TCVN: 1.3/1.15, EC2: 1.5/1.15, ACI: 1.0/1.0)."
+      - "  - Update `setupMaterial` to divide inputs `f_input` and `fy_input` by these gamma factors."
+      - "  - In `generateSurface`, enforce 'Cap Points' creation: Push 20+ points at (0,0,P_max) and (0,0,P_min) to close the 3D mesh tops/bottoms for `alphahull`."
+      - "Action 2 (Rebar Logic - app-cal.js):"
+      - "  - Review `generateBars` logic. Ensure it correctly calculates coordinates for rectangular perimeter distribution (avoiding duplicate corner bars or uneven spacing)."
+      - "Action 3 (Visualization - app-inp.js):"
+      - "  - In the `drawSection` function, **increase the radius of steel bar circles by 150%** (multiply `rBar` by 1.5) to make them clearly visible."
+      - "  - Refactor `AppInp` component to **REMOVE** the `sidebarOnly` and `formOnly` prop logic. Instead, render a **Single Unified Input Panel** containing: The Section Preview (Top) + The Tabbed Input Form (Bottom)."
+      - "Action 4 (UI Layout Overhaul - index.html):"
+      - "  - Remove the complex 3-pane CSS Grid layout."
+      - "  - Implement a standard **2-Column Layout** similar to `shortcol2D`:"
+      - "    - **Left Column (approx 35%):** Renders `<AppInp />` (Unified Input & Preview)."
+      - "    - **Right Column (approx 65%):** Renders `<AppOut />` (Results Table & 3D Chart)."
+      - "  - Ensure the layout is 'seamless' (liền mạch), utilizing full height without nested scrollbars where possible."
+      - "Action 5 (Output Adaptation - app-out.js):"
+      - "  - Ensure `AppOut` adapts to the new container width. Keep the internal 2-pane split (Table/Chart) OR stack them if space is tight, but prioritize the 3D Chart visibility."
+
+# =====================================================================
   # TASK 18: FIX SHORTCOL 3D RUNTIME ERRORS (404 & INFINITE LOADING)
   # Mục tiêu: Loại bỏ tham chiếu file cũ (shortcol3D.js), sửa lỗi treo app.
   # =====================================================================

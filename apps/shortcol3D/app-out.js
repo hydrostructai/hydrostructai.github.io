@@ -250,15 +250,17 @@ const AppOut = ({ results, input }) => {
         </div>
       </div>
 
-      {/* 2-Column Layout: Table (Left) | Chart (Right) */}
+      {/* 2-Column Layout: Table (Left) | Chart (Right) - Responsive */}
       <div className="flex-grow-1 d-flex" style={{ minHeight: 0 }}>
-        {/* LEFT COLUMN: Results Table */}
+        {/* LEFT COLUMN: Results Table - Responsive width based on content */}
         <div
           className="border-end"
           style={{
-            width: "35%",
+            minWidth: "300px",
+            maxWidth: "45%",
             overflowY: "auto",
             borderColor: "#dee2e6",
+            flex: "0 0 40%",
           }}
         >
           <div className="table-responsive">
@@ -334,10 +336,10 @@ const AppOut = ({ results, input }) => {
           </div>
         </div>
 
-        {/* RIGHT COLUMN: 3D Chart */}
+        {/* RIGHT COLUMN: 3D Chart - Flex grows to fill remaining space */}
         <div
           className="flex-grow-1 overflow-auto position-relative"
-          style={{ width: "65%" }}
+          style={{ flex: "1 1 auto", minHeight: 0 }}
         >
           {/* Plotly Chart */}
           <div

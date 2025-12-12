@@ -295,6 +295,7 @@ function generateInteractionSurface(inputData) {
       barPositions.push({
         x: radius * Math.cos(angle),
         y: radius * Math.sin(angle),
+        As: steel.As_bar,
       });
     }
   }
@@ -340,6 +341,31 @@ function generateInteractionSurface(inputData) {
         z: P,
       });
     }
+  }
+
+  // ADD CAP POINTS: Push 20+ points at P_max and P_min to close 3D mesh tops/bottoms
+  // This prevents the alphahull from creating open surfaces
+  const P_max = Pu;
+  const P_min = 0;
+
+  // Cap at maximum load
+  for (let i = 0; i < 20; i++) {
+    const angle = (2 * Math.PI * i) / 20;
+    points.push({
+      x: 0.1 * Math.cos(angle), // Small radius around center
+      y: 0.1 * Math.sin(angle),
+      z: P_max,
+    });
+  }
+
+  // Cap at minimum load
+  for (let i = 0; i < 20; i++) {
+    const angle = (2 * Math.PI * i) / 20;
+    points.push({
+      x: 0.1 * Math.cos(angle),
+      y: 0.1 * Math.sin(angle),
+      z: P_min,
+    });
   }
 
   return points;
