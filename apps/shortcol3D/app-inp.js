@@ -4,7 +4,7 @@
  * - Read values from HTML inputs
  * - Handle button/form events
  * - Draw section illustration (SVG)
- * - Pass validated data to app-cal.js for calculation
+ * - Pass validated data to app-cal-math.js for calculation
  * - Trigger display updates via app-out.js
  */
 
@@ -105,14 +105,15 @@ const AppInp = ({
       // Draw reinforcement bars
       const Nb = steel.Nb || 8;
       const d_bar = steel.d_bar || 20;
-      const barRadius = (d_bar * scale) / (2 * w);
+      const barRadius = Math.max(2, (d_bar * scale) / (2 * Math.max(w, h)));
 
-      // Generate bar positions (perimeter layout)
+      // Generate bar positions (perimeter layout, in mm from center)
       const barPositions = generateBarPositions(Nb, w, h, geo.cover);
 
       barPositions.forEach((pos) => {
-        const bx = x + (pos.bx * scale) / (w / 2 + geo.cover);
-        const by = y + (pos.by * scale) / (h / 2 + geo.cover);
+        // Scale position from actual dimensions to SVG coordinates
+        const bx = x + width / 2 + pos.bx * scale;
+        const by = y + height / 2 + pos.by * scale;
 
         const circle = document.createElementNS(
           "http://www.w3.org/2000/svg",

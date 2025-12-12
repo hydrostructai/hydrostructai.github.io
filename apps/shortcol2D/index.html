@@ -208,7 +208,7 @@
                     data-bs-toggle="tab"
                     data-bs-target="#tab-loads"
                   >
-                    3. Nội lực
+                    3. Tải trọng
                   </button>
                 </li>
               </ul>
@@ -377,7 +377,7 @@
                   <div
                     class="d-flex justify-content-between align-items-center mb-3"
                   >
-                    <h6 class="mb-0">Danh sách Tổ hợp nội lực</h6>
+                    <h6 class="mb-0">Danh sách Tổ hợp tải trọng</h6>
                     <button class="btn btn-sm btn-success" id="btn-add-load">
                       <i class="bi bi-plus-circle"></i> Thêm Tổ hợp
                     </button>
@@ -471,8 +471,9 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../assets/js/global.js"></script>
 
+    <!-- Load order: app-cal.js (Pure Math) -> app-out.js (Display) -> app-inp.js (Controller/UI) -->
     <script src="app-cal.js"></script>
     <script src="app-out.js"></script>
-    <script src="shortcol.js"></script>
+    <script src="app-inp.js"></script>
   </body>
 </html>

@@ -1,6 +1,10 @@
 /**
- * ShortCol Controller
- * shortcol.js
+ * APP INPUT & CONTROLLER MODULE (app-inp.js)
+ * Responsibility: Handle ALL user interface interactions
+ * - Read values from HTML inputs
+ * - Handle button/form events
+ * - Draw section illustration (SVG)
+ * - Coordinate data flow between app-cal.js (calculation) and app-out.js (display)
  */
 
 document.addEventListener("DOMContentLoaded", () => {

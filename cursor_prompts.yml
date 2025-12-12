@@ -1,4 +1,32 @@
 prompts:
+
+# =====================================================================
+  # TASK 16: REFACTOR SHORTCOL 2D (LOGIC SPLIT & OUTPUT LAYOUT)
+  # Mục tiêu: Tách code thành app-inp.js (UI/Input) và app-cal.js (Pure Math).
+  #           Gộp logic từ shortcol.js vào app-cal.js rồi xóa file cũ.
+  #           Cấu trúc lại layout kết quả thành 2 cột.
+  # =====================================================================
+  refactor_shortcol2d_structure:
+    description: "Refactor ShortCol 2D to enforce separation of concerns by splitting UI and Calculation logic, and merging legacy code."
+    references:
+      - "apps/shortcol2D/index.html"
+      - "apps/shortcol2D/app-cal.js"
+      - "apps/shortcol2D/shortcol.js" # Legacy file to be merged & deleted
+      - "apps/shortcol2D/app-out.js"
+    steps:
+      - "Action 1 (Create UI Controller): Create a new file `apps/shortcol2D/app-inp.js`. Move ALL DOM interaction logic here from `app-cal.js` and `shortcol.js`. Responsibilities:"
+      - "  - Read values from HTML inputs (Material, Geometry, Loads)."
+      - "  - Handle 'Tính toán' button click events."
+      - "  - **Draw Section Illustration:** Move the canvas drawing logic for the cross-section (geometry + rebar) here so it updates immediately upon input change."
+      - "  - Call the calculation function from the new `app-cal.js` and pass the results to `app-out.js`."
+      - "Action 2 (Pure Math Refactor): Refactor `apps/shortcol2D/app-cal.js` to contain **ONLY** pure calculation logic. Merge any necessary math functions from `apps/shortcol2D/shortcol.js` into this file."
+      - "  - This file must NOT contain `document.getElementById` or any DOM manipulation."
+      - "  - It should accept a raw data object (e.g., `{ b, h, Rb, Rs, ... }`) and return a results object (e.g., `{ interactionCurve, checkResults }`)."
+      - "Action 3 (Cleanup): Delete the file `apps/shortcol2D/shortcol.js` after ensuring all its logic is safely migrated to `app-cal.js` or `app-inp.js`."
+      - "Action 4 (Layout Update): Modify `apps/shortcol2D/index.html` to rearrange the **Output Section** into a 2-column grid (for Desktop):"
+      - "  - **Left Column:** The 'Kiểm tra' (Check) results table."
+      - "  - **Right Column:** The 2D Interaction Diagram (Canvas container)."
+      - "Action 5 (Script Update): Update the `<script>` tags in `index.html` to load files in the correct order: `app-cal.js` (Math) -> `app-inp.js` (UI/Controller) -> `app-out.js` (Output Renderer)."
 # =====================================================================
   # TASK 15: REFACTOR SHORTCOL 3D (UI STANDARDIZATION & LOGIC SPLIT)
   # Mục tiêu: 1. Chuẩn hóa UI theo mẫu ShortCol 2D (Input 3 phần, Layout 2 cột).
