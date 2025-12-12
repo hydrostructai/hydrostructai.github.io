@@ -1,6 +1,29 @@
 prompts:
 
 # =====================================================================
+  # TASK 17: FINALIZE SHORTCOL 3D REFACTOR & CLEANUP
+  # Mục tiêu: Hợp nhất logic vào app-cal.js, cập nhật UI/Output, và xóa file rác.
+  # =====================================================================
+  finalize_shortcol3d_refactor:
+    description: "Execute the final refactoring of ShortCol 3D: Merge calculation logic into a single engine, update UI components, and delete obsolete files."
+    references:
+      - "apps/shortcol3D/shortcol3D.js"   # Source logic (to be migrated then deleted)
+      - "apps/shortcol3D/app-cal-math.js" # Source logic (to be migrated then deleted)
+      - "apps/shortcol3D/index.html"      # Target to update script tags
+      - "apps/shortcol3D/app-inp.js"      # Target to update
+      - "apps/shortcol3D/app-out.js"      # Target to update
+    steps:
+      - "Action 1 (Create Unified Engine): Create a NEW file `apps/shortcol3D/app-cal.js`. This file must contain the COMPLETE calculation logic derived from `shortcol3D.js` (Fiber Integration Method, Material Models for ACI/EC2/TCVN). It must expose a global `window.CalculationEngine` object with a `performAnalysis(inputData)` function. **CRITICAL:** Do NOT depend on `app-cal-math.js` or `shortcol3D.js` after this step."
+      - "Action 2 (Update Input Controller): Rewrite `apps/shortcol3D/app-inp.js` to strictly handle UI events, draw the SVG section preview, and call `CalculationEngine.performAnalysis()`. Ensure it passes clean data structures (geo, mat, steel, loads) to the engine."
+      - "Action 3 (Update Output View): Rewrite `apps/shortcol3D/app-out.js` to render results using the pre-calculated data from the new engine. It should visualize the 3D interaction diagram (using Plotly) and the Safety Factor table."
+      - "Action 4 (Update Entry Point): Modify `apps/shortcol3D/index.html` to:"
+      - "  - Remove `<script src='shortcol3D.js'></script>`."
+      - "  - Remove `<script src='app-cal-math.js'></script>`."
+      - "  - Add `<script src='app-cal.js'></script>` before `app-inp.js`."
+      - "  - Ensure the loading order is: Libraries -> `app-cal.js` -> `app-inp.js` -> `app-out.js`."
+      - "Action 5 (Cleanup): DELETE the obsolete files `apps/shortcol3D/shortcol3D.js` and `apps/shortcol3D/app-cal-math.js` from the project to prevent confusion."
+      - "Action 6 (Verification): Confirm that `index.html` now only references the 3 new modular files and the app runs without errors."
+# =====================================================================
   # TASK 16: REFACTOR SHORTCOL 2D (LOGIC SPLIT & OUTPUT LAYOUT)
   # Mục tiêu: Tách code thành app-inp.js (UI/Input) và app-cal.js (Pure Math).
   #           Gộp logic từ shortcol.js vào app-cal.js rồi xóa file cũ.
