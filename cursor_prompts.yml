@@ -1,6 +1,30 @@
 prompts:
 
 # =====================================================================
+  # TASK 18: FIX SHORTCOL 3D RUNTIME ERRORS (404 & INFINITE LOADING)
+  # Mục tiêu: Loại bỏ tham chiếu file cũ (shortcol3D.js), sửa lỗi treo app.
+  # =====================================================================
+  fix_shortcol3d_runtime:
+    description: "Resolve the '404 Not Found' error for shortcol3D.js and the infinite 'Waiting for modules...' loop by cleaning up HTML references and verifying global variable exports."
+    references:
+      - "apps/shortcol3D/index.html"
+      - "apps/shortcol3D/app-cal.js"
+      - "apps/shortcol3D/app-inp.js"
+      - "apps/shortcol3D/app-out.js"
+    steps:
+      - "Action 1 (Fix HTML References): In `apps/shortcol3D/index.html`, explicitly **REMOVE** the script tag `<script src=\"shortcol3D.js\"></script>`. This file is obsolete and causes the 404 error."
+      - "Action 2 (Verify Script Order): Ensure `apps/shortcol3D/index.html` loads scripts in this EXACT order:"
+      - "  1. Libraries (React, Babel, Plotly, Bootstrap)."
+      - "  2. `../../assets/js/global.js`"
+      - "  3. `<script src=\"app-cal.js\"></script>` (Must be standard JS, NOT type='text/babel')."
+      - "  4. `<script src=\"app-inp.js\" type=\"text/babel\"></script>`"
+      - "  5. `<script src=\"app-out.js\" type=\"text/babel\"></script>`"
+      - "Action 3 (Debug Global Exports):"
+      - "  - In `app-cal.js`, add `console.log('AppCal loaded');` at the top and ensure it exports `window.CalculationEngine` at the end."
+      - "  - In `app-inp.js`, add `console.log('AppInp loaded');` and ensure it exports `window.AppInp`."
+      - "Action 4 (Fix Mount Logic): In `apps/shortcol3D/index.html`, modify the `mountApp()` function to check ONLY for the valid modules: `window.AppInp`, `window.AppOut`, and `window.CalculationEngine`. **REMOVE** the check for `window.ShortCol3D` as it no longer exists."
+      - "Action 5 (Validation): Check if `app-cal.js` uses any ES6 syntax that older browsers/environments might block (though modern browsers are fine). Ensure it does NOT contain JSX code."
+# =====================================================================
   # TASK 17: FINALIZE SHORTCOL 3D REFACTOR & CLEANUP
   # Mục tiêu: Hợp nhất logic vào app-cal.js, cập nhật UI/Output, và xóa file rác.
   # =====================================================================
