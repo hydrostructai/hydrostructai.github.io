@@ -25,7 +25,7 @@ Trong thiết kế hạ tầng, bài toán vạch tuyến cống thoát nước 
 - **Google Maps (2D):** Tìm đường ngắn nhất trên mặt phẳng.
 - **Thoát nước (3D):** Tìm đường trong không gian 3D, có ràng buộc:
   - Độ dốc phải nằm trong `[i_min, i_max]`
-  - $z_{start} > z_{end}$ đảm bảo tự chảy
+  - $$z_{start} > z_{end}$$ đảm bảo tự chảy
   - Tránh đào sâu quá mức → chi phí lớn
 
 Do đó cần **Terrain-Aware Pathfinding**.
@@ -40,15 +40,15 @@ $$f(n) = g(n) + h(n) + C_{terrain}(n) + C_{hydraulic}(n)$$
 
 Trong đó:
 
-- **$g(n)$** – chi phí thực từ điểm đầu đến node hiện tại
-- **$h(n)$** – heuristic đến đích
-- **$C_{terrain}$** – phạt khi đào đắp lớn
-- **$C_{hydraulic}$** – phạt khi không đảm bảo điều kiện thủy lực
+- **$$g(n)$$** – chi phí thực từ điểm đầu đến node hiện tại
+- **$$h(n)$$** – heuristic đến đích
+- **$$C_{terrain}$$** – phạt khi đào đắp lớn
+- **$$C_{hydraulic}$$** – phạt khi không đảm bảo điều kiện thủy lực
 
 Ràng buộc thủy lực quan trọng:
 
-- $i < i_{min}$ → nước không chảy → **phạt vô cực**
-- $i > i_{max}$ → xói lở → **phạt lớn**
+- $$i < i_{min}$$ → nước không chảy → **phạt vô cực**
+- $$i > i_{max}$$ → xói lở → **phạt lớn**
 - Đi _ngược dốc_ → **phạt vô cực** (trừ khi có bơm)
 
 ---

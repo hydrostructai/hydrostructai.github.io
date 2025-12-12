@@ -20,9 +20,9 @@ tags: [Visualization, Geometry, JavaScript, p5js, numericjs, Giải tích]
 Đây là một bài toán cổ điển trong hình học giải tích, thường được biết đến là một biến thể của **Bài toán Apollonius**: Làm thế nào để tìm một hình tròn tiếp xúc với ba đối tượng cho trước?
 
 Trong trường hợp này, chúng ta nâng cấp bài toán bằng cách tìm một hình tròn tiếp xúc với ba đường cong hàm số phức tạp:
-1.  $y = -x^3 + x$ (Đa thức)
-2.  $y = e^x$ (Hàm mũ)
-3.  $y = -\sin(x) + 3$ (Hàm lượng giác)
+1.  $$y = -x^3 + x$$ (Đa thức)
+2.  $$y = e^x$$ (Hàm mũ)
+3.  $$y = -\sin(x) + 3$$ (Hàm lượng giác)
 
 ### 2. Ứng dụng Web Giải thuật
 
@@ -30,7 +30,7 @@ Công cụ này trực quan hóa bài toán và cung cấp lời giải số h�
 
 * **Đồ họa:** Sử dụng **p5.js** để vẽ biểu đồ các hàm số, trục tọa độ, và hình tròn kết quả một cách mượt mà.
 * **Lõi Tính toán:** Sử dụng thư viện **numeric.js** để giải một hệ 6 phương trình phi tuyến.
-* **Logic:** Thuật toán `numeric.uncmin` tìm cách tối thiểu hóa hàm lỗi (tổng bình phương của 6 phương trình) để tìm ra 6 ẩn số: tọa độ tâm $(x_c, y_c)$, bán kính $R$, và 3 hoành độ tiếp điểm ($x_f, x_g, x_h$).
+* **Logic:** Thuật toán `numeric.uncmin` tìm cách tối thiểu hóa hàm lỗi (tổng bình phương của 6 phương trình) để tìm ra 6 ẩn số: tọa độ tâm $$(x_c, y_c)$$, bán kính $$R$$, và 3 hoành độ tiếp điểm ($$x_f, x_g, x_h$$).
 
 ### 3. Trải nghiệm ngay
 
