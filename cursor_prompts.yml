@@ -1,6 +1,53 @@
 prompts:
-    # Thêm vào cuối file cursor_prompts.yml
-# Thêm vào cuối file cursor_prompts.yml
+# =====================================================================
+  # TASK 15: REFACTOR SHORTCOL 3D (UI STANDARDIZATION & LOGIC SPLIT)
+  # Mục tiêu: 1. Chuẩn hóa UI theo mẫu ShortCol 2D (Input 3 phần, Layout 2 cột).
+  #           2. Tách code logic: app-inp.js (Nhập liệu/Vẽ tiết diện) vs app-cal.js (Tính toán).
+  #           3. Sửa lỗi hiển thị minh họa.
+  # =====================================================================
+  refactor_shortcol3d_full:
+    description: "Comprehensive refactor of ShortCol 3D: Split logic into input/calc files and standardize UI to match ShortCol 2D patterns."
+    references:
+      - "apps/shortcol3D/index.html"
+      - "apps/shortcol3D/app-cal.js"
+      - "apps/shortcol3D/app-out.js"
+      - "apps/shortcol3D/shortcol3D.js"
+      - "apps/shortcol2D/index.html" # UI Pattern Source
+    steps:
+      - "Action 1 (JS Logic Split): Split the existing `apps/shortcol3D/app-cal.js` into two separate files to enforce separation of concerns:"
+      - "  - **Create `apps/shortcol3D/app-inp.js`:** This file handles ALL User Interface interactions. Responsibilities: 1. Read values from HTML inputs. 2. Handle button click events. 3. **Draw the Section Illustration** (Canvas/SVG) to visualize geometry and rebar immediately upon input change."
+      - "  - **Refactor `apps/shortcol3D/app-cal.js`:** This file must contain ONLY pure calculation logic and mathematical functions (e.g., interaction surface generation, moment capacity checks). It should accept raw data objects from `app-inp.js` and return calculation results. Remove all DOM manipulation code from here."
+      - "Action 2 (HTML Structure - Inputs): Refactor the Input Section in `index.html` to strictly follow the 3-group structure of `shortcol2D`:"
+      - "  - **Group 1: Tiết diện & Vật liệu:** Inputs for b, h, Concrete (B), Steel (Cb)."
+      - "  - **Group 2: Cốt thép:** Inputs for rebar configuration (Diameter, Numbers). Ensure the UI style matches `shortcol2D`."
+      - "  - **Group 3: Tổ hợp tải trọng:** Inputs for N, Mx, My."
+      - "Action 3 (HTML Structure - Outputs): Re-arrange the Output Section in `index.html` into a **2-column grid** (Desktop view):"
+      - "  - **Left Column:** The 'Kiểm tra' (Check) results table."
+      - "  - **Right Column:** The 3D Interaction Diagram (Canvas container handled by `app-out.js`)."
+      - "Action 4 (Fix Illustration): In the new `app-inp.js`, implement/fix the drawing logic for the 'Minh họa tiết diện' menu. It must correctly render the rectangular section and rebar positions based on current inputs."
+      - "Action 5 (Integration): Update `apps/shortcol3D/index.html` to include the new script `app-inp.js` (ensure correct loading order: `shortcol3D.js` -> `app-cal.js` -> `app-inp.js` -> `app-out.js`)."
+      - "Action 6 (Styling): Apply `assets/css/app-standard.css` classes to buttons and tables to ensure visual consistency with the rest of the platform."
+      
+# =====================================================================
+  # TASK 14: REFACTOR SPILLWAY LOGIC & FIX RUNTIME ERROR
+  # Mục tiêu: Tách logic nhập liệu/tính toán (Separation of Concerns) 
+  #           và sửa lỗi thiếu hàm generateSimplifiedProfile.
+  # =====================================================================
+  refactor_fix_spillway_logic:
+    description: "Fix the 'generateSimplifiedProfile is not defined' error and split 'app-cal.js' into 'app-input.js' (DOM/Events) and 'app-cal.js' (Pure Math) for better maintainability."
+    references:
+      - "apps/hydraulicspillway/index.html"
+      - "apps/hydraulicspillway/app-cal.js"
+      - "apps/hydraulicspillway/output.js"
+    steps:
+      - "Action 1 (Fix Missing Function): In `apps/hydraulicspillway/app-cal.js` (or the new math file), implement the missing function `generateSimplifiedProfile(profileData)`. Logic: It should accept the detailed calculation array and return a simplified array of objects `{ station, bedElevation, waterLevel }` suitable for charting. Ensure this function is exported or globally accessible."
+      - "Action 2 (Split Logic): Refactor `apps/hydraulicspillway/app-cal.js` into two separate files:"
+      - "  - **`app-cal.js` (Pure Calculation):** Keep ONLY the mathematical formulas and hydraulic logic (e.g., functions taking numeric inputs and returning calculation objects). Remove all `document.getElementById` or DOM references from here."
+      - "Action 3 (rename js): rename `output.js` to `app-out.js` remain all code.
+      - "  - **`app-inp.js` (Input & Events):** Create this new file to handle DOM interaction. It should: 1. Read values from HTML inputs. 2. Validate data. 3. Call the functions from `app-cal.js`. 4. Pass results to `app-out.js`."
+      - "Action 4 (Update HTML): Update `apps/hydraulicspillway/index.html` to include the new `app-input.js` script tag (placed after `app-cal.js` and before `output.js`)."
+      - "Action 5 (Verification): Verify that the 'Tính toán' button now triggers the sequence: `app-input.js` (read) -> `app-cal.js` (calc) -> `output.js` (render), and the error `generateSimplifiedProfile is not defined` is resolved."
+      
 # =====================================================================
   # TASK 13: REFACTOR HYDRAULIC SPILLWAY (UI TABS & VISUALIZATION)
   # Mục tiêu: Chuẩn hóa UI theo style consmcc-test, dọn dẹp file thừa,

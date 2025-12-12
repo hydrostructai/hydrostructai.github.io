@@ -114,8 +114,10 @@
 
     <script src="../../assets/js/global.js"></script>
 
+    <!-- Load order: shortcol3D (engine) -> app-cal-math (pure calc) -> app-inp (UI input) -> app-out (display) -->
     <script src="shortcol3D.js"></script>
-    <script src="app-cal.js" type="text/babel"></script>
+    <script src="app-cal-math.js"></script>
+    <script src="app-inp.js" type="text/babel"></script>
     <script src="app-out.js" type="text/babel"></script>
 
     <script type="text/babel">
@@ -127,7 +129,7 @@
         const [calcResults, setCalcResults] = useState(null);
         const [isComputing, setIsComputing] = useState(false);
 
-        // Hàm xử lý khi người dùng nhấn "Tính toán" từ AppCal
+        // Hàm xử lý khi người dùng nhấn "Tính toán" từ AppInp
         const handleCalculate = (data) => {
           // 1. Cập nhật state
           setInputData(data);
@@ -141,16 +143,14 @@
           setTimeout(() => {
             try {
               // Kiểm tra module tính toán
-              if (typeof ShortCol3D === "undefined") {
+              if (typeof CalculationEngine === "undefined") {
                 throw new Error(
-                  "Chưa tải được module ShortCol3D. Vui lòng thử lại."
+                  "Chưa tải được module CalculationEngine. Vui lòng thử lại."
                 );
               }
 
-              const engine = new ShortCol3D();
-
-              // Thực hiện tính toán nặng
-              const results = engine.analyze(data);
+              // Gọi pure calculation function
+              const results = CalculationEngine.performAnalysis(data);
 
               // Cập nhật kết quả
               setCalcResults(results);
@@ -225,7 +225,7 @@
                 }}
               >
                 {/* Component Nhập liệu - Only Sidebar Content */}
-                <AppCal
+                <AppInp
                   onCalculate={handleCalculate}
                   isComputing={isComputing}
                   sidebarOnly={true}
@@ -244,7 +244,7 @@
                 }}
               >
                 {/* Component Nhập liệu - Form Content */}
-                <AppCal
+                <AppInp
                   onCalculate={handleCalculate}
                   isComputing={isComputing}
                   formOnly={true}
@@ -272,9 +272,14 @@
       };
 
       // --- FIX: CƠ CHẾ POLLING CHỜ THƯ VIỆN ---
-      // Hàm này sẽ đợi cho đến khi các biến toàn cục (AppCal, AppOut) được load xong
+      // Hàm này sẽ đợi cho đến khi các biến toàn cục được load xong
       const mountApp = () => {
-        if (window.AppCal && window.AppOut && window.ShortCol3D) {
+        if (
+          window.AppInp &&
+          window.AppOut &&
+          window.CalculationEngine &&
+          window.ShortCol3D
+        ) {
           console.log("All modules loaded. Rendering App...");
           const root = ReactDOM.createRoot(document.getElementById("root"));
           root.render(<MainApp />);

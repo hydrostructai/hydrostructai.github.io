@@ -1,6 +1,7 @@
 /**
- * APP CALCULATION COMPONENT (INPUT UI)
- * Nhiệm vụ: Thu thập dữ liệu, validate và gửi sang engine tính toán.
+ * APP CALCULATION WRAPPER (Backward Compatibility)
+ * This file now delegates to app-inp.js for UI logic
+ * and app-cal-math.js for pure calculation
  */
 
 const { useState, useEffect, useMemo } = React;
@@ -52,7 +53,7 @@ const AppCal = ({
   }, [steel.d_bar]);
 
   // Hàm tạo tọa độ cốt thép (Logic sinh tự động)
-// Hàm tạo tọa độ cốt thép (Logic rải đều theo chu vi - Perimeter Walking)
+  // Hàm tạo tọa độ cốt thép (Logic rải đều theo chu vi - Perimeter Walking)
   const generateBarLayout = () => {
     const bars = [];
     const As = Number(steel.As_bar);
@@ -63,53 +64,53 @@ const AppCal = ({
       // W, H là kích thước từ tâm cốt thép bên này sang tâm cốt thép bên kia
       const W = Number(geo.B) - 2 * Number(geo.cover);
       const H = Number(geo.H) - 2 * Number(geo.cover);
-      
+
       // 2. Tính chu vi đường tim cốt thép
       const perimeter = 2 * (W + H);
-      
+
       // 3. Khoảng cách giữa các thanh nếu rải đều tuyệt đối
       const spacing = perimeter / N;
 
       // 4. Thuật toán "Đi bộ dọc chu vi"
       // Bắt đầu từ góc dưới trái (-W/2, -H/2) và đi ngược chiều kim đồng hồ
       // Thứ tự đi: Đáy (Trái->Phải) -> Phải (Dưới->Trên) -> Đỉnh (Phải->Trái) -> Trái (Trên->Dưới)
-      
+
       for (let i = 0; i < N; i++) {
         // Vị trí của thanh thứ i trên chu vi đã duỗi thẳng (từ 0 đến perimeter)
-        let currentDist = i * spacing; 
-        
-        let x = 0, y = 0;
+        let currentDist = i * spacing;
+
+        let x = 0,
+          y = 0;
 
         // Xác định thanh nằm trên cạnh nào
         if (currentDist <= W) {
           // --- Cạnh Đáy (Bottom) ---
-          x = -W/2 + currentDist;
-          y = -H/2;
+          x = -W / 2 + currentDist;
+          y = -H / 2;
         } else if (currentDist <= W + H) {
           // --- Cạnh Phải (Right) ---
-          x = W/2;
-          y = -H/2 + (currentDist - W);
-        } else if (currentDist <= 2*W + H) {
+          x = W / 2;
+          y = -H / 2 + (currentDist - W);
+        } else if (currentDist <= 2 * W + H) {
           // --- Cạnh Đỉnh (Top) --- Đi ngược từ Phải sang Trái
-          x = W/2 - (currentDist - (W + H));
-          y = H/2;
+          x = W / 2 - (currentDist - (W + H));
+          y = H / 2;
         } else {
           // --- Cạnh Trái (Left) --- Đi ngược từ Trên xuống Dưới
-          x = -W/2;
-          y = H/2 - (currentDist - (2*W + H));
+          x = -W / 2;
+          y = H / 2 - (currentDist - (2 * W + H));
         }
-        
+
         // 5. Snap vào góc (Khử sai số số học)
         // Nếu tọa độ rất gần góc, ép nó vào đúng góc để hình vẽ đẹp hơn
         const tolerance = 0.1;
-        if (Math.abs(x - -W/2) < tolerance) x = -W/2;
-        if (Math.abs(x - W/2) < tolerance) x = W/2;
-        if (Math.abs(y - -H/2) < tolerance) y = -H/2;
-        if (Math.abs(y - H/2) < tolerance) y = H/2;
+        if (Math.abs(x - -W / 2) < tolerance) x = -W / 2;
+        if (Math.abs(x - W / 2) < tolerance) x = W / 2;
+        if (Math.abs(y - -H / 2) < tolerance) y = -H / 2;
+        if (Math.abs(y - H / 2) < tolerance) y = H / 2;
 
         bars.push({ x, y, As });
       }
-
     } else {
       // Logic cho cột Tròn: Bố trí đều (Polar Array)
       const R_bars = Number(geo.D) / 2 - Number(geo.cover);
@@ -572,35 +573,37 @@ const AppCal = ({
             </div>
           </div>
 
-			{/* 2. Material Section */}
-			<div className="card shadow-sm mb-3">
-			  <div className="card-body p-2">
-				<div className="d-flex justify-content-between align-items-center mb-2">
-				  <label className="small fw-bold text-dark mb-0">Vật liệu</label>
-				  <span className="badge bg-warning text-dark small">{lbl.t}</span>
-				</div>
-				<div className="row g-2">
-				  <div className="col-6">
-					<label className="form-label small">{lbl.c}</label>
-					<input
-					  type="number"
-					  value={mat.fck}
-					  onChange={(e) => setMat({ ...mat, fck: e.target.value })}
-					  className="form-control form-control-sm fw-bold"
-					/>
-				  </div>
-				  <div className="col-6">
-					<label className="form-label small">{lbl.s}</label>
-					<input
-					  type="number"
-					  value={mat.fyk}
-					  onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
-					  className="form-control form-control-sm fw-bold"
-					/>
-				  </div>
-				</div>
-			  </div>
-			</div>
+          {/* 2. Material Section */}
+          <div className="card shadow-sm mb-3">
+            <div className="card-body p-2">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="small fw-bold text-dark mb-0">Vật liệu</label>
+                <span className="badge bg-warning text-dark small">
+                  {lbl.t}
+                </span>
+              </div>
+              <div className="row g-2">
+                <div className="col-6">
+                  <label className="form-label small">{lbl.c}</label>
+                  <input
+                    type="number"
+                    value={mat.fck}
+                    onChange={(e) => setMat({ ...mat, fck: e.target.value })}
+                    className="form-control form-control-sm fw-bold"
+                  />
+                </div>
+                <div className="col-6">
+                  <label className="form-label small">{lbl.s}</label>
+                  <input
+                    type="number"
+                    value={mat.fyk}
+                    onChange={(e) => setMat({ ...mat, fyk: e.target.value })}
+                    className="form-control form-control-sm fw-bold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
 
           {/* 3. Reinforcement Section */}
           <div className="card shadow-sm mb-3">
