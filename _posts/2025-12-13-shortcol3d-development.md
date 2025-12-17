@@ -368,7 +368,7 @@ Biểu đồ tương tác 3D không phải là **lý thuyết mới** - Nó đã
 
 Hãy **dũng cảm thử nghiệm** với các công cụ mới. Fiber Integration 3D không phải là "black box" - nó là **thể hiện trực tiếp của cơ học kết cấu**. Bằng cách hiểu rõ thuật toán, bạn sẽ thiết kế cột **an toàn hơn, thông minh hơn**.
 
-**ShortCol 3D chờ bạn**: [https://hydrostructai.com/apps/shortcol3d](https://hydrostructai.com/apps/shortcol3d)
+**ShortCol 3D chờ bạn**: [shortcol3D]( https://hydrostructai.com/apps/shortcol3D)
 
 ---
 
