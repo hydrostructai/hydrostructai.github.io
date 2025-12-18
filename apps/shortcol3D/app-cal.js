@@ -1,5 +1,5 @@
 /**
- * UNIFIED CALCULATION ENGINE (app-cal.js)
+ * UNIFIED CALCULATION ENGINE (app-cal.js) UPDATE 18/12/2025
  * ========================================
  * Pure mathematical calculation module for ShortCol 3D
  * Merges Fiber Integration Method (shortcol3D.js) with simplified math functions (app-cal-math.js)
