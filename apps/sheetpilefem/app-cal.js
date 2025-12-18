@@ -258,6 +258,9 @@ function showLoading(isLoading) {
  * Follows chain: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
  */
 async function runAnalysis() {
+    alert("Sắp ra mắt, vui lòng quay lại sau!");
+    return;
+    // Các logic cũ bên dưới sẽ không bao giờ được chạy
     hideError();
     showLoading(true);
     
