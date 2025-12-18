@@ -329,11 +329,12 @@ function generateInteractionSurface(inputData) {
       "y"
     );
 
-    const numAngles = 16;
+// --- ĐOẠN CODE SỬA ĐỔI: TẠO ĐIỂM BIÊN VÀ ĐÓNG KÍN MẶT (CAP) ---
+    const numAngles = 24; // Tăng mật độ điểm để Mesh mịn hơn
     for (let angleIdx = 0; angleIdx < numAngles; angleIdx++) {
       const theta = (2 * Math.PI * angleIdx) / numAngles;
-      const Mx_point = Mx_cap * Math.sin(theta);
-      const My_point = My_cap * Math.cos(theta);
+      const Mx_point = Mx_cap * Math.cos(theta);
+      const My_point = My_cap * Math.sin(theta);
 
       points.push({
         x: Mx_point,
@@ -343,35 +344,23 @@ function generateInteractionSurface(inputData) {
     }
   }
 
-  // ADD CAP POINTS: Push 20+ points at P_max and P_min to close 3D mesh tops/bottoms
-  // This prevents the alphahull from creating open surfaces
-  const P_max = Pu;
-  const P_min = 0;
+  // FIX HỞ ĐÁY: Bổ sung các điểm trọng tâm tuyệt đối (Centroid points)
+  // Điểm chốt tại đỉnh biểu đồ (Lực nén lớn nhất, Moment = 0)
+  points.push({ x: 0, y: 0, z: Pu });
+  
+  // Điểm chốt tại đáy biểu đồ (Lực nén = 0, Moment = 0) 
+  // Thêm một offset cực nhỏ (-0.001) để định hướng Vector pháp tuyến mặt đáy
+  points.push({ x: 0, y: 0, z: 0 });
+  points.push({ x: 0, y: 0, z: -0.001 }); 
 
-// Bịt kín mặt đỉnh (Tại điểm lực nén lớn nhất)
-  points.push({
-    x: 0,
-    y: 0,
-    z: P_max,
-  });
-
-  // Bịt kín mặt đáy (Tại điểm lực nén bằng 0 - trạng thái uốn thuần túy)
-  points.push({
-    x: 0,
-    y: 0,
-    z: P_min,
-  });
-
-  // Thêm các điểm biên trung gian tại đáy để đảm bảo độ dày cho thuật toán Convex Hull
+  // Bổ sung vòng đệm đáy để ép Alphahull tạo mặt phẳng phẳng tuyệt đối
   for (let i = 0; i < 8; i++) {
     const angle = (2 * Math.PI * i) / 8;
-    points.push({ x: 0.01 * Math.cos(angle), y: 0.01 * Math.sin(angle), z: P_max });
-    points.push({ x: 0.01 * Math.cos(angle), y: 0.01 * Math.sin(angle), z: P_min });
+    points.push({ x: 0.1 * Math.cos(angle), y: 0.1 * Math.sin(angle), z: 0 });
   }
 
   return points;
 }
-
 /**
  * Calculate safety factor for a load case
  */
