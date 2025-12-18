@@ -421,6 +421,11 @@ function loadSampleData() {
  * Follows chain: validateInputs() -> validateLicense() -> callWasmCalculation() -> renderResults()
  */
 async function runAnalysis() {
+    // Hiển thị thông báo và chặn các bước tính toán phía sau
+    alert("Sắp ra mắt, vui lòng quay lại sau!");
+    return; 
+
+    // Các logic cũ bên dưới sẽ không bao giờ được chạy
     hideError();
     showLoading(true);
     
