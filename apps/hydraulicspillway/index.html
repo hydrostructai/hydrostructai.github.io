@@ -422,7 +422,7 @@ sidebar: nav: right
       </div>
 
       <div style="text-align: center; margin-top: 25px">
-        <button class="btn-calculate" onclick="calculateHydraulicJump()">
+        <button class="btn-calculate" onclick="runAnalysis()">
           🚀 TÍNH TOÁN
         </button>
       </div>
@@ -649,6 +649,14 @@ sidebar: nav: right
   // Auto-switch to results tab after successful calculation
   function showResultsTab() {
     switchTab("result-sec");
+  }
+  <script>
+  function runAnalysis() {
+    // Hiển thị thông báo và chặn các bước tính toán phía sau
+    alert("Sắp ra mắt, vui lòng quay lại sau!");
+    return; 
+
+    // Các logic cũ bên dưới sẽ không bao giờ được chạy
   }
 </script>
 
