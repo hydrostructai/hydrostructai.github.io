@@ -259,7 +259,14 @@ function integrateSection(fibers, bars, mat, eps_0, phi_x, phi_y, current_c) {
 // =====================================================================
 
 /**
- * Generate interaction surface points (P-Mx-My diagram)
+ * REFACTORED: Generate topologically closed interaction surface (P-Mx-My diagram)
+ * using Fiber Integration Method with Angular & Depth Sweeping
+ * 
+ * Theory:
+ * - Strain compatibility: ε(x,y) = ε₀ + κₓ·y - κᵧ·x
+ * - κₓ, κᵧ = curvatures (strains/depth); ε₀ = axial strain
+ * - For each NA orientation θ, sweep neutral axis depth c from near-zero to very large
+ * - This ensures all interaction points are captured and poles are properly closed
  */
 function generateInteractionSurface(inputData) {
   const { colType, geo, mat, steel, standard } = inputData;
@@ -285,9 +292,17 @@ function generateInteractionSurface(inputData) {
   const Nb = steel.Nb;
   const As_total = steel.As_bar * Nb;
 
+  // Generate fiber mesh and bar positions
+  const fibers = generateFiberMesh(colType, geo.B || geo.D, geo.H || geo.D, geo.D || geo.H);
+  
   let barPositions = [];
   if (colType === "rect") {
-    barPositions = generateBarPositions(Nb, geo.B, geo.H, geo.cover);
+    const barPos = generateBarPositions(Nb, geo.B, geo.H, geo.cover);
+    barPositions = barPos.map(p => ({
+      x: p.x,
+      y: p.y,
+      As: steel.As_bar
+    }));
   } else {
     const radius = (geo.D - 2 * geo.cover) / 2;
     for (let i = 0; i < Nb; i++) {
@@ -300,63 +315,178 @@ function generateInteractionSurface(inputData) {
     }
   }
 
+  // Initialize material model
+  const materialModel = new MaterialModel(standard, fck, fyk);
+
+  // Collect all surface points
   const points = [];
-  const Pu = fcd * Ac + fsd * As_total;
-  const numLoads = 12;
+  const P_collection = [];
+  const Mx_collection = [];
+  const My_collection = [];
 
-  for (let loadIdx = 0; loadIdx <= numLoads; loadIdx++) {
-    const loadFraction = loadIdx / numLoads;
-    const P = loadFraction * Pu;
+  // ================================================================
+  // MAIN LOOP: Angular sweep (NA orientation) + Depth sweep
+  // ================================================================
+  const numAngles = 36; // 10° increments for smooth surface
+  const numDepths = 40; // Sufficient convergence to poles
 
-    const Mx_cap = calculateMomentCapacity(
-      colType,
-      geo,
-      barPositions,
-      As_total / Nb,
-      P,
-      fcd,
-      fsd,
-      "x"
-    );
-    const My_cap = calculateMomentCapacity(
-      colType,
-      geo,
-      barPositions,
-      As_total / Nb,
-      P,
-      fcd,
-      fsd,
-      "y"
-    );
+  // Depth range: from very small to very large (pure compression/tension)
+  const c_min = 0.001 * d_eff;
+  const c_max = 100 * d_eff;
+  const c_log_min = Math.log(c_min);
+  const c_log_max = Math.log(c_max);
 
-// --- ĐOẠN CODE SỬA ĐỔI: TẠO ĐIỂM BIÊN VÀ ĐÓNG KÍN MẶT (CAP) ---
-    const numAngles = 24; // Tăng mật độ điểm để Mesh mịn hơn
-    for (let angleIdx = 0; angleIdx < numAngles; angleIdx++) {
-      const theta = (2 * Math.PI * angleIdx) / numAngles;
-      const Mx_point = Mx_cap * Math.cos(theta);
-      const My_point = My_cap * Math.sin(theta);
+  for (let angleIdx = 0; angleIdx < numAngles; angleIdx++) {
+    // Neutral axis orientation angle (0° to 2π)
+    const theta = (2 * Math.PI * angleIdx) / numAngles;
+    
+    // Unit vector perpendicular to NA (points into compression zone)
+    const NA_perpX = Math.cos(theta);
+    const NA_perpY = Math.sin(theta);
 
-      points.push({
-        x: Mx_point,
-        y: My_point,
-        z: P,
-      });
+    for (let depthIdx = 0; depthIdx < numDepths; depthIdx++) {
+      // Use logarithmic spacing for better coverage of extreme strains
+      const c_frac = depthIdx / (numDepths - 1);
+      const c = Math.exp(c_log_min + c_frac * (c_log_max - c_log_min));
+
+      // Maximum strain: at the extreme fiber distance from NA
+      const max_dist = Math.max(
+        Math.abs(NA_perpX * (geo.B ? geo.B/2 : geo.D/2) + NA_perpY * (geo.H ? geo.H/2 : geo.D/2)),
+        Math.abs(-NA_perpX * (geo.B ? geo.B/2 : geo.D/2) - NA_perpY * (geo.H ? geo.H/2 : geo.D/2))
+      );
+
+      // Curvature (strain/depth) at extreme fiber
+      const kappa = (materialModel.eps_cu) / c; // kappa = ε_cu / c
+
+      // Axial strain: solve for ε₀ that gives target P
+      // N = ∫ σ_c dA + ∫ σ_s dA
+      // We iterate to find ε₀ that produces this equilibrium
+
+      // Binary search for ε₀ that gives approximately zero stress resultant
+      let eps_0_low = -0.005;
+      let eps_0_high = 0.005;
+      let eps_0 = 0;
+
+      for (let iter = 0; iter < 10; iter++) {
+        eps_0 = (eps_0_low + eps_0_high) / 2;
+
+        // Integrate section forces
+        let N_trial = 0;
+        let Mx_trial = 0;
+        let My_trial = 0;
+
+        // Integrate concrete fibers
+        for (let fib of fibers) {
+          // Strain: distance along NA direction determines compression/tension
+          const dist_from_NA = fib.x * NA_perpX + fib.y * NA_perpY;
+          const strain = eps_0 + kappa * (c - dist_from_NA);
+
+          const stress = materialModel.getConcreteStress(strain);
+          const force = stress * fib.dA;
+
+          N_trial += force;
+          Mx_trial += force * fib.y;
+          My_trial += force * fib.x;
+        }
+
+        // Integrate steel bars
+        for (let bar of barPositions) {
+          const dist_from_NA = bar.x * NA_perpX + bar.y * NA_perpY;
+          const strain = eps_0 + kappa * (c - dist_from_NA);
+
+          const stress = materialModel.getSteelStress(strain);
+          const force = stress * bar.As;
+
+          N_trial += force;
+          Mx_trial += force * bar.y;
+          My_trial += force * bar.x;
+        }
+
+        // Adjust bounds for next iteration
+        if (N_trial < 0) {
+          eps_0_low = eps_0; // More compression needed
+        } else {
+          eps_0_high = eps_0;
+        }
+      }
+
+      // Final integration with converged ε₀
+      let N_final = 0, Mx_final = 0, My_final = 0;
+
+      for (let fib of fibers) {
+        const dist_from_NA = fib.x * NA_perpX + fib.y * NA_perpY;
+        const strain = eps_0 + kappa * (c - dist_from_NA);
+        const stress = materialModel.getConcreteStress(strain);
+        const force = stress * fib.dA;
+
+        N_final += force;
+        Mx_final += force * fib.y;
+        My_final += force * fib.x;
+      }
+
+      for (let bar of barPositions) {
+        const dist_from_NA = bar.x * NA_perpX + bar.y * NA_perpY;
+        const strain = eps_0 + kappa * (c - dist_from_NA);
+        const stress = materialModel.getSteelStress(strain);
+        const force = stress * bar.As;
+
+        N_final += force;
+        Mx_final += force * bar.y;
+        My_final += force * bar.x;
+      }
+
+      // Convert units: N (N) -> P (kN), Moments (N·mm) -> M (kNm)
+      const P = -N_final / 1000;
+      const Mx = -Mx_final / 1e6;
+      const My = -My_final / 1e6;
+
+      // Only add points in valid range (P > 0 or near zero)
+      if (P >= -50) { // Small tolerance for numerical error
+        points.push({ x: Mx, y: My, z: P });
+        P_collection.push(P);
+        Mx_collection.push(Mx);
+        My_collection.push(My);
+      }
     }
   }
 
-  // FIX HỞ ĐÁY: Bổ sung các điểm trọng tâm tuyệt đối (Centroid points)
-  // Điểm chốt tại đỉnh biểu đồ (Lực nén lớn nhất, Moment = 0)
-  points.push({ x: 0, y: 0, z: Pu });
+  // ================================================================
+  // POLE CONVERGENCE: Explicit pole points for closed topology
+  // ================================================================
   
-  // Điểm chốt tại đáy biểu đồ (Lực nén = 0, Moment = 0) 
-  // Thêm một offset cực nhỏ (-0.001) để định hướng Vector pháp tuyến mặt đáy
-  points.push({ x: 0, y: 0, z: 0 });
-  points.push({ x: 0, y: 0, z: -0.001 }); 
+  // Pure compression point (maximum P at M = 0)
+  const P_max = fcd * Ac + fsd * As_total;
+  points.push({ x: 0, y: 0, z: P_max / 1000 });
 
-  // Bổ sung vòng đệm đáy để ép Alphahull tạo mặt phẳng phẳng tuyệt đối
-  for (let i = 0; i < 8; i++) {
-    const angle = (2 * Math.PI * i) / 8;
-    points.push({ x: 0.1 * Math.cos(angle), y: 0.1 * Math.sin(angle), z: 0 });
+  // Pure tension point (M = 0, P negative or near zero)
+  const As_total_eff = As_total;
+  const P_tension = -(fsd * As_total_eff) / 1000;
+  points.push({ x: 0, y: 0, z: P_tension });
+
+  // ================================================================
+  // BOUNDARY RING: Create ring caps at poles for mesh closure
+  // ================================================================
+  
+  // Ring at compression pole
+  const ringRadius_comp = Math.max(
+    Math.max(...Mx_collection.map(m => Math.abs(m))),
+    Math.max(...My_collection.map(m => Math.abs(m)))
+  ) * 0.05; // Small radius ring
+
+  const ringNumPoints = 16;
+  for (let i = 0; i < ringNumPoints; i++) {
+    const phi = (2 * Math.PI * i) / ringNumPoints;
+    const Mx_ring = ringRadius_comp * Math.cos(phi);
+    const My_ring = ringRadius_comp * Math.sin(phi);
+    points.push({ x: Mx_ring, y: My_ring, z: P_max / 1000 });
+  }
+
+  // Ring at tension pole
+  for (let i = 0; i < ringNumPoints; i++) {
+    const phi = (2 * Math.PI * i) / ringNumPoints;
+    const Mx_ring = ringRadius_comp * Math.cos(phi);
+    const My_ring = ringRadius_comp * Math.sin(phi);
+    points.push({ x: Mx_ring, y: My_ring, z: P_tension });
   }
 
   return points;
@@ -409,8 +539,12 @@ function calculateSafetyFactor(load, surfacePoints) {
  */
 function performAnalysis(inputData) {
   try {
+    console.error("!!! performAnalysis CALLED !!!"); // Use error for visibility
+    console.warn("Input data received:", inputData);
+    
     // Generate interaction surface
     const surfacePoints = generateInteractionSurface(inputData);
+    console.warn(`Generated ${surfacePoints.length} surface points`);
 
     // Calculate safety factors for all loads
     const safetyFactors = {};
@@ -418,11 +552,14 @@ function performAnalysis(inputData) {
       safetyFactors[load.id] = calculateSafetyFactor(load, surfacePoints);
     });
 
-    return {
+    const result = {
       surfacePoints,
       safetyFactors,
       timestamp: new Date().toISOString(),
     };
+    
+    console.warn("Analysis complete. Result numPoints:", surfacePoints.length);
+    return result;
   } catch (error) {
     console.error("Analysis error:", error);
     throw error;

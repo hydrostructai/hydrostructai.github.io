@@ -38,7 +38,8 @@ const AppInp = ({ onCalculate, isComputing }) => {
 
   // Loads
   const [loads, setLoads] = useState([
-    { id: 1, P: 1000, Mx: 50, My: 20, note: "TH1" },
+    { id: 1, P: 1150, Mx: 135, My: 85, note: "TH1" },
+    { id: 1, P: 1025, Mx: 105, My: 132, note: "TH2" },
   ]);
 
   // SVG Preview Reference
@@ -101,8 +102,8 @@ const AppInp = ({ onCalculate, isComputing }) => {
       const Nb = steel.Nb || 8;
       const d_bar = steel.d_bar || 20;
       const barRadius = Math.max(
-        2,
-        (d_bar * scale * 1.5) / (2 * Math.max(w, h))
+        3,
+        (d_bar * scale * 2.5) / (2 * Math.max(w, h))
       );
 
       // Generate bar positions (perimeter layout, in mm from center)
@@ -246,36 +247,36 @@ const AppInp = ({ onCalculate, isComputing }) => {
       ];
     }
 
-    // Generic perimeter distribution
+    // Generic perimeter distribution (match calculation engine logic)
     const positions = [];
-    const perimeter = 2 * (B + H);
+    const W = B - 2 * cover;        // Core width
+    const H_core = H - 2 * cover;   // Core height
+    const perimeter = 2 * (W + H_core);
     const spacing = perimeter / Nb;
-    let dist = 0;
 
     for (let i = 0; i < Nb; i++) {
       let bx, by;
-      let currentDist = dist % perimeter;
+      let currentDist = i * spacing;
 
-      if (currentDist < B / 2) {
+      if (currentDist <= W) {
         // Bottom edge
-        bx = -B / 2 + currentDist;
-        by = -H / 2 + cover;
-      } else if (currentDist < B / 2 + H) {
+        bx = -W / 2 + currentDist;
+        by = -H_core / 2;
+      } else if (currentDist <= W + H_core) {
         // Right edge
-        bx = B / 2 - cover;
-        by = -H / 2 + (currentDist - B / 2);
-      } else if (currentDist < B + H + B / 2) {
+        bx = W / 2;
+        by = -H_core / 2 + (currentDist - W);
+      } else if (currentDist <= 2 * W + H_core) {
         // Top edge
-        bx = B / 2 - (currentDist - B / 2 - H);
-        by = H / 2 - cover;
+        bx = W / 2 - (currentDist - W - H_core);
+        by = H_core / 2;
       } else {
         // Left edge
-        bx = -B / 2 + cover;
-        by = H / 2 - (currentDist - B - H - B / 2);
+        bx = -W / 2;
+        by = H_core / 2 - (currentDist - 2 * W - H_core);
       }
 
       positions.push({ bx, by });
-      dist += spacing;
     }
 
     return positions;
