@@ -348,24 +348,25 @@ function generateInteractionSurface(inputData) {
   const P_max = Pu;
   const P_min = 0;
 
-  // Cap at maximum load
-  for (let i = 0; i < 20; i++) {
-    const angle = (2 * Math.PI * i) / 20;
-    points.push({
-      x: 0.1 * Math.cos(angle), // Small radius around center
-      y: 0.1 * Math.sin(angle),
-      z: P_max,
-    });
-  }
+// Bịt kín mặt đỉnh (Tại điểm lực nén lớn nhất)
+  points.push({
+    x: 0,
+    y: 0,
+    z: P_max,
+  });
 
-  // Cap at minimum load
-  for (let i = 0; i < 20; i++) {
-    const angle = (2 * Math.PI * i) / 20;
-    points.push({
-      x: 0.1 * Math.cos(angle),
-      y: 0.1 * Math.sin(angle),
-      z: P_min,
-    });
+  // Bịt kín mặt đáy (Tại điểm lực nén bằng 0 - trạng thái uốn thuần túy)
+  points.push({
+    x: 0,
+    y: 0,
+    z: P_min,
+  });
+
+  // Thêm các điểm biên trung gian tại đáy để đảm bảo độ dày cho thuật toán Convex Hull
+  for (let i = 0; i < 8; i++) {
+    const angle = (2 * Math.PI * i) / 8;
+    points.push({ x: 0.01 * Math.cos(angle), y: 0.01 * Math.sin(angle), z: P_max });
+    points.push({ x: 0.01 * Math.cos(angle), y: 0.01 * Math.sin(angle), z: P_min });
   }
 
   return points;
