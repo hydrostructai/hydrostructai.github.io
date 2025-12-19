@@ -130,7 +130,7 @@ except Exception as e:
 ```
 Mặt cắt ngang dầm:
 
-<figure class="img-zoom-150">
+<figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png" alt="box-girder-section">
   </a>
@@ -160,7 +160,7 @@ plt.show()
 ```
 Lưới phần tử hữu hạn mặt cắt ngang dầm:
 
-<figure class="img-zoom-150">
+<figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png" alt="box-girder-mesh">
   </a>
@@ -226,7 +226,7 @@ sec.plot_centroids()
 ```
 Hiển thị trọng tâm hình học của mặt cắt:
 
-<figure class="img-zoom-150">
+<figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png" alt="box-girder-centroid">
   </a>
@@ -256,7 +256,7 @@ stress.plot_stress(stress="vm", normalize=False, fmt="{x:.2f}")
 ```
 Biểu đồ ứng suất của mặt cắt Dầm:
 
-<figure class="img-zoom-150">
+<figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png" alt="box-girder-stress">
   </a>
@@ -274,7 +274,7 @@ stress.plot_stress_vector(stress="vy_zxy", fmt="{x:.2f}")
 ```
 Biểu đồ Vectơ ứng suất Von Mises của mặt cắt Dầm:
 
-<figure class="img-zoom-150">
+<figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png" alt="box-girder-stress-vector">
   </a>
@@ -294,7 +294,7 @@ plt.show()
 ```
 Biểu đồ Vòng tròn Mohr ứng suất:
 
-<figure class="img-zoom-150">
+<figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png" alt="box-girder-mohr">
   </a>
