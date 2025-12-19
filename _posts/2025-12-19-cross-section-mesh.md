@@ -1,5 +1,5 @@
 ---
-title: "Phân Tích Tiết Diện Sàn Dầm Sử Dụng Thư viện Python SectionProperties"
+title: "Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties"
 author_profile: true
 author_name: "HST.AI"
 date: 2025-12-19 10:00:00 +0700
@@ -21,10 +21,10 @@ image: /assets/images/posts/2025-12-19-cross-section-mesh/box-girder.png
 ---
 
 ## Tổng Quan
-Bài viết minh họa phân tích cấu trúc tự động của tiết diện sàn dầm bê tông sử dụng gói Python mã nguồn mở `sectionproperties`. 
+Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở `sectionproperties`. 
 Phân tích bao gồm:
-1. **Định Nghĩa Vật Liệu**: Bê tông với các tính chất đàn hồi được chỉ định
-2. **Tạo Hình Học**: Tiết diện sàn dầm được định nghĩa theo chương trình (thay thế nhập DXF)
+1. **Định Nghĩa Vật Liệu**: Bê tông với các tính chất đàn hồi 
+2. **Tạo Hình Học**: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF)
 3. **Tạo Lưới**: Tạo lưới phần tử hữu hạn
 4. **Tính Toán Tính Chất**: Tính chất hình học, uốn và dẻo
 5. **Phân Tích Độ Cứng**: Độ cứng trục, uốn và xoắn
@@ -33,7 +33,7 @@ Phân tích bao gồm:
 
 ## Tiết Diện Thiết Kế
 
-**Tiết Diện Sàn Dầm Bê Tông Cầu**
+**Tiết Diện dầm Bê Tông**
 - Vật liệu: Bê tông (E = 30,1 GPa, ν = 0,2)
 - Kích thước lưới: 60 mm²
 - Tải Áp Dụng:
@@ -105,9 +105,9 @@ print(f"Màu:                     {concrete_properties['color']}")
 
 ---
 
-## 3. Xây Dựng Hình Học Tiết Diện Sàn Dầm
+## 3. Xây Dựng Hình Học Tiết Diện dầm
 
-Tải hình học tiết diện sàn dầm từ tệp DXF hoặc tạo lập trình. Hình học xấp xỉ tiết diện sàn dầm bê tông cầu điển hình với các đặc trưng sau:
+Tải hình học tiết diện dầm từ tệp DXF. Hình học tiết diện dầm bê tông cầu điển hình với các đặc trưng sau:
 - Mặt trên rộng để chịu tải
 - Lõi trung tâm rỗng để giảm khối lượng
 - Các góc bo tròn cho sự mượt mà
@@ -188,7 +188,7 @@ sec.display_results(fmt=".2f")
 
 ---
 
-## 6. Tính Toán Các Chỉ Số Độ Cứng
+## 6. Các Đặc trưng Độ Cứng
 
 Độ cứng là một chỉ số quan trọng cho biết tiết diện sẽ chống lại biến dạng như thế nào. Chúng ta sẽ tính ba loại độ cứng chính:
 - **Độ cứng trục (EA)**: Chống lại lực kéo/nén
@@ -215,8 +215,8 @@ print(f"Độ cứng xoắn (G.J): {gj:.3e} N.mm2")
 ## 7. Trực Quan Hóa Các Tâm Hình Học
 
 Ngoài các tính chất cơ bản, chúng ta có thể trực quan hóa các tâm đặc biệt của tiết diện để hiểu rõ hơn về phân bố hình học:
-- **Tâm đàn hồi**: Điểm áp dụng tải trục để không gây uốn
-- **Tâm cắt**: Điểm áp dụng lực cắt để không gây xoắn
+- **Tâm đàn hồi**: Điểm tương tức tải trọng trục gây uốn
+- **Tâm cắt**: Điểm tương ứng tác dụng lực cắt để không gây xoắn
 - **Tâm dẻo**: Điểm tương ứng với chuyển động dẻo
 - **Trục chính**: Hướng của các mô-men quán tính chính
 
@@ -236,13 +236,11 @@ Hiển thị trọng tâm hình học của mặt cắt:
 
 ## 8. Phân Tích Ứng Suất 
 
-Cuối cùng, chúng ta sẽ tính toán và trực quan hóa các ứng suất trong tiết diện. Giả sử tiết diện này thuộc nhịp trung tâm của một dầm đơn giản được hỗ trợ tại hai đầu. Dầm chịu một sự kết hợp các tải bên ngoài:
+Cuối cùng, chúng ta sẽ tính toán và trực quan hóa các ứng suất trong tiết diện. Giả sử tiết diện này thuộc nhịp trung tâm của một dầm đơn giản được gối tựa hai đầu. Dầm chịu một sự kết hợp các tải bên ngoài:
 - **N = 10 kN**: Tải trục (kéo hoặc nén)
 - **M_xx = 10 kN·m**: Mô-men uốn quanh trục x (gây cong dầm)
 - **V_x = 25 kN**: Lực cắt theo hướng x
 - **V_y = 50 kN**: Lực cắt theo hướng y
-
-Sự kết hợp này gây ra các loại ứng suất khác nhau trong tiết diện mà chúng ta sẽ phân tích.
 
 ### Ứng Suất Von Mises
 
@@ -272,16 +270,16 @@ Ngoài ứng suất Von Mises, chúng ta cũng có thể hiển thị các vect�
 # Các vectơ cho thấy hướng và độ lớn của ứng suất cắt tại mỗi điểm
 stress.plot_stress_vector(stress="vy_zxy", fmt="{x:.2f}")
 ```
-Biểu đồ Vectơ ứng suất Von Mises của mặt cắt Dầm:
+Biểu đồ Vectơ ứng suất cắt của mặt cắt Dầm:
 
 <figure class="img-zoom-125">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png" alt="box-girder-stress-vector">
   </a>
-  <figcaption>Von Mises Stress Vector<sup>2</sup>.</figcaption>
+  <figcaption>Stress Vector<sup>2</sup>.</figcaption>
 </figure>
 
-### Vòng tròn Mohr để Phân Tích Ứng Suất Chính
+### Vòng tròn Mohr Ứng suất
 
 Vòng tròn Mohr là biểu đồ hình học giúp xác định ứng suất chính, ứng suất cắt cực đại, và trạng thái ứng suất tại một điểm cụ thể. Chúng ta sẽ vẽ Vòng Mohr tại điểm (x=500, y=325) - một điểm tới hạn trong tiết diện:
 
@@ -304,13 +302,11 @@ Biểu đồ Vòng tròn Mohr ứng suất:
 
 ## 9. Tóm Tắt và Kết Luận
 
-### Tóm Tắt Tính Chất Tiết Diện Sàn Dầm
-
-Phân tích này kiểm tra chi tiết tiết diện sàn dầm bê tông cầu trong các điều kiện tải kết hợp phức tạp bằng cách sử dụng các nguyên tắc phân tích phần tử hữu hạn (FEA). Các kết quả chính được tóm tắt dưới đây:
+Phân tích này kiểm tra chi tiết tiết diện dầm bê tông cầu trong các điều kiện tải kết hợp phức tạp bằng cách sử dụng các nguyên tắc phân tích phần tử hữu hạn (FEA). Các kết quả chính được tóm tắt dưới đây:
 
 **Hình Học Tiết Diện:**
 - Tải từ tệp DXF (nếu khả dụng) hoặc được tạo lập trình
-- Tiết diện sàn dầm hình chữ nhật rỗng - tối ưu chi phí
+- Tiết diện dầm hình chữ nhật rỗng - tối ưu chi phí
 - Các góc bo tròn - giảm tập trung ứng suất
 - Bề dày tường bên - chịu lực cắt và uốn
 
@@ -332,22 +328,11 @@ Phân tích này kiểm tra chi tiết tiết diện sàn dầm bê tông cầu 
 - Lực Cắt theo x: V_x = 25 kN
 - Lực Cắt theo y: V_y = 50 kN
 
-### Kết Quả Chính Của Phân Tích
-
 Phân tích hoàn chỉnh tạo ra các kết quả sau:
-1. **Trực Quan Hóa Hình Học**: Xác nhận hình học tiết diện sàn dầm rỗng với các thành phần chính
+1. **Trực Quan Hóa Hình Học**: Xác nhận hình học tiết diện dầm rỗng với các thành phần chính
 2. **Lưới Phần Tử Hữu Hạn**: Chia tiết diện thành các phần tử 60 mm² để tinh chỉnh đầy đủ
 3. **Ma Trận Độ Cứng**: Tính toán độ cứng trục (EA), uốn (EI), và xoắn (GJ)
 4. **Phân Bố Ứng Suất Von Mises**: Hiển thị vùng chịu ứng suất cao trên toàn bộ tiết diện
 5. **Trường Vectơ Ứng Suất Cắt**: Cho thấy mô hình tập trung ứng suất cắt
 6. **Phân Tích Tâm Hình Học**: Xác định vị trí các tâm đàn hồi, dẻo, cắt và trục chính
-7. **Vòng Mohr**: Xác định ứng suất chính tại điểm tới hạn (500, 325)
-
-### Quan Sát Thiết Kế Quan Trọng
-
-- **Phân bố ứng suất**: Cho thấy các mẫu mong đợi cho tải kết hợp phức tạp
-- **Vị trí ứng suất cực đại**: Xảy ra ở các góc tiết diện và các vị trí không liên tục
-- **Ưu điểm thiết kế rỗng**: Hình học lõi rỗng làm giảm khối lượng nhưng tối ưu hóa sử dụng vật liệu
-- **Điểm phân tích**: (500, 325) ở gần ranh giới tiết diện - nơi ứng suất tăng cao
-- **Cân nhắc vật liệu**: Các tiết diện bê tông yêu cầu phân tích cẩn thận dưới căng để tránh nứt
-- **Ứng dụng thực tế**: Phân tích này hỗ trợ thiết kế cầu có độ an toàn và hiệu quả kinh tế cao
+7. **Vòng tròn Mohr Ứng suất**: Xác định ứng suất chính tại điểm tới hạn (500, 325)
