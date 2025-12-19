@@ -113,10 +113,8 @@ Tải hình học tiết diện sàn dầm từ tệp DXF hoặc tạo lập tr�
 - Các góc bo tròn cho sự mượt mà
 - Các bức tường bên dày để chịu lực cắt
 
-Lưu ý: Vì tệp DXF gốc có thể không khả dụng, hình học được tổng hợp để đại diện cho tiết diện sàn dầm điển hình trong thực tế.
 
 ```python
-# Cố gắng tải hình học từ tệp DXF nếu tệp tồn tại
 try:
     # Tải hình học từ tệp DXF
     geom = Geometry.from_dxf(dxf_filepath="./dxf/box-girder.dxf") 
@@ -130,7 +128,14 @@ except Exception as e:
     print(f"Không thể tải tệp DXF: {e}")
     print("Sử dụng hình học được xác định lập trình...")
 ```
+Mặt cắt ngang dầm:
 
+<figure>
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png" alt="box-girder-section">
+  </a>
+  <figcaption>Minh họa mắt cắt ngang dầm<sup>2</sup>.</figcaption>
+</figure>
 ---
 
 ## 4. Tạo Lưới Phần Tử Hữu Hạn
@@ -153,7 +158,14 @@ sec = Section(geom)
 sec.plot_mesh() 
 plt.show()
 ```
+Lưới phần tử hữu hạn mặt cắt ngang dầm:
 
+<figure>
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png" alt="box-girder-mesh">
+  </a>
+  <figcaption>Lưới phần tử hữu hạn mặt cắt ngang dầm<sup>2</sup>.</figcaption>
+</figure>
 ---
 
 ## 5. Tính Toán Các Tính Chất Hình Học
@@ -212,10 +224,17 @@ Ngoài các tính chất cơ bản, chúng ta có thể trực quan hóa các t�
 # Vẽ tất cả các tâm hình học quan trọng: tâm đàn hồi, tâm cắt, tâm dẻo, và trục chính
 sec.plot_centroids()
 ```
+Hiển thị trọng tâm hình học của mặt cắt:
 
+<figure>
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png" alt="box-girder-centroid">
+  </a>
+  <figcaption>Trọng tâm hình học của mặt cắt<sup>2</sup>.</figcaption>
+</figure>
 ---
 
-## 8. Phân Tích Ứng Suất Dưới Tải Kết Hợp
+## 8. Phân Tích Ứng Suất 
 
 Cuối cùng, chúng ta sẽ tính toán và trực quan hóa các ứng suất trong tiết diện. Giả sử tiết diện này thuộc nhịp trung tâm của một dầm đơn giản được hỗ trợ tại hai đầu. Dầm chịu một sự kết hợp các tải bên ngoài:
 - **N = 10 kN**: Tải trục (kéo hoặc nén)
@@ -235,6 +254,14 @@ stress = sec.calculate_stress(n=10e3, mxx=10e6, vx=25e3, vy=50e3)
 # normalize=False: không chuẩn hóa, hiển thị giá trị thực tế
 stress.plot_stress(stress="vm", normalize=False, fmt="{x:.2f}")
 ```
+Biểu đồ ứng suất của mặt cắt Dầm:
+
+<figure>
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png" alt="box-girder-stress">
+  </a>
+  <figcaption>Biểu đồ ứng suất của mặt cắt Dầm<sup>2</sup>.</figcaption>
+</figure>
 
 ### Trực Quan Hóa Vectơ Ứng Suất Cắt
 
@@ -245,10 +272,18 @@ Ngoài ứng suất Von Mises, chúng ta cũng có thể hiển thị các vect�
 # Các vectơ cho thấy hướng và độ lớn của ứng suất cắt tại mỗi điểm
 stress.plot_stress_vector(stress="vy_zxy", fmt="{x:.2f}")
 ```
+Biểu đồ Vectơ ứng suất Von Mises của mặt cắt Dầm:
 
-### Vòng Mohr để Phân Tích Ứng Suất Chính
+<figure>
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png" alt="box-girder-stress-vector">
+  </a>
+  <figcaption>Biểu đồ Vectơ ứng suất Von Mises của mặt cắt Dầm<sup>2</sup>.</figcaption>
+</figure>
 
-Vòng Mohr là biểu đồ hình học giúp xác định ứng suất chính, ứng suất cắt cực đại, và trạng thái ứng suất tại một điểm cụ thể. Chúng ta sẽ vẽ Vòng Mohr tại điểm (x=500, y=325) - một điểm tới hạn trong tiết diện:
+### Vòng tròn Mohr để Phân Tích Ứng Suất Chính
+
+Vòng tròn Mohr là biểu đồ hình học giúp xác định ứng suất chính, ứng suất cắt cực đại, và trạng thái ứng suất tại một điểm cụ thể. Chúng ta sẽ vẽ Vòng Mohr tại điểm (x=500, y=325) - một điểm tới hạn trong tiết diện:
 
 ```python
 # Vẽ Vòng Mohr tại điểm cụ thể (500, 325) mm để xác định ứng suất chính
@@ -257,7 +292,14 @@ stress.plot_mohrs_circles(x=500, y=325)
 # Hiển thị tất cả các biểu đồ
 plt.show()
 ```
+Biểu đồ Vòng tròn Mohr ứng suất:
 
+<figure>
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png" alt="box-girder-mohr">
+  </a>
+  <figcaption>Biểu đồ Vòng tròn Mohr ứng suất<sup>2</sup>.</figcaption>
+</figure>
 ---
 
 ## 9. Tóm Tắt và Kết Luận
