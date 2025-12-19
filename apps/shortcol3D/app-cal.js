@@ -1,26 +1,179 @@
 /**
- * UNIFIED CALCULATION ENGINE (app-cal.js) UPDATE 18/12/2025
+ * UNIFIED CALCULATION ENGINE (app-cal.js) v3.0 - COMPLETE REFACTOR
  * ========================================
  * Pure mathematical calculation module for ShortCol 3D
- * Merges Fiber Integration Method (shortcol3D.js) with simplified math functions (app-cal-math.js)
+ * Theory: Fiber Integration + 3D Strain Compatibility
  *
- * Supports: TCVN 5574:2018 | EC2:2004/2015 | ACI 318-19
- * Method: Fiber Integration + Strain Compatibility
+ * Correct Implementation:
+ * - Strain compatibility: ε(x,y) = ε₀ + κₓ·y - κᵧ·x (3D)
+ * - Material models: TCVN 5574:2018 | EC2:2004/2015 | ACI 318-19
+ * - Method: Angular sweep + depth sweep to generate closed interaction surface
  *
  * NO DOM REFERENCES - Pure mathematical functions only
  */
 
 // =====================================================================
-// HELPER FUNCTIONS
+// SECTION 1: MATERIAL MODELS (TCVN / EC2 / ACI)
 // =====================================================================
 
 /**
- * Generate reinforcement bar layout positions
+ * Concrete Stress-Strain Model
+ * Supports: Whitney Block (ACI), Parabola (EC2/TCVN)
+ */
+class ConcreteModel {
+  constructor(standard, fck) {
+    this.standard = standard;
+    this.fck = fck;  // MPa
+    this.Es = 200000; // MPa
+
+    if (standard === "ACI") {
+      this.eps_cu = 0.003;
+      this.eps_c0 = 0.002;
+      this.type = "whitney";
+      // β₁ coefficient
+      if (fck <= 28) {
+        this.beta1 = 0.85;
+      } else if (fck <= 55) {
+        this.beta1 = 0.85 - 0.008 * (fck - 28);
+      } else {
+        this.beta1 = 0.65;
+      }
+    } else if (standard === "EC2") {
+      this.eps_cu = 0.0035;
+      this.eps_c1 = 0.002; // Peak strain
+      this.eps_c2 = 0.002; // Strain at fck
+      this.type = "parabola";
+    } else { // TCVN (similar to EC2)
+      this.eps_cu = 0.0035;
+      this.eps_c1 = 0.002;
+      this.type = "parabola";
+    }
+  }
+
+  /**
+   * Get concrete compressive stress (negative convention)
+   * @param {number} strain - Strain (positive = tension, negative = compression)
+   * @returns {number} Stress in MPa (negative = compression)
+   */
+  getStress(strain) {
+    if (strain >= 0) return 0; // No tension capacity
+
+    const e = Math.abs(strain);
+
+    if (this.type === "whitney") {
+      // ACI Whitney Stress Block
+      if (e > this.eps_cu) return 0;
+      // Bilinear approximation: 85% of fck from 0 to eps_c0, linear decay
+      if (e <= this.eps_c0) {
+        return -0.85 * this.fck;
+      } else {
+        const frac = (e - this.eps_c0) / (this.eps_cu - this.eps_c0);
+        return -0.85 * this.fck * (1 - frac);
+      }
+    } else {
+      // Parabolic model (EC2/TCVN)
+      if (e > this.eps_cu) return 0;
+      if (e <= this.eps_c1) {
+        // Parabola: f = -fck * (1 - (1 - e/eps_c1)^2) = -fck * (2*e/eps_c1 - (e/eps_c1)^2)
+        const eta = e / this.eps_c1;
+        return -this.fck * (2 * eta - eta * eta);
+      } else {
+        // Constant at fck
+        return -this.fck;
+      }
+    }
+  }
+}
+
+/**
+ * Steel Stress-Strain Model
+ * Bilinear: Elastic up to yield, constant after
+ */
+class SteelModel {
+  constructor(fyk) {
+    this.fyk = fyk;  // MPa
+    this.Es = 200000; // MPa
+    this.eps_y = fyk / this.Es;
+  }
+
+  /**
+   * Get steel stress
+   * @param {number} strain - Strain
+   * @returns {number} Stress in MPa
+   */
+  getStress(strain) {
+    if (Math.abs(strain) <= this.eps_y) {
+      return strain * this.Es;
+    } else if (strain > 0) {
+      return this.fyk;
+    } else {
+      return -this.fyk;
+    }
+  }
+}
+
+// =====================================================================
+// SECTION 2: GEOMETRY & DISCRETIZATION
+// =====================================================================
+
+/**
+ * Generate fiber mesh for concrete section
+ * @param {string} type - "rect" or "circ"
+ * @param {number} B - Width (for rect) in mm
+ * @param {number} H - Height (for rect) in mm
+ * @param {number} D - Diameter (for circ) in mm
+ * @returns {Array} Array of {x, y, dA} - fiber coordinates (mm) and area (mm²)
+ */
+function generateFiberMesh(type, B, H, D) {
+  const fibers = [];
+
+  if (type === "rect") {
+    const nx = 25;  // Increased for accuracy
+    const ny = 25;
+    const dx = B / nx;
+    const dy = H / ny;
+    const dA = dx * dy;
+
+    for (let i = 0; i < nx; i++) {
+      for (let j = 0; j < ny; j++) {
+        const x = -B / 2 + (i + 0.5) * dx;
+        const y = -H / 2 + (j + 0.5) * dy;
+        fibers.push({ x, y, dA });
+      }
+    }
+  } else if (type === "circ") {
+    // Polar mesh for circular section
+    const nr = 15;
+    const ntheta = 30;
+    const R = D / 2;
+
+    for (let ir = 0; ir < nr; ir++) {
+      const r_inner = (ir * R) / nr;
+      const r_outer = ((ir + 1) * R) / nr;
+      const r_mid = (r_inner + r_outer) / 2;
+      const dr = (r_outer - r_inner);
+      const dtheta = (2 * Math.PI) / ntheta;
+      const dA = r_mid * dr * dtheta;
+
+      for (let itheta = 0; itheta < ntheta; itheta++) {
+        const theta = itheta * dtheta + dtheta / 2;
+        const x = r_mid * Math.cos(theta);
+        const y = r_mid * Math.sin(theta);
+        fibers.push({ x, y, dA });
+      }
+    }
+  }
+
+  return fibers;
+}
+
+/**
+ * Generate reinforcement bar positions
  * @param {number} Nb - Number of bars
- * @param {number} B - Width (mm)
- * @param {number} H - Height (mm)
- * @param {number} cover - Concrete cover (mm)
- * @returns {Array} Array of {x, y} positions in mm
+ * @param {number} B - Width in mm
+ * @param {number} H - Height in mm
+ * @param {number} cover - Concrete cover in mm
+ * @returns {Array} Array of {x, y, As} - bar coordinates (mm) and area (mm²)
  */
 function generateBarPositions(Nb, B, H, cover) {
   const bars = [];
@@ -31,21 +184,27 @@ function generateBarPositions(Nb, B, H, cover) {
 
   for (let i = 0; i < Nb; i++) {
     let currentDist = i * spacing;
-    let x = 0,
-      y = 0;
+    let x = 0, y = 0;
 
+    // Bottom edge (left to right)
     if (currentDist <= W) {
       x = -W / 2 + currentDist;
       y = -H_core / 2;
-    } else if (currentDist <= W + H_core) {
+    }
+    // Right edge (bottom to top)
+    else if (currentDist <= W + H_core) {
       x = W / 2;
       y = -H_core / 2 + (currentDist - W);
-    } else if (currentDist <= 2 * W + H_core) {
-      x = W / 2 - (currentDist - (W + H_core));
+    }
+    // Top edge (right to left)
+    else if (currentDist <= 2 * W + H_core) {
+      x = W / 2 - (currentDist - W - H_core);
       y = H_core / 2;
-    } else {
+    }
+    // Left edge (top to bottom)
+    else {
       x = -W / 2;
-      y = H_core / 2 - (currentDist - (2 * W + H_core));
+      y = H_core / 2 - (currentDist - 2 * W - H_core);
     }
 
     bars.push({ x, y });
@@ -69,342 +228,220 @@ function getDesignCoefficients(standard) {
 }
 
 /**
- * Calculate moment capacity at a given axial load
+ * Generate circular bar arrangement
+ * @param {number} Nb - Number of bars
+ * @param {number} D - Diameter in mm
+ * @param {number} cover - Concrete cover in mm
+ * @returns {Array} Array of {x, y} - bar coordinates
  */
-function calculateMomentCapacity(
-  colType,
-  geo,
-  barPositions,
-  As_bar,
-  P,
-  fcd,
-  fsd,
-  direction
-) {
-  let W, c;
+function generateBarPositionsCircular(Nb, D, cover) {
+  const bars = [];
+  const r = (D - 2 * cover) / 2;
 
-  if (colType === "rect") {
-    const B = geo.B;
-    const H = geo.H;
-    if (direction === "x") {
-      W = (B * H * H) / 6;
-      c = H / 2;
-    } else {
-      W = (H * B * B) / 6;
-      c = B / 2;
-    }
-  } else {
-    const D = geo.D;
-    W = (Math.PI * Math.pow(D, 3)) / 32;
-    c = D / 2;
+  for (let i = 0; i < Nb; i++) {
+    const theta = (2 * Math.PI * i) / Nb;
+    const x = r * Math.cos(theta);
+    const y = r * Math.sin(theta);
+    bars.push({ x, y });
   }
 
-  const Mg = W * fcd;
-  const Ms = (fsd * As_bar * barPositions.length * c) / 1000;
-  const M_cap = Mg + Ms;
-
-  const Ac =
-    colType === "rect" ? geo.B * geo.H : Math.PI * Math.pow(geo.D / 2, 2);
-  const Pu = (fcd * Ac) / 1000;
-  const interaction = Math.max(0.1, 1 - P / (2 * Pu));
-
-  return M_cap * interaction;
+  return bars;
 }
 
 // =====================================================================
-// MATERIAL MODELING
+// SECTION 3: SECTION INTEGRATION
 // =====================================================================
 
-class MaterialModel {
-  constructor(standard, fck, fyk) {
-    this.standard = standard;
-    this.f_c = fck;
-    this.f_y = fyk;
-    this.eps_cu = 0.0035;
-    this.eps_c1 = 0.002;
-    this.eps_y = fyk / 200000;
-    this.type = "parabola";
-    this.beta1 = 0.85;
-    this.Es = 200000;
+/**
+ * Integrate section to get internal forces from given strain parameters
+ * 
+ * Strain compatibility (3D):
+ *   ε(x,y) = ε₀ + κₓ·y - κᵧ·x
+ * where:
+ *   ε₀ = axial strain
+ *   κₓ = curvature about x-axis (rotation causing y-bending)
+ *   κᵧ = curvature about y-axis (rotation causing x-bending)
+ * 
+ * @param {Array} fibers - Fiber array from generateFiberMesh
+ * @param {Array} bars - Bar array from generateBarPositions
+ * @param {ConcreteModel} concreteModel - Material model
+ * @param {SteelModel} steelModel - Material model
+ * @param {number} eps0 - Axial strain
+ * @param {number} kappax - Curvature about x-axis (1/mm)
+ * @param {number} kappay - Curvature about y-axis (1/mm)
+ * @returns {Object} {P, Mx, My} in kN and kNm (P positive = compression)
+ */
+function integrateSection(fibers, bars, concreteModel, steelModel, eps0, kappax, kappay) {
+  let N_internal = 0;  // N in N (will convert to kN)
+  let Mx_internal = 0; // Mx in N·mm (will convert to kNm)
+  let My_internal = 0; // My in N·mm (will convert to kNm)
 
-    if (standard === "ACI") {
-      this.eps_cu = 0.003;
-      this.type = "whitney";
-      if (fck <= 28) {
-        this.beta1 = 0.85;
-      } else if (fck >= 55) {
-        this.beta1 = 0.65;
-      } else {
-        this.beta1 = 0.85 - (0.05 * (fck - 28)) / 7;
-      }
-    }
-  }
-
-  getConcreteStress(strain) {
-    if (strain >= 0) return 0;
-
-    const e = Math.abs(strain);
-    const f_max = this.f_c;
-
-    if (this.type === "whitney") {
-      const e0 = (2 * 0.85 * this.f_c) / (4700 * Math.sqrt(this.f_c));
-      if (e > this.eps_cu) return 0;
-      if (e < e0) {
-        return -f_max * (2 * (e / e0) - (e / e0) ** 2);
-      }
-      return -f_max * (1 - (0.15 * (e - e0)) / (this.eps_cu - e0));
-    }
-
-    // Parabola model
-    if (e > this.eps_cu) return 0;
-    if (e <= this.eps_c1) {
-      return -f_max * (1 - Math.pow(1 - e / this.eps_c1, 2));
-    } else {
-      return -f_max;
-    }
-  }
-
-  getSteelStress(strain) {
-    const stress = strain * this.Es;
-    if (stress > this.f_y) return this.f_y;
-    if (stress < -this.f_y) return -this.f_y;
-    return stress;
-  }
-}
-
-// =====================================================================
-// FIBER MESH GENERATION
-// =====================================================================
-
-function generateFiberMesh(type, B, H, D) {
-  const fibers = [];
-  const nx = 20;
-  const ny = 20;
-
-  if (type === "rect") {
-    const dx = B / nx;
-    const dy = H / ny;
-    const dA = dx * dy;
-
-    for (let i = 0; i < nx; i++) {
-      for (let j = 0; j < ny; j++) {
-        const x = -B / 2 + (i + 0.5) * dx;
-        const y = -H / 2 + (j + 0.5) * dy;
-        fibers.push({ x, y, dA });
-      }
-    }
-  } else {
-    const nr = 12;
-    const ntheta = 24;
-    const R = D / 2;
-
-    for (let i = 0; i < nr; i++) {
-      const r_inner = (i * R) / nr;
-      const r_outer = ((i + 1) * R) / nr;
-      const r_mid = (r_inner + r_outer) / 2;
-      const dA = (Math.PI * (r_outer * r_outer - r_inner * r_inner)) / ntheta;
-
-      for (let j = 0; j < ntheta; j++) {
-        const theta = (2 * Math.PI * j) / ntheta;
-        const x = r_mid * Math.cos(theta);
-        const y = r_mid * Math.sin(theta);
-        fibers.push({ x, y, dA });
-      }
-    }
-  }
-
-  return fibers;
-}
-
-// =====================================================================
-// SECTION INTEGRATION
-// =====================================================================
-
-function integrateSection(fibers, bars, mat, eps_0, phi_x, phi_y, current_c) {
-  let N_int = 0;
-  let Mx_int = 0;
-  let My_int = 0;
-
-  // Integrate concrete
+  // ===== CONCRETE FIBERS =====
   for (let fib of fibers) {
-    const strain = eps_0 + phi_x * fib.y + phi_y * fib.x;
-    const stress = mat.getConcreteStress(strain);
-    const force = stress * fib.dA;
+    const strain = eps0 + kappax * fib.y - kappay * fib.x;
+    const stress = concreteModel.getStress(strain); // MPa (negative for compression)
+    const force = stress * fib.dA; // N (stress in MPa, area in mm²)
 
-    N_int += force;
-    Mx_int += force * fib.y;
-    My_int += force * fib.x;
+    N_internal += force;
+    Mx_internal += force * fib.y;  // Moment about x-axis
+    My_internal += force * fib.x;  // Moment about y-axis
   }
 
-  // Integrate steel
+  // ===== STEEL BARS =====
   for (let bar of bars) {
-    const strain = eps_0 + phi_x * bar.y + phi_y * bar.x;
-    const stress = mat.getSteelStress(strain);
-    const force = stress * bar.As;
+    const strain = eps0 + kappax * bar.y - kappay * bar.x;
+    const stress = steelModel.getStress(strain); // MPa
+    const force = stress * bar.As; // N
 
-    N_int += force;
-    Mx_int += force * bar.y;
-    My_int += force * bar.x;
+    N_internal += force;
+    Mx_internal += force * bar.y;
+    My_internal += force * bar.x;
   }
 
+  // Convert to kN and kNm, with positive = compression
   return {
-    P: -N_int / 1000,
-    Mx: -Mx_int / 1e6,
-    My: -My_int / 1e6,
+    P: -N_internal / 1000,      // kN, compression positive
+    Mx: -Mx_internal / 1e6,     // kNm
+    My: -My_internal / 1e6,     // kNm
   };
 }
 
 // =====================================================================
-// MAIN ANALYSIS FUNCTIONS
+// SECTION 4: GENERATE INTERACTION SURFACE (MAIN ALGORITHM)
 // =====================================================================
 
 /**
- * REFACTORED: Generate topologically closed interaction surface (P-Mx-My diagram)
- * using Fiber Integration Method with Angular & Depth Sweeping
+ * MAIN ALGORITHM: Generate P-Mx-My interaction surface
  * 
- * Theory:
- * - Strain compatibility: ε(x,y) = ε₀ + κₓ·y - κᵧ·x
- * - κₓ, κᵧ = curvatures (strains/depth); ε₀ = axial strain
- * - For each NA orientation θ, sweep neutral axis depth c from near-zero to very large
- * - This ensures all interaction points are captured and poles are properly closed
+ * Strategy: Angular sweep + Depth sweep with correct 3D strain compatibility
+ * - For each neutral axis orientation angle θ (0° to 360°, 10° steps)
+ * - For each neutral axis depth c (logarithmic range)
+ * - Map strain parameters correctly: ε(x,y) = ε₀ + κₓ·y - κᵧ·x
+ * - Integrate section to get (P, Mx, My)
+ * - Create closed mesh by adding pole points and convergence rings
  */
 function generateInteractionSurface(inputData) {
   const { colType, geo, mat, steel, standard } = inputData;
+  
+  // Validate input
+  if (!geo.B && !geo.D) throw new Error("Missing geometry");
+  if (!mat.fck || !mat.fyk) throw new Error("Missing material");
+  if (!steel.Nb || !steel.As_bar) throw new Error("Missing reinforcement");
+
+  // Design coefficients
   const coeff = getDesignCoefficients(standard);
+  const fcd = mat.fck / coeff.gammac;   // Design strength (MPa)
+  const fsd = mat.fyk / coeff.gammas;   // Design strength (MPa)
 
-  const fck = mat.fck;
-  const fyk = mat.fyk;
-  const fcd = fck / coeff.gammac;
-  const fsd = fyk / coeff.gammas;
-
+  // Section dimensions
   let Ac, d_eff;
   if (colType === "rect") {
-    const B = geo.B;
-    const H = geo.H;
-    Ac = B * H;
-    d_eff = Math.max(B, H);
+    Ac = geo.B * geo.H;
+    d_eff = Math.max(geo.B, geo.H);
   } else {
-    const D = geo.D;
-    Ac = Math.PI * Math.pow(D / 2, 2);
-    d_eff = D;
+    Ac = Math.PI * Math.pow(geo.D / 2, 2);
+    d_eff = geo.D;
   }
 
-  const Nb = steel.Nb;
-  const As_total = steel.As_bar * Nb;
+  const As_total = steel.Nb * steel.As_bar;
+
+  // Initialize materials
+  const concreteModel = new ConcreteModel(standard, mat.fck);
+  const steelModel = new SteelModel(mat.fyk);
 
   // Generate fiber mesh and bar positions
-  const fibers = generateFiberMesh(colType, geo.B || geo.D, geo.H || geo.D, geo.D || geo.H);
-  
-  let barPositions = [];
+  let fibers, bars;
   if (colType === "rect") {
-    const barPos = generateBarPositions(Nb, geo.B, geo.H, geo.cover);
-    barPositions = barPos.map(p => ({
-      x: p.x,
-      y: p.y,
-      As: steel.As_bar
-    }));
+    fibers = generateFiberMesh("rect", geo.B, geo.H, geo.D);
+    const barPos = generateBarPositions(steel.Nb, geo.B, geo.H, geo.cover);
+    bars = barPos.map(p => ({ x: p.x, y: p.y, As: steel.As_bar }));
   } else {
-    const radius = (geo.D - 2 * geo.cover) / 2;
-    for (let i = 0; i < Nb; i++) {
-      const angle = (2 * Math.PI * i) / Nb;
-      barPositions.push({
-        x: radius * Math.cos(angle),
-        y: radius * Math.sin(angle),
-        As: steel.As_bar,
-      });
-    }
+    fibers = generateFiberMesh("circ", geo.B, geo.H, geo.D);
+    const barPos = generateBarPositionsCircular(steel.Nb, geo.D, geo.cover);
+    bars = barPos.map(p => ({ x: p.x, y: p.y, As: steel.As_bar }));
   }
 
-  // Initialize material model
-  const materialModel = new MaterialModel(standard, fck, fyk);
-
-  // Collect all surface points
+  // Collect surface points
   const points = [];
-  const P_collection = [];
-  const Mx_collection = [];
-  const My_collection = [];
+  const pCollection = [], mxCollection = [], myCollection = [];
 
-  // ================================================================
+  // =====================================================================
   // MAIN LOOP: Angular sweep (NA orientation) + Depth sweep
-  // ================================================================
-  const numAngles = 36; // 10° increments for smooth surface
-  const numDepths = 40; // Sufficient convergence to poles
-
-  // Depth range: from very small to very large (pure compression/tension)
+  // =====================================================================
+  
+  const numAngles = 36;  // 10° increments
+  const numDepths = 50;  // Depth sweep
+  
   const c_min = 0.001 * d_eff;
-  const c_max = 100 * d_eff;
+  const c_max = 200 * d_eff;
   const c_log_min = Math.log(c_min);
   const c_log_max = Math.log(c_max);
 
-  for (let angleIdx = 0; angleIdx < numAngles; angleIdx++) {
-    // Neutral axis orientation angle (0° to 2π)
-    const theta = (2 * Math.PI * angleIdx) / numAngles;
-    
-    // Unit vector perpendicular to NA (points into compression zone)
-    const NA_perpX = Math.cos(theta);
-    const NA_perpY = Math.sin(theta);
+  for (let iAngle = 0; iAngle < numAngles; iAngle++) {
+    const theta = (2 * Math.PI * iAngle) / numAngles;
+    const n_x = Math.cos(theta);  // Unit normal to NA
+    const n_y = Math.sin(theta);
 
-    for (let depthIdx = 0; depthIdx < numDepths; depthIdx++) {
-      // Use logarithmic spacing for better coverage of extreme strains
-      const c_frac = depthIdx / (numDepths - 1);
-      const c = Math.exp(c_log_min + c_frac * (c_log_max - c_log_min));
+    for (let iDepth = 0; iDepth < numDepths; iDepth++) {
+      // Logarithmic depth distribution for better coverage
+      const c_log = c_log_min + (iDepth / (numDepths - 1)) * (c_log_max - c_log_min);
+      const c = Math.exp(c_log);
 
-      // Maximum strain: at the extreme fiber distance from NA
-      const max_dist = Math.max(
-        Math.abs(NA_perpX * (geo.B ? geo.B/2 : geo.D/2) + NA_perpY * (geo.H ? geo.H/2 : geo.D/2)),
-        Math.abs(-NA_perpX * (geo.B ? geo.B/2 : geo.D/2) - NA_perpY * (geo.H ? geo.H/2 : geo.D/2))
-      );
+      // ===== STRAIN PARAMETERIZATION =====
+      // Neutral axis equation: n_x·x + n_y·y = -c
+      // Curvature (strain/depth): κ = ε_cu / c
+      // Strain at point (x,y): ε(x,y) = ε₀ + κ·(c - dist_from_NA)
+      // where dist_from_NA = n_x·x + n_y·y
+      
+      const eps_cu = concreteModel.eps_cu;
+      const eps_max = -eps_cu;
+      
+      // Find maximum distance from NA on section
+      let max_dist = 0;
+      for (let fib of fibers) {
+        const dist = fib.x * n_x + fib.y * n_y;
+        max_dist = Math.max(max_dist, Math.abs(dist - (-c)));
+      }
+      for (let bar of bars) {
+        const dist = bar.x * n_x + bar.y * n_y;
+        max_dist = Math.max(max_dist, Math.abs(dist - (-c)));
+      }
 
-      // Curvature (strain/depth) at extreme fiber
-      const kappa = (materialModel.eps_cu) / c; // kappa = ε_cu / c
-
-      // Axial strain: solve for ε₀ that gives target P
-      // N = ∫ σ_c dA + ∫ σ_s dA
-      // We iterate to find ε₀ that produces this equilibrium
-
-      // Binary search for ε₀ that gives approximately zero stress resultant
-      let eps_0_low = -0.005;
-      let eps_0_high = 0.005;
+      // Curvature magnitude
+      const kappa = (eps_max) / max_dist;  // Curvature in 1/mm
+      
+      // Axial strain: iterate to find ε₀ for equilibrium
+      // Binary search for ε₀ that gives zero or near-zero axial force
+      
+      let eps_0_low = -0.01;
+      let eps_0_high = 0.01;
       let eps_0 = 0;
 
-      for (let iter = 0; iter < 10; iter++) {
+      for (let iter = 0; iter < 12; iter++) {
         eps_0 = (eps_0_low + eps_0_high) / 2;
 
-        // Integrate section forces
+        // Integrate to check axial force
         let N_trial = 0;
-        let Mx_trial = 0;
-        let My_trial = 0;
 
-        // Integrate concrete fibers
+        // Fibers
         for (let fib of fibers) {
-          // Strain: distance along NA direction determines compression/tension
-          const dist_from_NA = fib.x * NA_perpX + fib.y * NA_perpY;
+          const dist_from_NA = fib.x * n_x + fib.y * n_y;
           const strain = eps_0 + kappa * (c - dist_from_NA);
-
-          const stress = materialModel.getConcreteStress(strain);
-          const force = stress * fib.dA;
-
-          N_trial += force;
-          Mx_trial += force * fib.y;
-          My_trial += force * fib.x;
+          const stress = concreteModel.getStress(strain);
+          N_trial += stress * fib.dA;
         }
 
-        // Integrate steel bars
-        for (let bar of barPositions) {
-          const dist_from_NA = bar.x * NA_perpX + bar.y * NA_perpY;
+        // Bars
+        for (let bar of bars) {
+          const dist_from_NA = bar.x * n_x + bar.y * n_y;
           const strain = eps_0 + kappa * (c - dist_from_NA);
-
-          const stress = materialModel.getSteelStress(strain);
-          const force = stress * bar.As;
-
-          N_trial += force;
-          Mx_trial += force * bar.y;
-          My_trial += force * bar.x;
+          const stress = steelModel.getStress(strain);
+          N_trial += stress * bar.As;
         }
 
-        // Adjust bounds for next iteration
-        if (N_trial < 0) {
-          eps_0_low = eps_0; // More compression needed
+        // Adjust bounds
+        if (N_trial > 0) {
+          eps_0_low = eps_0;
         } else {
           eps_0_high = eps_0;
         }
@@ -414,9 +451,9 @@ function generateInteractionSurface(inputData) {
       let N_final = 0, Mx_final = 0, My_final = 0;
 
       for (let fib of fibers) {
-        const dist_from_NA = fib.x * NA_perpX + fib.y * NA_perpY;
+        const dist_from_NA = fib.x * n_x + fib.y * n_y;
         const strain = eps_0 + kappa * (c - dist_from_NA);
-        const stress = materialModel.getConcreteStress(strain);
+        const stress = concreteModel.getStress(strain);
         const force = stress * fib.dA;
 
         N_final += force;
@@ -424,10 +461,10 @@ function generateInteractionSurface(inputData) {
         My_final += force * fib.x;
       }
 
-      for (let bar of barPositions) {
-        const dist_from_NA = bar.x * NA_perpX + bar.y * NA_perpY;
+      for (let bar of bars) {
+        const dist_from_NA = bar.x * n_x + bar.y * n_y;
         const strain = eps_0 + kappa * (c - dist_from_NA);
-        const stress = materialModel.getSteelStress(strain);
+        const stress = steelModel.getStress(strain);
         const force = stress * bar.As;
 
         N_final += force;
@@ -440,8 +477,8 @@ function generateInteractionSurface(inputData) {
       const Mx = -Mx_final / 1e6;
       const My = -My_final / 1e6;
 
-      // Only add points in valid range (P > 0 or near zero)
-      if (P >= -50) { // Small tolerance for numerical error
+      // Add point if valid
+      if (P >= -100) { // Small tolerance for numerical error
         points.push({ x: Mx, y: My, z: P });
         P_collection.push(P);
         Mx_collection.push(Mx);
@@ -450,118 +487,143 @@ function generateInteractionSurface(inputData) {
     }
   }
 
-  // ================================================================
-  // POLE CONVERGENCE: Explicit pole points for closed topology
-  // ================================================================
+  // =====================================================================
+  // POLE CONVERGENCE: Add explicit points at extreme states
+  // =====================================================================
   
-  // Pure compression point (maximum P at M = 0)
-  const P_max = fcd * Ac + fsd * As_total;
-  points.push({ x: 0, y: 0, z: P_max / 1000 });
+  // Pure compression
+  const forces_comp = integrateSection(fibers, bars, concreteModel, steelModel, -concreteModel.eps_cu, 0, 0);
+  const P_max = Math.max(forces_comp.P, ...pCollection);
+  points.push({ x: 0, y: 0, z: P_max });
 
-  // Pure tension point (M = 0, P negative or near zero)
-  const As_total_eff = As_total;
-  const P_tension = -(fsd * As_total_eff) / 1000;
-  points.push({ x: 0, y: 0, z: P_tension });
+  // Pure tension  
+  const forces_tens = integrateSection(fibers, bars, concreteModel, steelModel, 0.01, 0, 0);
+  const P_min = Math.min(forces_tens.P, ...pCollection);
+  points.push({ x: 0, y: 0, z: P_min });
 
-  // ================================================================
-  // BOUNDARY RING: Create ring caps at poles for mesh closure
-  // ================================================================
+  // Closure rings
+  const maxMn = Math.max(...myCollection.map(m => Math.abs(m) || 0), ...mxCollection.map(m => Math.abs(m) || 0), 100);
+  const ringRadius = maxMn * 0.06;
   
-  // Ring at compression pole
-  const ringRadius_comp = Math.max(
-    Math.max(...Mx_collection.map(m => Math.abs(m))),
-    Math.max(...My_collection.map(m => Math.abs(m)))
-  ) * 0.05; // Small radius ring
-
-  const ringNumPoints = 16;
-  for (let i = 0; i < ringNumPoints; i++) {
-    const phi = (2 * Math.PI * i) / ringNumPoints;
-    const Mx_ring = ringRadius_comp * Math.cos(phi);
-    const My_ring = ringRadius_comp * Math.sin(phi);
-    points.push({ x: Mx_ring, y: My_ring, z: P_max / 1000 });
+  for (let i = 0; i < 12; i++) {
+    const phi = (2 * Math.PI * i) / 12;
+    points.push({
+      x: ringRadius * Math.sin(phi),
+      y: ringRadius * Math.cos(phi),
+      z: P_max
+    });
+    points.push({
+      x: ringRadius * Math.sin(phi),
+      y: ringRadius * Math.cos(phi),
+      z: P_min
+    });
   }
 
-  // Ring at tension pole
-  for (let i = 0; i < ringNumPoints; i++) {
-    const phi = (2 * Math.PI * i) / ringNumPoints;
-    const Mx_ring = ringRadius_comp * Math.cos(phi);
-    const My_ring = ringRadius_comp * Math.sin(phi);
-    points.push({ x: Mx_ring, y: My_ring, z: P_tension });
-  }
-
+  console.log(`✓ Generated ${points.length} surface points (base: ${numAngles * numDepths}, poles + rings: ${points.length - numAngles * numDepths})`);
+  
   return points;
 }
+// =====================================================================
+// SECTION 5: SAFETY FACTOR CALCULATION
+// =====================================================================
+
 /**
  * Calculate safety factor for a load case
+ * Uses radial convergence on 3D surface
  */
 function calculateSafetyFactor(load, surfacePoints) {
   const { P, Mx, My } = load;
-  const dist = Math.sqrt(P * P + Mx * Mx + My * My);
+  const loadVector = Math.sqrt(P * P + Mx * Mx + My * My);
 
-  if (dist < 0.01) {
+  if (loadVector < 0.01) {
     return { k: 999, isSafe: true };
   }
 
-  const uP = P / dist;
-  const uMx = Mx / dist;
-  const uMy = My / dist;
+  // Unit vector along load direction
+  const u_P = P / loadVector;
+  const u_Mx = Mx / loadVector;
+  const u_My = My / loadVector;
 
   let maxDot = -1;
   let bestPoint = null;
+  let bestDist = 0;
 
+  // Find surface point with maximum alignment with load direction
   for (let pt of surfacePoints) {
     const ptDist = Math.sqrt(pt.x * pt.x + pt.y * pt.y + pt.z * pt.z);
     if (ptDist < 0.01) continue;
 
-    const dot = (pt.x * uMx + pt.y * uMy + pt.z * uP) / ptDist;
+    const dot = (pt.x * u_My + pt.y * u_Mx + pt.z * u_P);
+    const cosTot = dot / ptDist;
 
-    if (dot > maxDot) {
-      maxDot = dot;
+    if (cosTot > maxDot) {
+      maxDot = cosTot;
       bestPoint = pt;
+      bestDist = ptDist;
     }
   }
 
-  if (bestPoint && maxDot > 0.95) {
-    const capDist = Math.sqrt(
-      bestPoint.x ** 2 + bestPoint.y ** 2 + bestPoint.z ** 2
-    );
-    const k = capDist / dist;
-    return { k, isSafe: k >= 1.0 };
+  if (bestPoint && maxDot > 0.92) {  // ~23° tolerance
+    const k = bestDist / loadVector;
+    return { k: Math.max(0.1, k), isSafe: k >= 1.0 };
   }
 
   return { k: 0, isSafe: false };
 }
 
+// =====================================================================
+// SECTION 6: MAIN ENTRY POINT
+// =====================================================================
+
 /**
- * Main analysis function - entry point for the calculation engine
- * @param {Object} inputData - Input with properties: standard, colType, geo, mat, steel, loads
- * @returns {Object} Results with surfacePoints and safetyFactors
+ * Perform complete analysis
+ * @param {Object} inputData - {colType, geo, mat, steel, standard, loads}
+ * @returns {Object} {surfacePoints, safetyFactors, timestamp}
  */
 function performAnalysis(inputData) {
   try {
-    console.error("!!! performAnalysis CALLED !!!"); // Use error for visibility
-    console.warn("Input data received:", inputData);
-    
+    console.log("=== CalculationEngine Analysis Started ===");
+    console.log("Input:", inputData);
+
+    // Validate required fields
+    if (!inputData.colType) throw new Error("Column type not specified");
+    if (!inputData.geo) throw new Error("Geometry not defined");
+    if (!inputData.mat) throw new Error("Materials not defined");
+    if (!inputData.steel) throw new Error("Reinforcement not defined");
+    if (!inputData.standard) throw new Error("Design standard not selected");
+
     // Generate interaction surface
     const surfacePoints = generateInteractionSurface(inputData);
-    console.warn(`Generated ${surfacePoints.length} surface points`);
+    if (surfacePoints.length < 100) {
+      console.warn("Warning: Few surface points generated:", surfacePoints.length);
+    }
 
-    // Calculate safety factors for all loads
+    // Calculate safety factors
     const safetyFactors = {};
-    inputData.loads.forEach((load) => {
-      safetyFactors[load.id] = calculateSafetyFactor(load, surfacePoints);
-    });
+    if (inputData.loads && Array.isArray(inputData.loads)) {
+      inputData.loads.forEach((load, idx) => {
+        const result = calculateSafetyFactor(load, surfacePoints);
+        safetyFactors[load.id || idx] = result;
+        console.log(`Load ${load.id || idx}: k=${result.k.toFixed(3)}, Safe=${result.isSafe}`);
+      });
+    }
 
     const result = {
       surfacePoints,
       safetyFactors,
       timestamp: new Date().toISOString(),
+      summary: {
+        numPoints: surfacePoints.length,
+        numLoads: (inputData.loads || []).length,
+        numSafe: Object.values(safetyFactors).filter(s => s.isSafe).length
+      }
     };
-    
-    console.warn("Analysis complete. Result numPoints:", surfacePoints.length);
+
+    console.log("=== Analysis Completed ===", result.summary);
     return result;
+
   } catch (error) {
-    console.error("Analysis error:", error);
+    console.error("Analysis Error:", error.message);
     throw error;
   }
 }
@@ -575,4 +637,12 @@ window.CalculationEngine = {
   calculateSafetyFactor,
   performAnalysis,
   generateBarPositions,
+  generateBarPositionsCircular,
+  generateFiberMesh,
+  integrateSection,
+  ConcreteModel,
+  SteelModel,
+  getDesignCoefficients,
 };
+
+console.log("✓ CalculationEngine v3.0 loaded successfully");

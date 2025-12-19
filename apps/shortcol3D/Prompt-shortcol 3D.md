@@ -116,16 +116,17 @@ Hãy trả lại cho tôi:
 # ✅ **KẾT QUẢ MONG MUỐN**
 cấu trúc các file code gồm:
 index.html
+app-inp.js
 app-cal.js
 app-out.js
-shortcol3D.js
+
 
 Bạn phải sửa xong để:
 
 * Bao tương tác 3D trơn tru, đúng hình, không rách.
 * Không sai mô men ở 4 góc và 8 trục.
 * Đúng với lý thuyết cột lệch tâm xiên trong **TCVN — EC2 — ACI**.
+* Hiển thị cả 3 phương pháp tính toán dạng option trong 1 frame, mặc định ACI
 + File index.html Fix lỗi Overlay Thêm style="visibility: hidden; opacity: 0;" vào thẻ #loading-overlay để mặc định nó không hiện ra che khuất form.
 * Sai số lực < 1%.
 
-Dưới đây là mã nguồn cần sửa:
