@@ -130,11 +130,11 @@ except Exception as e:
 ```
 Mặt cắt ngang dầm:
 
-<figure>
+<figure class="img-zoom-150">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png" alt="box-girder-section">
   </a>
-  <figcaption>Minh họa mắt cắt ngang dầm<sup>2</sup>.</figcaption>
+  <figcaption>Cross Section<sup>2</sup>.</figcaption>
 </figure>
 ---
 
@@ -160,11 +160,11 @@ plt.show()
 ```
 Lưới phần tử hữu hạn mặt cắt ngang dầm:
 
-<figure>
+<figure class="img-zoom-150">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png" alt="box-girder-mesh">
   </a>
-  <figcaption>Lưới phần tử hữu hạn mặt cắt ngang dầm<sup>2</sup>.</figcaption>
+  <figcaption>Mesh<sup>2</sup>.</figcaption>
 </figure>
 ---
 
@@ -226,11 +226,11 @@ sec.plot_centroids()
 ```
 Hiển thị trọng tâm hình học của mặt cắt:
 
-<figure>
+<figure class="img-zoom-150">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png" alt="box-girder-centroid">
   </a>
-  <figcaption>Trọng tâm hình học của mặt cắt<sup>2</sup>.</figcaption>
+  <figcaption>Section Centroid<sup>2</sup>.</figcaption>
 </figure>
 ---
 
@@ -256,11 +256,11 @@ stress.plot_stress(stress="vm", normalize=False, fmt="{x:.2f}")
 ```
 Biểu đồ ứng suất của mặt cắt Dầm:
 
-<figure>
+<figure class="img-zoom-150">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png" alt="box-girder-stress">
   </a>
-  <figcaption>Biểu đồ ứng suất của mặt cắt Dầm<sup>2</sup>.</figcaption>
+  <figcaption>Box Girder Stress<sup>2</sup>.</figcaption>
 </figure>
 
 ### Trực Quan Hóa Vectơ Ứng Suất Cắt
@@ -274,11 +274,11 @@ stress.plot_stress_vector(stress="vy_zxy", fmt="{x:.2f}")
 ```
 Biểu đồ Vectơ ứng suất Von Mises của mặt cắt Dầm:
 
-<figure>
+<figure class="img-zoom-150">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png" alt="box-girder-stress-vector">
   </a>
-  <figcaption>Biểu đồ Vectơ ứng suất Von Mises của mặt cắt Dầm<sup>2</sup>.</figcaption>
+  <figcaption>Von Mises Stress Vector<sup>2</sup>.</figcaption>
 </figure>
 
 ### Vòng tròn Mohr để Phân Tích Ứng Suất Chính
@@ -294,11 +294,11 @@ plt.show()
 ```
 Biểu đồ Vòng tròn Mohr ứng suất:
 
-<figure>
+<figure class="img-zoom-150">
   <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png">
     <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png" alt="box-girder-mohr">
   </a>
-  <figcaption>Biểu đồ Vòng tròn Mohr ứng suất<sup>2</sup>.</figcaption>
+  <figcaption>Mohr Circle<sup>2</sup>.</figcaption>
 </figure>
 ---
 

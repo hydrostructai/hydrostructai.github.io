@@ -245,6 +245,12 @@ div.highlighter-rouge pre.highlight {
    MODERN POST LAYOUT - CSS GRID (20:60:20) with STICKY LEFT SIDEBAR
    Applied to: _layouts/single.html
    ===================================================================== */
+.img-zoom-150 img {
+  width: 150%;
+  max-width: none;
+  display: block;
+  margin: 0 auto;
+}
 
 /* Grid Container for Single Post Layout */
 .post-grid-container {
