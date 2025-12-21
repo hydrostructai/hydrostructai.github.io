@@ -190,6 +190,26 @@ div.highlighter-rouge:after {
   color: #abb2bf;
   text-transform: uppercase;
 }
+/* --- JULIA CODE BLOCK STYLING --- */
+
+/* Label cho ngôn ngữ Julia */
+.language-julia.highlighter-rouge:after { 
+  content: "Julia Language"; 
+  color: #9558b2; /* Màu tím đặc trưng của Julia */
+  font-weight: 800;
+}
+
+/* Tùy chỉnh highlight cho các từ khóa Julia phổ biến */
+.highlight .kn { color: #9558b2; font-weight: bold; } /* Import/Using */
+.highlight .nf { color: #389826; } /* Functions */
+.highlight .mi { color: #cb3c33; } /* Numbers */
+.highlight .kt { color: #4163ad; } /* Types */
+
+/* Đảm bảo khung code có độ bo góc và bóng đổ giống mẫu dầm bê tông */
+.language-julia.highlighter-rouge {
+  border-left: 4px solid #9558b2;
+  background: #1e1e1e; /* Màu nền tối hơn một chút cho code */
+}
 
 /* Định nghĩa Label cụ thể cho từng ngôn ngữ */
 .language-vba.highlighter-rouge:after { content: "VBA (Excel)"; color: #207245; }
