@@ -93,15 +93,27 @@ M = ? "Moment uốn = ?"
 3. Nhấn "Generate" hoặc Ctrl+G
 4. Xem kết quả tạo thành file `my_analysis.html`
 
-**Trên Linux:**
+**Trên Linux/WSL:**
 ```bash
 calcpad my_analysis.cpd
 ```
 
-### Bước 3: Xem Kết Quả
+### Bước 3: Sử dụng Calcpad trên VS Code (Khuyên dùng)
+Sử dụng VS Code giúp bạn viết code nhanh hơn nhờ tính năng gợi ý (Intellisense) và xem kết quả ngay lập tức.
+
+1. **Cài đặt:** Mở VS Code, nhấn `Ctrl+Shift+X`, tìm "Calcpad" hoặc cài từ file `.vsix`.
+2. **Chạy tính toán:** Nhấn **`Ctrl+Shift+B`**, báo cáo HTML sẽ hiện ra ở cửa sổ bên cạnh.
+3. **Mở phần mềm gốc:** Nhấn `Ctrl+Shift+O` để mở file trong Calcpad Editor.
+4. **Cấu hình trên WSL/Linux:** 
+   Nếu bạn dùng Linux hoặc WSL, cần vào **Settings** (`Ctrl+,`) và chỉnh lại đường dẫn:
+   - `calcpad.cliPath`: `/usr/local/bin/calcpad`
+   - `calcpad.Path`: `/usr/local/bin/calcpad`
+   - `calcpad.settingsPath`: `$HOME/.calcpad/Settings.xml`
+
+### Bước 4: Xem Kết Quả
 - ✅ File `my_analysis.html` được tạo
-- ✅ Mở trong trình duyệt để xem báo cáo
-- ✅ In hoặc lưu thành PDF
+- ✅ Mở trong trình duyệt hoặc WebView của VS Code để xem báo cáo
+- ✅ In hoặc lưu thành PDF bằng `wkhtmltopdf`
 
 ---
 
