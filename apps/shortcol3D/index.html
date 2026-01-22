@@ -133,6 +133,8 @@
 
         // Hàm xử lý khi người dùng nhấn "Tính toán" từ AppInp
         const handleCalculate = (data) => {
+          alert("Sắp ra mắt, vui lòng quay lại sau!");
+          return;
           // 1. Cập nhật state
           setInputData(data);
           setIsComputing(true);
