@@ -20,9 +20,7 @@ tags:
   ]
 ---
 
-## MỘT SỐ KẾT QUẢ TÍNH TOÁN SỬ DỤNG CALCPAD
-
-👉 **[Xem chi tiết các báo cáo mẫu tại đây](https://hydrostructai.com/calcpad_engineering/calcpad.html)**
+**[Xem chi tiết các báo cáo mẫu tại đây](https://hydrostructai.com/calcpad_engineering/calcpad.html)**
 
 ---
 
