@@ -29,7 +29,7 @@ Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ
 ### 1.1. Định nghĩa bài toán
 Quy hoạch tuyến tính là phương pháp tối ưu hóa một hàm mục tiêu tuyến tính, thỏa mãn các ràng buộc đẳng thức hoặc bất đẳng thức tuyến tính.
 
-Mô hình toán học tổng quát (Canonical Form):
+Mô hình toán học tổng quát:
 
 $$
 \begin{aligned}
@@ -40,10 +40,10 @@ $$
 $$
 
 Trong đó:
-* $\mathbf{x}$ : Vector biến quyết định (variables).
-* $\mathbf{c}$ : Vector hệ số hàm mục tiêu (objective coefficients).
-* $A$ : Ma trận hệ số ràng buộc (constraint matrix).
-* $\mathbf{b}$ : Vector giới hạn (bounds).
+* $$\mathbf{x}$$ : Vector biến quyết định (variables).
+* $$\mathbf{c}$$ : Vector hệ số hàm mục tiêu (objective coefficients).
+* $$A$$ : Ma trận hệ số ràng buộc (constraint matrix).
+* $$\mathbf{b}$$ : Vector giới hạn (bounds).
 
 ### 1.2. Các Phương pháp giải chính
 1.  **Simplex Method (Đơn hình):** Phát triển bởi George Dantzig (1947). Giải thuật di chuyển dọc theo các cạnh của đa diện khả thi để tìm cực trị tại các đỉnh.
@@ -55,21 +55,21 @@ Trong đó:
 ## 2. Mô hình hóa 3 Bài toán Thực tế
 
 ### Bài toán 1: Quản lý Sản xuất (Production Mix)
-**Mục tiêu:** Tối đa hóa lợi nhuận từ việc sản xuất 2 loại sản phẩm $P_1, P_2$.
-*   Hàm mục tiêu: $\text{Max } Z = 30x_1 + 40x_2$
-*   Ràng buộc nguyên liệu: $1x_1 + 2x_2 \leq 100$
-*   Ràng buộc nhân công: $2x_1 + 1x_2 \leq 80$
+**Mục tiêu:** Tối đa hóa lợi nhuận từ việc sản xuất 2 loại sản phẩm $$P_1, P_2$$.
+*   Hàm mục tiêu: $$\text{Max } Z = 30x_1 + 40x_2$$
+*   Ràng buộc nguyên liệu: $$1x_1 + 2x_2 \leq 100$$
+*   Ràng buộc nhân công: $$2x_1 + 1x_2 \leq 80$$
 
 ### Bài toán 2: Vận chuyển (Transportation Problem)
 **Mục tiêu:** Tối thiểu hóa chi phí vận chuyển từ 2 kho (S1, S2) đến 2 cửa hàng (D1, D2).
-*   Cung (Supply): $S_1=50, S_2=60$
-*   Cầu (Demand): $D_1=40, D_2=70$
-*   Hàm mục tiêu: $\text{Min } Z = 2x_{11} + 4x_{12} + 3x_{21} + 1x_{22}$
+*   Cung (Supply): $$S_1=50, S_2=60$$
+*   Cầu (Demand): $$D_1=40, D_2=70$$
+*   Hàm mục tiêu: $$\text{Min } Z = 2x_{11} + 4x_{12} + 3x_{21} + 1x_{22}$$
 
 ### Bài toán 3: Quản lý Dự án (Project Management / CPM)
 **Mục tiêu:** Tối thiểu hóa thời gian hoàn thành dự án gồm 3 công việc A, B, C.
 *   A (3 ngày), B (2 ngày) làm song song; C (4 ngày) làm sau A và B.
-*   Hàm mục tiêu: $\text{Min } T_{end}$
+*   Hàm mục tiêu: $$\text{Min } T_{end}$$
 
 ---
 
