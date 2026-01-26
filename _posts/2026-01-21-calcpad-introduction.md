@@ -1,5 +1,5 @@
 ---
-title: "Giới thiệu và Hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng"
+title: "Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng"
 author_profile: true
 author_name: "HST.AI"
 date: 2026-01-21 10:00:00 +0700
@@ -49,9 +49,9 @@ Calcpad cho phép bạn:
 
 ---
 
-## 🎯 Tính Năng Chính
+## 🎯 Tính năng chính
 
-| Tính Năng | Mô Tả |
+| Tính năng | Mô tả |
 |-----------|-------|
 | **Biến số** | Khai báo biến và gán giá trị |
 | **Công thức** | Viết phương trình toán học |
@@ -63,7 +63,7 @@ Calcpad cho phép bạn:
 
 ---
 
-## 🚀 Bắt Đầu Nhanh (5 Phút)
+## 🚀 Bắt đầu nhanh (5 Phút)
 
 ### Bước 1: Tạo File `.cpd`
 
@@ -98,7 +98,7 @@ M = ? "Moment uốn = ?"
 calcpad my_analysis.cpd
 ```
 
-### Bước 3: Sử dụng Calcpad trên VS Code (Khuyên dùng)
+### Bước 3: Sử dụng Calcpad trên VS Code
 Sử dụng VS Code giúp bạn viết code nhanh hơn nhờ tính năng gợi ý (Intellisense) và xem kết quả ngay lập tức.
 
 1. **Cài đặt:** Mở VS Code, nhấn `Ctrl+Shift+X`, tìm "Calcpad" hoặc cài từ file `.vsix`.
@@ -117,7 +117,7 @@ Sử dụng VS Code giúp bạn viết code nhanh hơn nhờ tính năng gợi �
 
 ---
 
-## 📝 Cú Pháp Calcpad Cơ Bản
+## 📝 Cú pháp Calcpad cơ bản
 
 ### 1. Khai Báo Biến
 
@@ -127,7 +127,7 @@ L = 6 "m"          'Biến có đơn vị (mét)
 L = 6 "mm" = ? "m" 'Chuyển đổi đơn vị (từ mm sang m)
 ```
 
-### 2. Phép Toán
+### 2. Phép toán
 
 ```calcpad
 A = 5 + 3
@@ -137,7 +137,7 @@ D = 2 ^ 3          'Lũy thừa (2³ = 8)
 E = √16            'Căn bậc hai
 ```
 
-### 3. Văn Bản Giải Thích
+### 3. Cách ghi chú, giải thích
 
 ```calcpad
 'Dòng bắt đầu với dấu ngoặc đơn (') là bình luận
@@ -145,14 +145,14 @@ E = √16            'Căn bậc hai
 "Bước 1: Tính diện tích"
 ```
 
-### 4. Hiển Thị Kết Quả
+### 4. Hiển thị kết quả
 
 ```calcpad
 M = 50 * 6 / 4    'Tính moment
 M = ?             'Hiển thị kết quả: M = 75 kNm
 ```
 
-### 5. Định Dạng Đầu Ra
+### 5. Định dạng đầu ra
 
 ```calcpad
 M = 75
@@ -163,22 +163,22 @@ M = 75!           'Bỏ qua hiển thị (giấu kết quả)
 
 ---
 
-## 💡 Ví Dụ Thực Tế
+## 💡 Ví dụ thực tế
 
-### Ví Dụ 1: Tính Diện Tích Hình Chữ Nhật
+### Ví dụ 1: Tính diện tích hình chữ nhật
 
 ```calcpad
-"Diện Tích Hình Chữ Nhật"
+"Diện tích hình chữ nhật"
 b = 5 "m" 'Chiều rộng
 h = 3 "m" 'Chiều dài
 A = b * h "m²" 'Diện tích
 A = ? "Diện tích = ?"
 ```
 
-### Ví Dụ 2: Tính Moment Uốn Dầm Đơn Giản
+### Ví dụ 2: Tính Moment uốn dầm đơn giản
 
 ```calcpad
-"Phân Tích Dầm Đơn Giản Chịu Tải Trọng Tập Trung"
+"Phân tích dầm đơn giản chịu tải trọng tập trung"
 
 'Dữ liệu đầu vào
 L = 6 "m" 'Chiều dài dầm
@@ -203,10 +203,9 @@ R_B = ?
 M_max = ?
 ```
 
-### Ví Dụ 3: Tính Toán Thép Cốt
+### Ví dụ 3: Tính toán cốt thép dầm bê tông
 
 ```calcpad
-"Thiết Kế Thép Cốt Cho Dầm Bê Tông"
 
 'Dữ liệu
 M = 75 "kNm" 'Moment tác dụng
@@ -226,14 +225,14 @@ A_s_min = ?
 
 ---
 
-## 🎨 Định Dạng Văn Bản
+## 🎨 Định dạng văn bản
 
-### Heading (Tiêu Đề)
+### Heading (Tiêu đề)
 
 ```calcpad
-"Tiêu đề Chính"           'Heading 1
-"_Tiêu đề Phụ"           'Heading 2
-"__Tiêu đề Phụ Phụ"      'Heading 3
+"Tiêu đề chính"           'Heading 1
+"_Tiêu đề phụ"           'Heading 2
+"__Tiêu đề phụ 1"      'Heading 3
 ```
 
 ### In Đậm, Nghiêng
@@ -244,7 +243,7 @@ A_s_min = ?
 "Văn bản ***đậm nghiêng***"
 ```
 
-### Danh Sách
+### Danh sách
 
 ```calcpad
 "Danh sách gạch đầu dòng:
@@ -260,15 +259,15 @@ A_s_min = ?
 
 ---
 
-## 🌐 Từ Calcpad Sang HTML/PDF
+## 🌐 Từ Calcpad sang HTML/PDF
 
-### Tại Sao Xuất HTML/PDF?
+### Tại sao xuất HTML/PDF?
 - 📤 **Chia sẻ:** Gửi báo cáo cho đồng nghiệp không cần Calcpad
 - 🖨️ **In ấn:** In báo cáo chuyên nghiệp từ HTML
 - 📎 **Lưu trữ:** Lưu bản sao lưu định kỳ
 - 🌐 **Công bố:** Đăng lên website
 
-### Cách Xuất
+### Hướng dẫn
 
 **Calcpad Editor:**
 1. Mở file `.cpd`
@@ -288,16 +287,16 @@ wkhtmltopdf my_analysis.html my_analysis.pdf
 
 ---
 
-## ⚡ Mẹo & Thủ Thuật
+## ⚡ Mẹo & Thủ thuật
 
-### 1. Tái Sử Dụng Template
+### 1. Tái sử dụng Template
 Lưu file `.cpd` làm template, sau đó:
 ```bash
 cp template.cpd my_new_analysis.cpd
 ```
 Chỉnh sửa giá trị đầu vào, kết quả tự động cập nhật!
 
-### 2. Nhóm Biến Liên Quan
+### 2. Nhóm biến liên quan
 ```calcpad
 'Vật liệu bê tông
 f_c = 30 "MPa"
@@ -308,7 +307,7 @@ f_y = 400 "MPa"
 E_s = 200000 "MPa"
 ```
 
-### 3. Kiểm Tra Độc Lập
+### 3. Kiểm tra độc lập
 ```calcpad
 'Tính toán chính
 M = 75 "kNm"
@@ -329,9 +328,9 @@ result = ? 'Chỉ hiển thị kết quả cuối
 
 ---
 
-## 🛠 Xử Lý Sự Cố
+## 🛠 Xử lý sự cố
 
-| Vấn Đề | Giải Pháp |
+| Vấn đề | Giải pháp |
 |--------|---------|
 | **Lỗi cú pháp** | Kiểm tra dấu ngoặc kép, dấu phẩy, toán tử |
 | **Không tính toán được** | Kiểm tra đơn vị, biến chưa khai báo |
@@ -340,7 +339,7 @@ result = ? 'Chỉ hiển thị kết quả cuối
 
 ---
 
-## 👨‍💼 Hỗ Trợ
+## 👨‍💼 Hỗ trợ
 
 **Các câu hỏi thường gặp:**
 1. Làm cách nào để viết căn bậc hai? `√` hoặc `sqrt()`
@@ -351,10 +350,3 @@ Xem thêm: [https://www.calcpad.eu/docs](https://www.calcpad.eu/docs)
 
 ---
 
-## 📝 License
-
-MIT License
-
----
-
-**Cập nhật cuối:** 2026-01-22
