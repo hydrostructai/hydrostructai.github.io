@@ -59,8 +59,11 @@ layout: default
   /* Nội dung bài viết (Ở giữa) */
   .post-grid-article {
     grid-column: 2 / 3 !important;
-    width: 100% !important;
+    width: 100% !important; /* Đảm bảo article chiếm toàn bộ cột 2 */
+    max-width: none !important;
     min-width: 0; /* Tránh vỡ layout khi có ảnh to */
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   /* Bài viết liên quan (Full width dưới cùng) */
@@ -74,7 +77,10 @@ layout: default
     padding-top: 2rem;
   }
  /* CHUYÊN GIA: Ép nội dung bên trong bài viết giãn 100% */
-  .post-grid-article .page__inner-wrap {
+  /* CHUYÊN GIA: Ép mọi lớp bao trong phải giãn 100% */
+  .post-grid-article,
+  .post-grid-article .page__inner-wrap,
+  .post-grid-article .page__content {
     width: 100% !important;
     max-width: none !important;
     margin-left: 0 !important;
@@ -82,8 +88,10 @@ layout: default
     padding-left: 0 !important;
     padding-right: 0 !important;
   }
-
-  .post-grid-article .page__content {
+  /* Khử giới hạn của các thẻ nội dung cụ thể nếu có */
+  .post-grid-article header,
+  .post-grid-article section,
+  .post-grid-article footer {
     width: 100% !important;
     max-width: none !important;
   }
