@@ -1,15 +1,15 @@
 ---
 layout: single
-title: "Thuật toán Tối ưu Tuyến công trình trên địa hình phức tạp"
+title: "Quy hoạch Tuyến công trình Dựa trên Địa hình (Terrain-Aware Path Planning)"
 author_profile: true
 author_name: "HST.AI"
 date: 2025-12-09 08:30:00 +0700
 categories: [Algorithms, Hydraulic Engineering, Python, Revit API]
-tags: [A-Star, Optimization, Computational Design, Infrastructure, Open Source]
+tags: [A-Star, Hybrid-A-Star, Path Planning, Computational Design, Infrastructure, Digital Elevation Model]
 author: "HydroStructAI Team"
-image: "/assets/images/posts/pathfinding-terrain-cover.jpg"
-description: "Đi sâu vào thuật toán tìm đường A* cải tiến, tích hợp biến số địa hình và thủy lực để tối ưu hóa tuyến cống ngầm, cân bằng giữa chi phí đào đắp và khả năng tự chảy."
-excerpt: "Làm thế nào để tìm đường đi ngắn nhất nhưng chi phí thấp nhất trên một địa hình gồ ghề? Bài viết này chia sẻ mã nguồn và thuật toán Terrain-aware A*."
+image: "/assets/images/posts/terrain-aware-pathfinding/terrain-planning-cover.jpg"
+description: "Ứng dụng thuật toán Hybrid A* với hàm chi phí tích hợp địa hình (DEM) và ràng buộc thủy lực để tối ưu hóa tuyến cống thoát nước, cân bằng giữa chi phí đào đắp và khả năng tự chảy."
+excerpt: "Làm thế nào để quy hoạch tuyến tối ưu trên địa hình phức tạp? Bài viết này chia sẻ phương pháp Terrain-Aware Path Planning dựa trên mô hình số độ cao (DEM)."
 ---
 
 **Mức độ:** Chuyên gia (Expert)
@@ -17,8 +17,6 @@ excerpt: "Làm thế nào để tìm đường đi ngắn nhất nhưng chi phí
 ---
 
 ## 1. Đặt vấn đề: Khi đường ngắn nhất không phải đường tốt nhất
-
-Trong bài viết trước về **Neuro-Symbolic AI**, chúng ta đã thảo luận về việc AI có thể "tư duy" để đưa ra chiến lược thiết kế. Tuy nhiên, để hiện thực hóa chiến lược đó thành bản vẽ kỹ thuật, chúng ta cần các thuật toán thực thi chính xác.
 
 Trong thiết kế hạ tầng, bài toán vạch tuyến cống thoát nước khác hoàn toàn với bài toán tìm đường kiểu Google Maps.
 
@@ -47,9 +45,9 @@ Trong đó:
 
 Ràng buộc thủy lực quan trọng:
 
-- $$i < i_{min}$$ → nước không chảy → **phạt vô cực**
-- $$i > i_{max}$$ → xói lở → **phạt lớn**
-- Đi _ngược dốc_ → **phạt vô cực** (trừ khi có bơm)
+- $$i < i_{min}$$ → nước không chảy 
+- $$i > i_{max}$$ → xói lở 
+- Đi _ngược dốc_ →  không tự chảy (trừ khi có bơm)
 
 ---
 
