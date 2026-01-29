@@ -44,10 +44,14 @@ layout: default
     top: 80px !important;
     height: calc(100vh - 100px) !important;
     overflow-y: auto !important;
-    padding-right: 10px;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
   }
 
-  /* Sidebar Phải (Mục lục/Bài viết mới) - Scrollable independently from main content */
+  /* Sidebar Phải (Mục lục/Bài viết mới) - Cân xứng với sidebar trái */
   .post-grid-sidebar-right {
     display: block !important;
     grid-column: 3 / 4 !important;
@@ -55,23 +59,32 @@ layout: default
     top: 80px !important;
     height: calc(100vh - 100px) !important;
     overflow-y: auto !important;
-    padding-right: 15px;
-    border-left: 1px solid #f0f0f0;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
   }
 
-  /* Tối ưu scrollbar cho sidebars */
+  /* Tối ưu scrollbar cho sidebars (Hiện rõ hơn để người dùng biết có thể cuộn) */
   .post-grid-sidebar-left::-webkit-scrollbar,
   .post-grid-sidebar-right::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-track,
+  .post-grid-sidebar-right::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 10px;
   }
   .post-grid-sidebar-left::-webkit-scrollbar-thumb,
   .post-grid-sidebar-right::-webkit-scrollbar-thumb {
-    background-color: #ccc;
+    background-color: #ced4da;
     border-radius: 10px;
+    border: 2px solid #f8f9fa;
   }
   .post-grid-sidebar-left::-webkit-scrollbar-thumb:hover,
   .post-grid-sidebar-right::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+    background-color: #adb5bd;
   }
 
   /* Make items spaced out to ensure overflow */
