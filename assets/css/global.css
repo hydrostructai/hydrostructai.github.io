@@ -298,10 +298,26 @@ div.highlighter-rouge pre.highlight {
   min-width: 0; /* Prevent grid blowout from long content */
 }
 
-/* RIGHT SIDEBAR - Scrollable with content */
+/* RIGHT SIDEBAR - Scrollable independently from main content */
 .post-grid-sidebar-right {
-  /* Flows naturally with the main article content */
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow-y: auto;
   align-self: start;
+  scrollbar-width: thin; /* Modern browsers scrollbar styling */
+}
+
+/* Custom scrollbar styling for Chrome/Safari */
+.post-grid-sidebar-right::-webkit-scrollbar {
+  width: 6px;
+}
+.post-grid-sidebar-right::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+.post-grid-sidebar-right::-webkit-scrollbar-thumb:hover {
+  background: #aaa;
 }
 
 /* Styling for sidebars (clean, modern appearance) */

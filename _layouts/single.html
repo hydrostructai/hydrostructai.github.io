@@ -46,14 +46,17 @@ layout: default
     overflow-y: auto;
   }
 
-  /* Sidebar Phải (Mục lục) - Hiển thị lại */
+  /* Sidebar Phải (Mục lục) - Scrollable listing for older posts 
+     Enables users to scroll through the post list independently of the main article.
+     Adjust max-height or top to change the vertical positioning and view area. */
   .post-grid-sidebar-right {
     display: block !important;
     grid-column: 3 / 4 !important;
-    position: sticky;
-    top: 2rem;
-    max-height: calc(100vh - 4rem);
-    overflow-y: auto;
+    position: sticky !important;
+    top: 0 !important;
+    max-height: 100vh !important;
+    overflow-y: auto !important;
+    scrollbar-width: thin;
   }
 
   /* Nội dung bài viết (Ở giữa) */
