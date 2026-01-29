@@ -26,7 +26,7 @@ Trong thiết kế hạ tầng, bài toán **Quy hoạch tuyến (Alignment Plan
   - Hướng dòng chảy đảm bảo tự chảy ($$z_{upstream} > z_{downstream}$$).
   - Tối ưu hóa cao độ đặt ống để giảm thiểu khối lượng đào đắp (Cut & Fill).
 
-Do đó chúng ta cần một giải pháp **Terrain-Aware Pathfinding** có khả năng "nhận thức" cao độ tự nhiên từ dữ liệu DEM.
+Do đó chúng ta cần một giải pháp quy hoạch tuyến công trình có khả năng điều chỉnh theo cao độ tự nhiên từ dữ liệu khảo sát địa hình hay bản đồ số.
 
 ---
 
@@ -49,7 +49,7 @@ Thay vì sử dụng các mức phạt cảm tính, thuật toán áp dụng:
 
 ---
 
-## 3. Triển khai Thuật toán (Python Prototype)
+## 3. Triển khai Thuật toán 
 
 ### 3.1. Hàm tính toán chi phí thủy lực
 
