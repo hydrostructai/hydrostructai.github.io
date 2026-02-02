@@ -5,7 +5,7 @@ author_profile: false
 header:
   # Ảnh mặc định (sẽ bị CSS bên dưới ghi đè để chạy slide)
   overlay_image: "/assets/images/hero-engineering.jpg"
-  caption: "<span style='color: #FFD700; font-weight: bold;'>WhatsApp: <a href='https://wa.me/qr/UOQNWYT5B7SNG1' style='color: #FFD700; text-decoration: underline;' target='_blank'>HST.AI</a> | Email: <a href='mailto:ha.nguyen@hydrostructai.com' style='color: #FFD700; text-decoration: underline;'>HST.AI</a> </span>"
+  caption: "<span style='background-color: #dfe4cb; color: #000080; font-weight: bold; padding: 3px 10px; border-radius: 5px; display: inline-block;'>WhatsApp: <a href='https://wa.me/qr/UOQNWYT5B7SNG1' style='color: #000080; text-decoration: underline;' target='_blank'>HST.AI</a> | Email: <a href='mailto:ha.nguyen@hydrostructai.com' style='color: #000080; text-decoration: underline;'>HST.AI</a> </span>"
   title: "Ứng dụng Web cho Kỹ thuật Xây dựng"
   subtitle: "Các công cụ trực tuyến miễn phí hỗ trợ kỹ sư kết cấu & địa kỹ thuật."
   cta_label: "Khám phá tất cả Web App"
@@ -48,6 +48,14 @@ header:
   /* Quan trọng: Ghi đè style inline của Jekyll */
   background-image: url('{{ site.baseurl }}/assets/images/hero-engineering.jpg') !important; 
   /* Fallback nếu animation không chạy, nhưng @keyframes sẽ đè lên cái này */
+}
+
+/* 3. Căn giữa vùng thông tin liên hệ (caption) */
+.page__hero-caption {
+  left: 0 !important;
+  right: 0 !important;
+  text-align: center !important;
+  background-color: transparent !important; /* Bỏ nền mặc định của theme để dùng nền custom trong span */
 }
 </style>
 
