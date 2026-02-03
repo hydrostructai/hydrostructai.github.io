@@ -28,7 +28,7 @@ Pycivile is an open-source Python library designed to liberate structural engine
 This article provides an in-depth technical analysis of Pycivile tailored for structural engineers and BIM developers.  
 *Bài viết này cung cấp một phân tích kỹ thuật chuyên sâu về Pycivile được biên soạn dành riêng cho các kỹ sư kết cấu và lập trình viên BIM.*
 
-## 1. Project Overview & Objectives / Tổng Quan & Mục Tiêu Dự Án
+## 1. Overview & Objectives / Tổng Quan & Mục Tiêu
 
 ### Core Philosophy / Triết Lý Cốt Lõi
 In the modern AEC industry, engineering knowledge is often locked behind proprietary binary file formats of commercial software like ETABS, SAP2000, or Robot.  
