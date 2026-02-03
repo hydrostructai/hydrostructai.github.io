@@ -1,5 +1,5 @@
 ---
-title: "PyCivil: Open Source Structural Engineering Library & BIM Integration Strategy"
+title: "Pycivile: Open Source Structural Engineering Library & BIM Integration Strategy"
 author_profile: true
 author_name: "HST.AI"
 date: 2026-02-03 08:00:00 +0700
@@ -13,23 +13,20 @@ categories:
   - BIM
 tags:
   [
-    PyCivil,
+    Pycivile,
     Python,
     Finite Element Method,
     BIM Integration,
     Open Source
   ]
-header:
-  overlay_image: /assets/images/hero-engineering.jpg
-  caption: "PyCivil Architecture"
-excerpt: "An introduction of PyCivil - the Python library for structural engineers, analyzing its capabilities in calculating, verifying, and integrating BIM workflows. / Giới thiệu PyCivil - thư viện Python dành cho kỹ sư kết cấu, phân tích khả năng tính toán, kiểm tra và tích hợp quy trình BIM."
+
 ---
 
-PyCivil is an open-source Python library designed to liberate structural engineers from dependency on commercial software while preserving professional knowledge.  
-*PyCivil là một thư viện Python mã nguồn mở được thiết kế để giải phóng kỹ sư kết cấu khỏi sự phụ thuộc vào các phần mềm thương mại trong khi vẫn lưu giữ được tri thức chuyên môn.*
+Pycivile is an open-source Python library designed to liberate structural engineers from dependency on commercial software while preserving professional knowledge.  
+*Pycivile là một thư viện Python mã nguồn mở được thiết kế để giải phóng kỹ sư kết cấu khỏi sự phụ thuộc vào các phần mềm thương mại trong khi vẫn lưu giữ được tri thức chuyên môn.*
 
-This article provides an in-depth technical analysis of PyCivil tailored for structural engineers and BIM developers.  
-*Bài viết này cung cấp một phân tích kỹ thuật chuyên sâu về PyCivil được biên soạn dành riêng cho các kỹ sư kết cấu và lập trình viên BIM.*
+This article provides an in-depth technical analysis of Pycivile tailored for structural engineers and BIM developers.  
+*Bài viết này cung cấp một phân tích kỹ thuật chuyên sâu về Pycivile được biên soạn dành riêng cho các kỹ sư kết cấu và lập trình viên BIM.*
 
 ## 1. Project Overview & Objectives / Tổng Quan & Mục Tiêu Dự Án
 
@@ -37,8 +34,8 @@ This article provides an in-depth technical analysis of PyCivil tailored for str
 In the modern AEC industry, engineering knowledge is often locked behind proprietary binary file formats of commercial software like ETABS, SAP2000, or Robot.  
 *Trong ngành AEC hiện đại, tri thức kỹ thuật thường bị khóa chặt đằng sau các định dạng file nhị phân độc quyền của các phần mềm thương mại như ETABS, SAP2000 hay Robot.*
 
-PyCivil aims to create a "middleware" layer that standardizes structural data using open formats (JSON/BSON) and Python classes, ensuring that the engineering logic remains accessible and reusable.  
-*PyCivil hướng tới việc tạo ra một lớp "phần mềm trung gian" giúp chuẩn hóa dữ liệu kết cấu sử dụng các định dạng mở (JSON/BSON) và các lớp đối tượng Python, đảm bảo logic kỹ thuật luôn có thể truy cập và tái sử dụng.*
+Pycivile aims to create a "middleware" layer that standardizes structural data using open formats (JSON/BSON) and Python classes, ensuring that the engineering logic remains accessible and reusable.  
+*Pycivile hướng tới việc tạo ra một lớp "phần mềm trung gian" giúp chuẩn hóa dữ liệu kết cấu sử dụng các định dạng mở (JSON/BSON) và các lớp đối tượng Python, đảm bảo logic kỹ thuật luôn có thể truy cập và tái sử dụng.*
 
 ### Key Objectives / Các Mục Tiêu Chính
 1.  **Freedom from Licensing:** Reduce costs for small firms and freelancers.  
@@ -56,8 +53,8 @@ Checking the source code structure reveals a robust architecture divided into sp
 *Kiểm tra cấu trúc mã nguồn cho thấy một kiến trúc vững chắc được chia thành các lĩnh vực cụ thể.*
 
 ### 2.1. EXAGeometry: Computational Geometry / Hình Học Tính Toán
-Before performing structural analysis, we need to handle spatial data. PyCivil provides:  
-*Trước khi thực hiện phân tích kết cấu, chúng ta cần xử lý dữ liệu không gian. PyCivil cung cấp:*
+Before performing structural analysis, we need to handle spatial data. Pycivile provides:  
+*Trước khi thực hiện phân tích kết cấu, chúng ta cần xử lý dữ liệu không gian. Pycivile cung cấp:*
 
 *   **Primitives:** `Point3d`, `Vector3d`, `Polyline3d` for defining complex structural shapes.  
     *Các nguyên thủy: `Point3d`, `Vector3d`, `Polyline3d` để định nghĩa các hình dạng kết cấu phức tạp.*
@@ -76,8 +73,8 @@ This module handles the physics and engineering rules.
     *Triển khai tiêu chuẩn: Tích hợp sẵn các lớp cho **Eurocode 2** và **NTC2018**, xử lý các hệ số an toàn vật liệu và tổ hợp tải trọng.*
 
 ### 2.3. Interoperability & FEM / Khả Năng Tương Tác & FEM
-PyCivil is not just a calculator; it is a bridge.  
-*PyCivil không chỉ là một máy tính; nó là một cây cầu nối.*
+Pycivile is not just a calculator; it is a bridge.  
+*Pycivile không chỉ là một máy tính; nó là một cây cầu nối.*
 
 *   **MIDAS Gen Export:** Uses Jinja2 templates to generate `.mgt` text files, allowing script-based model generation.  
     *Xuất sang MIDAS Gen: Sử dụng Jinja2 templates để tạo file văn bản `.mgt`, cho phép tạo mô hình bằng mã lệnh.*
@@ -90,17 +87,17 @@ PyCivil is not just a calculator; it is a bridge.
 
 ## 3. BIM Integration: Present & Future / Tích Hợp BIM: Hiện Tại & Tương Lai
 
-BIM (Building Information Modeling) is shifting from "Drawing" to "Data Management". PyCivil aligns perfectly with this trend.  
-*BIM đang chuyển dịch từ "ngôn ngữ" bản vẽ sang "Quản lý dữ liệu". PyCivil phù hợp hoàn hảo với xu hướng này.*
+BIM (Building Information Modeling) is shifting from "Drawing" to "Data Management". Pycivile aligns perfectly with this trend.  
+*BIM đang chuyển dịch từ "ngôn ngữ" bản vẽ sang "Quản lý dữ liệu". Pycivile phù hợp hoàn hảo với xu hướng này.*
 
 ### 3.1. Current Workflow: Geometry to Analysis / Quy Trình Hiện Tại: Từ Hình Học đến Phân Tích
-Currently, PyCivil acts as a processor for geometric data imported from BIM software.  
-*Hiện tại, PyCivil đóng vai trò là bộ xử lý cho dữ liệu hình học được nhập từ phần mềm BIM.*
+Currently, Pycivile acts as a processor for geometric data imported from BIM software.  
+*Hiện tại, Pycivile đóng vai trò là bộ xử lý cho dữ liệu hình học được nhập từ phần mềm BIM.*
 
 1.  **Extract Data:** Nodes and element connectivity are extracted from IFC or CAD files using libraries like `ifcopenshell` or `ezdxf` (external dependencies).  
     *Trích xuất dữ liệu: Nút và liên kết phần tử được trích xuất từ file IFC hoặc CAD sử dụng các thư viện như `ifcopenshell` hoặc `ezdxf`.*
-2.  **Process in PyCivil:**  
-    *Xử lý trong PyCivil:*
+2.  **Process in Pycivile:**  
+    *Xử lý trong Pycivile:*
     *   Map geometric sections to `EXAStructural` objects.  
         *Ánh xạ tiết diện hình học sang đối tượng `EXAStructural`.*
     *   Assign material properties (`Concrete`, `Steel`).  
@@ -114,10 +111,10 @@ Currently, PyCivil acts as a processor for geometric data imported from BIM soft
 The future of structural BIM lies in "Generative Design" and "Real-time Verification".  
 *Tương lai của BIM kết cấu nằm ở "Thiết kế phát sinh" và "Kiểm tra thời gian thực".*
 
-*   **CDE Integration:** With `DbManager` (MongoDB), PyCivil can serve as the backend for a Common Data Environment, where changes in the architectural model automatically trigger structural checks stored in the database.  
-    *Tích hợp CDE: Với `DbManager` (MongoDB), PyCivil có thể đóng vai trò backend cho Môi trường Dữ liệu Chung, nơi các thay đổi trong mô hình kiến trúc tự động kích hoạt các kiểm tra kết cấu được lưu trong cơ sở dữ liệu.*
-*   **AI-Driven Optimization:** By exposing structural logic as Python functions, we can easily wrap PyCivil in optimization loops (Genetic Algorithms) to minimize material usage while satisfying ULS constraints.  
-    *Tối ưu hóa bằng AI: Bằng cách phơi bày logic kết cấu dưới dạng hàm Python, ta có thể dễ dàng bọc PyCivil trong các vòng lặp tối ưu hóa (Giải thuật Di truyền) để giảm thiểu vật liệu trong khi vẫn thỏa mãn điều kiện ULS.*
+*   **CDE Integration:** With `DbManager` (MongoDB), Pycivile can serve as the backend for a Common Data Environment, where changes in the architectural model automatically trigger structural checks stored in the database.  
+    *Tích hợp CDE: Với `DbManager` (MongoDB), Pycivile có thể đóng vai trò backend cho Môi trường Dữ liệu Chung, nơi các thay đổi trong mô hình kiến trúc tự động kích hoạt các kiểm tra kết cấu được lưu trong cơ sở dữ liệu.*
+*   **AI-Driven Optimization:** By exposing structural logic as Python functions, we can easily wrap Pycivile in optimization loops (Genetic Algorithms) to minimize material usage while satisfying ULS constraints.  
+    *Tối ưu hóa bằng AI: Bằng cách phơi bày logic kết cấu dưới dạng hàm Python, ta có thể dễ dàng bọc Pycivile trong các vòng lặp tối ưu hóa (Giải thuật Di truyền) để giảm thiểu vật liệu trong khi vẫn thỏa mãn điều kiện ULS.*
 
 ---
 
@@ -143,11 +140,11 @@ The future of structural BIM lies in "Generative Design" and "Real-time Verifica
 
 ## 5. Conclusion / Kết Luận
 
-PyCivil represents a paradigm shift from "User of Software" to "Developer of Solutions".  
-*PyCivil đại diện cho một sự chuyển dịch tư duy từ "Người dùng phần mềm" sang "Nhà phát triển giải pháp".*
+Pycivile is a paradigm shift from "User of Software" to "Developer of Solutions".  
+*Pycivile là bước chuyển dịch tư duy từ "dùng phần mềm" sang "phát triển giải pháp".*
 
-For Vietnamese engineers, adopting frameworks like PyCivil opens the door to deeply understanding structural behavior and automating the tedious parts of design according to TCVN standards. It is a stepping stone towards mastering Computational Engineering.  
-*Đối với các kỹ sư Việt Nam, việc áp dụng các thư viện như PyCivil mở ra cánh cửa để thấu hiểu sâu sắc hành vi kết cấu và tự động hóa những phần tẻ nhạt của thiết kế theo tiêu chuẩn TCVN. Đây là bước đệm để làm chủ Kỹ thuật tính toán trong xây dựng (Computational Engineering).*
+For Vietnamese engineers, adopting frameworks like Pycivile opens the door to deeply understanding structural behavior and automating the tedious parts of design according to TCVN standards. It is a stepping stone towards mastering Computational Engineering.  
+*Đối với các kỹ sư Việt Nam, việc áp dụng các thư viện như Pycivile mở ra cánh cửa để thấu hiểu sâu sắc hành vi kết cấu và tự động hóa những phần tẻ nhạt của thiết kế theo tiêu chuẩn TCVN. Đây là bước đệm để làm chủ Kỹ thuật tính toán trong xây dựng (Computational Engineering).*
 
 **Reference / Tài liệu tham khảo:**  
-[GitLab: PyCivile Repository](https://gitlab.com/luigi_paone/pycivile)
+[GitLab: Pycivilee Repository](https://gitlab.com/luigi_paone/Pycivilee)
