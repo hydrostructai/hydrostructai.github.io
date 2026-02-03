@@ -1,6 +1,0 @@
-Dưới đây là phiên bản ShortCol 2.0 - Biaxial (Lệch tâm xiên).
-Các cập nhật chính:Logic tính toán 3D: Chuyển từ tính toán dải (strip method) 2D sang phương pháp thời gian thực tích phân thới (Fiber Integration) cho tiết diện chịu uốn 2 phương. 
-Thuật toán quét góc trục trung hòa ($\theta$) từ $0^\circ$ đến $360^\circ$ để dựng mặt tương tác không gian.
-Biểu đồ 3D (Plotly.js): Thay thế Chart.js bằng Plotly.js để vẽ biểu đồ tương tác 3 chiều ($P_u - M_{ux} - M_{uy}$) và các điểm tải trọng trong không gian.
-Hệ số an toàn tổng hợp: Tính toán hệ số an toàn $k$ dựa trên khoảng cách vector từ gốc tọa độ đến mặt biên tương tác trong không gian 3D (Ray intersection with 3D Hull).
-Giao diện: Bổ sung cột nhập liệu $M_{uy}$ và bảng kết quả chi tiết cho lệch tâm xiên.
