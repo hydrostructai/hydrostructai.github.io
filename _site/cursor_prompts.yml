@@ -1,0 +1,418 @@
+prompts:
+
+# =====================================================================
+  # TASK 23: STANDARDIZE POSTS & WRITE DEEP-DIVE SHORTCOL 3D
+  # Mục tiêu: 1. Chuẩn hóa bài 12/12 theo format bài 07/12.
+  #           2. Viết bài 13/12 chuyên sâu về Biểu đồ tương tác 3D & 3 Tiêu chuẩn.
+  # =====================================================================
+  write_shortcol3d_development_series:
+    description: "Standardize existing ShortCol posts and generate a new in-depth technical article on 3D Interaction Diagrams (P-Mx-My) comparing TCVN, EC2, and ACI algorithms."
+    references:
+      - "_posts/2025-12-07-shortcol.md"                  # Style Reference (Format chuẩn)
+      - "_posts/2025-12-12-shortcol-standard.md"         # Target to Refactor
+      - "apps/shortcol3D/Prompt-shortcol 3D.md"          # Core Math/Physics Source
+      - "apps/shortcol3D/FINALIZATION_REPORT.md"         # Dev Story Source
+      - "apps/shortcol3D/COMPLETE_FIX_SUMMARY.md"        # Safety Factors Source
+    steps:
+      - "Action 1 (Style Standardization): Read `_posts/2025-12-07-shortcol.md`. apply layout: single and format (not change content) to `_posts/2025-12-12-shortcol-standard.md`. Ensure consistent use of LaTeX ($...$) and clear headings."
+      - "Action 2 (Create New Post): Create file `_posts/2025-12-13-shortcol3d-development.md`."
+      - "Action 3 (Front Matter): Set title 'Phát triển Thuật toán Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương', date '2025-12-13', tags [Structural Engineering, 3D Analysis, Fiber Integration, TCVN 5574, ACI 318, Eurocode 2], layout single, mathjax true."
+      - "Action 4 (Content - The 'Why'): Explain why 2D diagrams are insufficient for biaxial bending (Lệch tâm xiên). Discuss the limitations of approximate methods like Bresler's Load Contour vs. the precision of the 'Fiber Integration Method' (Phương pháp Tích phân Sợi) implemented in ShortCol 3D."
+      - "Action 5 (Content - 3 Standards Comparison): Compare how the 3 standards define the 3D failure surface:"
+      - "  - **TCVN 5574:2018:** Uses Parabola-Rectangle stress block, ε_cu = 0.0035. Mention the safety factors (γb=1.3)."
+      - "  - **Eurocode 2:** Similar to TCVN but with explicit material factors (γc=1.5). Discuss how this results in a smaller safety volume."
+      - "  - **ACI 318-19:** Uses Whitney Stress Block (Rectangular), ε_cu = 0.003 (more conservative strain). Explain how Beta1 varies with f'c."
+      - "  - **Nuance:** Discuss how the 'Neutral Axis Angle Sweep' (Quét góc trục trung hòa) algorithm creates the 3D mesh."
+      - "Action 6 (Content - Implementation): Describe the transition from legacy code to the unified `CalculationEngine` in `app-cal.js`. Highlight the use of Plotly.js for 3D visualization."
+      - "Constraint: Write ~2000 words in professional Vietnamese engineering tone. Use data from provided summaries."
+
+# =====================================================================
+  # TASK 22: WRITE TECHNICAL BLOG POST - 3 STANDARDS INTERACTION DIAGRAM
+  # Mục tiêu: Viết bài chuyên sâu về lý thuyết P-M Diagram theo TCVN/EC2/ACI.
+  # Nguồn: Dữ liệu từ thư mục shortcol2D (đã upload).
+  # =====================================================================
+  write_post_shortcol_standards:
+    description: "Generate a comprehensive 2000-word technical blog post comparing P-M Interaction Diagram construction methods across TCVN 5574:2018, Eurocode 2, and ACI 318-19."
+    references:
+      - "shortcol2D/CALCULATION_LOGIC_3STANDARDS.md"      # Nguồn thuật toán & công thức
+      - "shortcol2D/STANDARDS_COMPARISON_VISUAL.md"     # Nguồn bảng so sánh & thông số
+      - "shortcol2D/SHORTCOL_3STANDARDS_SUMMARY.md"     # Nguồn tổng quan
+      - "shortcol2D/DETAILED_LOGIC_EXPLANATION.md"      # Nguồn giải thích chi tiết
+    steps:
+      - "Action 1 (Setup): Create file `_posts/2025-12-12-shortcol-standard.md`."
+      - "Action 2 (Front Matter): Set `title: 'Xây dựng Biểu đồ Tương tác Cột (P-M) theo 3 Tiêu chuẩn: TCVN, EC2 và ACI'`, `date: 2025-12-12`, `categories: [Structural Engineering, Algorithms]`, `tags: [ShortCol, Interaction Diagram, TCVN 5574, Eurocode 2, ACI 318]`, `mathjax: true`, `toc: true`."
+      - "Action 3 (Content - Introduction): Define the 'Column Interaction Diagram' concept. State the problem: Calculating safety factors for eccentric compression. Introduce the 3 standards being compared."
+      - "Action 4 (Content - Methodology): Explain the 'Strain Compatibility Method' (Tương thích biến dạng) used in the algorithm. Describe the 5-step process: Geometry -> Layout -> Neutral Axis Sweep -> Force Integration -> Curve Generation."
+      - "Action 5 (Content - Deep Dive Comparison): Create a detailed Markdown comparison table based on and. Columns must include: Material Strength Formulas (Rb/fcd/0.85f'c), Ultimate Concrete Strain (epsilon_cu), Stress Block Factors (beta), and Safety Factors philosophy (Partial factors vs Reduction factors)."
+      - "Action 6 (Content - Safety Factor Calculation): Explain the 'Ray Casting Method' (Phương pháp tia) used to calculate k = R/S (Capacity/Load). Discuss how k >= 1.0 implies safety."
+      - "Action 7 (Content - Key Differences): Highlight specific nuances: ACI's lower ultimate strain (0.003) vs TCVN/EC2 (0.0035), and how EC2 explicitly uses gamma_c (1.5) while TCVN integrates it into Rb."
+      - "Action 8 (Conclusion): Summarize why automated tools like ShortCol are essential for handling these complex differences accurately."
+      - "Constraint: Write in professional Vietnamese (Kỹ sư xây dựng tone). Use LaTeX for all math formulas ($...$). Length ~2000 words."
+
+# =====================================================================
+  # TASK 21: FIX SHORTCOL 3D COMPLETE (PHYSICS, LOGIC, UI OVERHAUL)
+  # Mục tiêu: 1. Sửa lỗi hệ số an toàn vật liệu & hở biểu đồ 3D.
+  #           2. Sửa logic bố trí thép & tăng kích thước hiển thị thép 150%.
+  #           3. Hợp nhất giao diện Input/Output liền mạch (bỏ Sidebar/Form split).
+  # =====================================================================
+  fix_shortcol3d_complete:
+    description: "Comprehensive fix for ShortCol 3D: Implement material safety factors, fix 3D mesh closure, correct rebar logic/visualization, and unify the UI layout to match ShortCol 2D patterns."
+    references:
+      - "apps/shortcol3D/app-cal.js"
+      - "apps/shortcol3D/app-inp.js"
+      - "apps/shortcol3D/app-out.js"
+      - "apps/shortcol3D/index.html"
+      - "apps/shortcol2D/index.html" # UI Reference
+    steps:
+      - "Action 1 (Engineering Physics - app-cal.js):"
+      - "  - Restore `getDesignCoefficients(standard)` logic inside `FiberEngine` (TCVN: 1.3/1.15, EC2: 1.5/1.15, ACI: 1.0/1.0)."
+      - "  - Update `setupMaterial` to divide inputs `f_input` and `fy_input` by these gamma factors."
+      - "  - In `generateSurface`, enforce 'Cap Points' creation: Push 20+ points at (0,0,P_max) and (0,0,P_min) to close the 3D mesh tops/bottoms for `alphahull`."
+      - "Action 2 (Rebar Logic - app-cal.js):"
+      - "  - Review `generateBars` logic. Ensure it correctly calculates coordinates for rectangular perimeter distribution (avoiding duplicate corner bars or uneven spacing)."
+      - "Action 3 (Visualization - app-inp.js):"
+      - "  - In the `drawSection` function, **increase the radius of steel bar circles by 150%** (multiply `rBar` by 1.5) to make them clearly visible."
+      - "  - Refactor `AppInp` component to **REMOVE** the `sidebarOnly` and `formOnly` prop logic. Instead, render a **Single Unified Input Panel** containing: The Section Preview (Top) + The Tabbed Input Form (Bottom)."
+      - "Action 4 (UI Layout Overhaul - index.html):"
+      - "  - Remove the complex 3-pane CSS Grid layout."
+      - "  - Implement a standard **2-Column Layout** similar to `shortcol2D`:"
+      - "    - **Left Column (approx 35%):** Renders `<AppInp />` (Unified Input & Preview)."
+      - "    - **Right Column (approx 65%):** Renders `<AppOut />` (Results Table & 3D Chart)."
+      - "  - Ensure the layout is 'seamless' (liền mạch), utilizing full height without nested scrollbars where possible."
+      - "Action 5 (Output Adaptation - app-out.js):"
+      - "  - Ensure `AppOut` adapts to the new container width. Keep the internal 2-pane split (Table/Chart) OR stack them if space is tight, but prioritize the 3D Chart visibility."
+
+# =====================================================================
+  # TASK 18: FIX SHORTCOL 3D RUNTIME ERRORS (404 & INFINITE LOADING)
+  # Mục tiêu: Loại bỏ tham chiếu file cũ (shortcol3D.js), sửa lỗi treo app.
+  # =====================================================================
+  fix_shortcol3d_runtime:
+    description: "Resolve the '404 Not Found' error for shortcol3D.js and the infinite 'Waiting for modules...' loop by cleaning up HTML references and verifying global variable exports."
+    references:
+      - "apps/shortcol3D/index.html"
+      - "apps/shortcol3D/app-cal.js"
+      - "apps/shortcol3D/app-inp.js"
+      - "apps/shortcol3D/app-out.js"
+    steps:
+      - "Action 1 (Fix HTML References): In `apps/shortcol3D/index.html`, explicitly **REMOVE** the script tag `<script src=\"shortcol3D.js\"></script>`. This file is obsolete and causes the 404 error."
+      - "Action 2 (Verify Script Order): Ensure `apps/shortcol3D/index.html` loads scripts in this EXACT order:"
+      - "  1. Libraries (React, Babel, Plotly, Bootstrap)."
+      - "  2. `../../assets/js/global.js`"
+      - "  3. `<script src=\"app-cal.js\"></script>` (Must be standard JS, NOT type='text/babel')."
+      - "  4. `<script src=\"app-inp.js\" type=\"text/babel\"></script>`"
+      - "  5. `<script src=\"app-out.js\" type=\"text/babel\"></script>`"
+      - "Action 3 (Debug Global Exports):"
+      - "  - In `app-cal.js`, add `console.log('AppCal loaded');` at the top and ensure it exports `window.CalculationEngine` at the end."
+      - "  - In `app-inp.js`, add `console.log('AppInp loaded');` and ensure it exports `window.AppInp`."
+      - "Action 4 (Fix Mount Logic): In `apps/shortcol3D/index.html`, modify the `mountApp()` function to check ONLY for the valid modules: `window.AppInp`, `window.AppOut`, and `window.CalculationEngine`. **REMOVE** the check for `window.ShortCol3D` as it no longer exists."
+      - "Action 5 (Validation): Check if `app-cal.js` uses any ES6 syntax that older browsers/environments might block (though modern browsers are fine). Ensure it does NOT contain JSX code."
+# =====================================================================
+  # TASK 17: FINALIZE SHORTCOL 3D REFACTOR & CLEANUP
+  # Mục tiêu: Hợp nhất logic vào app-cal.js, cập nhật UI/Output, và xóa file rác.
+  # =====================================================================
+  finalize_shortcol3d_refactor:
+    description: "Execute the final refactoring of ShortCol 3D: Merge calculation logic into a single engine, update UI components, and delete obsolete files."
+    references:
+      - "apps/shortcol3D/shortcol3D.js"   # Source logic (to be migrated then deleted)
+      - "apps/shortcol3D/app-cal-math.js" # Source logic (to be migrated then deleted)
+      - "apps/shortcol3D/index.html"      # Target to update script tags
+      - "apps/shortcol3D/app-inp.js"      # Target to update
+      - "apps/shortcol3D/app-out.js"      # Target to update
+    steps:
+      - "Action 1 (Create Unified Engine): Create a NEW file `apps/shortcol3D/app-cal.js`. This file must contain the COMPLETE calculation logic derived from `shortcol3D.js` (Fiber Integration Method, Material Models for ACI/EC2/TCVN). It must expose a global `window.CalculationEngine` object with a `performAnalysis(inputData)` function. **CRITICAL:** Do NOT depend on `app-cal-math.js` or `shortcol3D.js` after this step."
+      - "Action 2 (Update Input Controller): Rewrite `apps/shortcol3D/app-inp.js` to strictly handle UI events, draw the SVG section preview, and call `CalculationEngine.performAnalysis()`. Ensure it passes clean data structures (geo, mat, steel, loads) to the engine."
+      - "Action 3 (Update Output View): Rewrite `apps/shortcol3D/app-out.js` to render results using the pre-calculated data from the new engine. It should visualize the 3D interaction diagram (using Plotly) and the Safety Factor table."
+      - "Action 4 (Update Entry Point): Modify `apps/shortcol3D/index.html` to:"
+      - "  - Remove `<script src='shortcol3D.js'></script>`."
+      - "  - Remove `<script src='app-cal-math.js'></script>`."
+      - "  - Add `<script src='app-cal.js'></script>` before `app-inp.js`."
+      - "  - Ensure the loading order is: Libraries -> `app-cal.js` -> `app-inp.js` -> `app-out.js`."
+      - "Action 5 (Cleanup): DELETE the obsolete files `apps/shortcol3D/shortcol3D.js` and `apps/shortcol3D/app-cal-math.js` from the project to prevent confusion."
+      - "Action 6 (Verification): Confirm that `index.html` now only references the 3 new modular files and the app runs without errors."
+# =====================================================================
+  # TASK 16: REFACTOR SHORTCOL 2D (LOGIC SPLIT & OUTPUT LAYOUT)
+  # Mục tiêu: Tách code thành app-inp.js (UI/Input) và app-cal.js (Pure Math).
+  #           Gộp logic từ shortcol.js vào app-cal.js rồi xóa file cũ.
+  #           Cấu trúc lại layout kết quả thành 2 cột.
+  # =====================================================================
+  refactor_shortcol2d_structure:
+    description: "Refactor ShortCol 2D to enforce separation of concerns by splitting UI and Calculation logic, and merging legacy code."
+    references:
+      - "apps/shortcol2D/index.html"
+      - "apps/shortcol2D/app-cal.js"
+      - "apps/shortcol2D/shortcol.js" # Legacy file to be merged & deleted
+      - "apps/shortcol2D/app-out.js"
+    steps:
+      - "Action 1 (Create UI Controller): Create a new file `apps/shortcol2D/app-inp.js`. Move ALL DOM interaction logic here from `app-cal.js` and `shortcol.js`. Responsibilities:"
+      - "  - Read values from HTML inputs (Material, Geometry, Loads)."
+      - "  - Handle 'Tính toán' button click events."
+      - "  - **Draw Section Illustration:** Move the canvas drawing logic for the cross-section (geometry + rebar) here so it updates immediately upon input change."
+      - "  - Call the calculation function from the new `app-cal.js` and pass the results to `app-out.js`."
+      - "Action 2 (Pure Math Refactor): Refactor `apps/shortcol2D/app-cal.js` to contain **ONLY** pure calculation logic. Merge any necessary math functions from `apps/shortcol2D/shortcol.js` into this file."
+      - "  - This file must NOT contain `document.getElementById` or any DOM manipulation."
+      - "  - It should accept a raw data object (e.g., `{ b, h, Rb, Rs, ... }`) and return a results object (e.g., `{ interactionCurve, checkResults }`)."
+      - "Action 3 (Cleanup): Delete the file `apps/shortcol2D/shortcol.js` after ensuring all its logic is safely migrated to `app-cal.js` or `app-inp.js`."
+      - "Action 4 (Layout Update): Modify `apps/shortcol2D/index.html` to rearrange the **Output Section** into a 2-column grid (for Desktop):"
+      - "  - **Left Column:** The 'Kiểm tra' (Check) results table."
+      - "  - **Right Column:** The 2D Interaction Diagram (Canvas container)."
+      - "Action 5 (Script Update): Update the `<script>` tags in `index.html` to load files in the correct order: `app-cal.js` (Math) -> `app-inp.js` (UI/Controller) -> `app-out.js` (Output Renderer)."
+# =====================================================================
+  # TASK 15: REFACTOR SHORTCOL 3D (UI STANDARDIZATION & LOGIC SPLIT)
+  # Mục tiêu: 1. Chuẩn hóa UI theo mẫu ShortCol 2D (Input 3 phần, Layout 2 cột).
+  #           2. Tách code logic: app-inp.js (Nhập liệu/Vẽ tiết diện) vs app-cal.js (Tính toán).
+  #           3. Sửa lỗi hiển thị minh họa.
+  # =====================================================================
+  refactor_shortcol3d_full:
+    description: "Comprehensive refactor of ShortCol 3D: Split logic into input/calc files and standardize UI to match ShortCol 2D patterns."
+    references:
+      - "apps/shortcol3D/index.html"
+      - "apps/shortcol3D/app-cal.js"
+      - "apps/shortcol3D/app-out.js"
+      - "apps/shortcol3D/shortcol3D.js"
+      - "apps/shortcol2D/index.html" # UI Pattern Source
+    steps:
+      - "Action 1 (JS Logic Split): Split the existing `apps/shortcol3D/app-cal.js` into two separate files to enforce separation of concerns:"
+      - "  - **Create `apps/shortcol3D/app-inp.js`:** This file handles ALL User Interface interactions. Responsibilities: 1. Read values from HTML inputs. 2. Handle button click events. 3. **Draw the Section Illustration** (Canvas/SVG) to visualize geometry and rebar immediately upon input change."
+      - "  - **Refactor `apps/shortcol3D/app-cal.js`:** This file must contain ONLY pure calculation logic and mathematical functions (e.g., interaction surface generation, moment capacity checks). It should accept raw data objects from `app-inp.js` and return calculation results. Remove all DOM manipulation code from here."
+      - "Action 2 (HTML Structure - Inputs): Refactor the Input Section in `index.html` to strictly follow the 3-group structure of `shortcol2D`:"
+      - "  - **Group 1: Tiết diện & Vật liệu:** Inputs for b, h, Concrete (B), Steel (Cb)."
+      - "  - **Group 2: Cốt thép:** Inputs for rebar configuration (Diameter, Numbers). Ensure the UI style matches `shortcol2D`."
+      - "  - **Group 3: Tổ hợp tải trọng:** Inputs for N, Mx, My."
+      - "Action 3 (HTML Structure - Outputs): Re-arrange the Output Section in `index.html` into a **2-column grid** (Desktop view):"
+      - "  - **Left Column:** The 'Kiểm tra' (Check) results table."
+      - "  - **Right Column:** The 3D Interaction Diagram (Canvas container handled by `app-out.js`)."
+      - "Action 4 (Fix Illustration): In the new `app-inp.js`, implement/fix the drawing logic for the 'Minh họa tiết diện' menu. It must correctly render the rectangular section and rebar positions based on current inputs."
+      - "Action 5 (Integration): Update `apps/shortcol3D/index.html` to include the new script `app-inp.js` (ensure correct loading order: `shortcol3D.js` -> `app-cal.js` -> `app-inp.js` -> `app-out.js`)."
+      - "Action 6 (Styling): Apply `assets/css/app-standard.css` classes to buttons and tables to ensure visual consistency with the rest of the platform."
+      
+# =====================================================================
+  # TASK 14: REFACTOR SPILLWAY LOGIC & FIX RUNTIME ERROR
+  # Mục tiêu: Tách logic nhập liệu/tính toán (Separation of Concerns) 
+  #           và sửa lỗi thiếu hàm generateSimplifiedProfile.
+  # =====================================================================
+  refactor_fix_spillway_logic:
+    description: "Fix the 'generateSimplifiedProfile is not defined' error and split 'app-cal.js' into 'app-input.js' (DOM/Events) and 'app-cal.js' (Pure Math) for better maintainability."
+    references:
+      - "apps/hydraulicspillway/index.html"
+      - "apps/hydraulicspillway/app-cal.js"
+      - "apps/hydraulicspillway/output.js"
+    steps:
+      - "Action 1 (Fix Missing Function): In `apps/hydraulicspillway/app-cal.js` (or the new math file), implement the missing function `generateSimplifiedProfile(profileData)`. Logic: It should accept the detailed calculation array and return a simplified array of objects `{ station, bedElevation, waterLevel }` suitable for charting. Ensure this function is exported or globally accessible."
+      - "Action 2 (Split Logic): Refactor `apps/hydraulicspillway/app-cal.js` into two separate files:"
+      - "  - **`app-cal.js` (Pure Calculation):** Keep ONLY the mathematical formulas and hydraulic logic (e.g., functions taking numeric inputs and returning calculation objects). Remove all `document.getElementById` or DOM references from here."
+      - "Action 3 (rename js): rename `output.js` to `app-out.js` remain all code.
+      - "  - **`app-inp.js` (Input & Events):** Create this new file to handle DOM interaction. It should: 1. Read values from HTML inputs. 2. Validate data. 3. Call the functions from `app-cal.js`. 4. Pass results to `app-out.js`."
+      - "Action 4 (Update HTML): Update `apps/hydraulicspillway/index.html` to include the new `app-input.js` script tag (placed after `app-cal.js` and before `output.js`)."
+      - "Action 5 (Verification): Verify that the 'Tính toán' button now triggers the sequence: `app-input.js` (read) -> `app-cal.js` (calc) -> `output.js` (render), and the error `generateSimplifiedProfile is not defined` is resolved."
+      
+# =====================================================================
+  # TASK 13: REFACTOR HYDRAULIC SPILLWAY (UI TABS & VISUALIZATION)
+  # Mục tiêu: Chuẩn hóa UI theo style consmcc-test, dọn dẹp file thừa,
+  #           và nâng cấp output.js để hiển thị bảng/biểu đồ chuẩn kỹ thuật.
+  # =====================================================================
+  refactor_hydraulic_spillway_ui_viz:
+    description: "Refactor the Hydraulic Spillway app to use a clean Tabbed UI (Input/Result), cleanup redundant logic files, and implement detailed hydraulic tables and charts in output.js."
+    references:
+      - "apps/hydraulicspillway/index.html"
+      - "apps/hydraulicspillway/calc.js"
+      - "apps/hydraulicspillway/calc-v2.js"
+      - "apps/hydraulicspillway/output.js"
+      - "consmcc-test.html" # UI Reference
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf" # Formulas & Chart logic
+    steps:
+      - "Action 1 (Cleanup): Check `index.html` to see which script is active (`calc.js` or `calc-v2.js`). Keep the active/newer one, rename it to `app-cal.js`, and **DELETE** the other one to remove redundancy. Update `index.html` script source accordingly."
+      - "Action 2 (UI Refactor): Rewrite `apps/hydraulicspillway/index.html` to implement the Tab logic found in `consmcc-test.html`, BUT simplified:"
+      - "  - Create 2 Tabs: **'Số liệu đầu vào'** (id: `input-sec`) and **'Kết quả tính toán'** (id: `result-sec`)."
+      - "  - Use simple CSS/JS to toggle visibility (active/hidden classes). Remove all logic related to 'Logs' or 'Download Logs'."
+      - "  - Ensure the 'Tính toán' button automatically switches the active tab to 'Kết quả tính toán' upon success."
+      - "Action 3 (Output Upgrade): Rewrite `apps/hydraulicspillway/output.js` to render specific hydraulic engineering data:"
+      - "  - **Table 1 (Chute Profile):** Iterate through calculation steps to show columns: Station (Lý trình), Bed Elevation ($Z_{day}$), Depth ($h$), Velocity ($V$), Froude ($Fr$), Water Elevation ($Z_{nuoc}$)."
+      - "  - **Table 2 (Stilling Basin):** Display calculated params for the Stilling Basin: $h_1, h_2$ (Conjugate depth), $L_{basin}$ (Length), and $K$ (Safety factor)."
+      - "  - **Chart (Water Profile):** Use Chart.js (add CDN to index.html if missing) to draw a line chart. X-axis: Distance. Y-axis: Elevation. Plot two lines: 'Chute Bed' and 'Water Surface'. Add a visual marker for the Hydraulic Jump location."
+      - "Action 4 (Final Check): Ensure `app-cal.js` returns data in a format that `output.js` can consume (e.g., an object containing `profileData` array and `basinParams` object)."
+      
+  # =====================================================================
+  # TASK 12: FINAL POST LAYOUT OPTIMIZATION (20:60:20 GRID & TOC RELOCATION)
+  # Mục tiêu: Mở rộng Main Content. Sidebar-Left: Sticky. Sidebar-Right: TOC. Latest Posts: Di chuyển xuống cuối.
+  # =====================================================================
+  optimize_post_layout_v3:
+    description: "Implement a modern CSS Grid layout for 'single' posts (20:60:20 ratio), make the left sidebar sticky, move TOC to the right sidebar, and move 'Latest Posts' below the article for maximum content width."
+    references:
+      - "hydrostructai.github.io/_layouts/single.html"
+      - "hydrostructai.github.io/_includes/sidebar-right.html"
+      - "hydrostructai.github.io/_includes/sidebar-left.html"
+      - "assets/css/global.css"
+    steps:
+      - "Action 1 (Relocate Latest Posts): Cut the 'Latest Posts' Liquid loop and associated HTML structure from `_includes/sidebar-right.html` and paste it into `_layouts/single.html` right before the final `{% endif %}` block (outside the `<article>` but inside `#main`)."
+      - "Action 2 (TOC to Sidebar-Right): Replace the original content of `_includes/sidebar-right.html` with the standard Minimal Mistakes Table of Contents (TOC) rendering logic (The logic previously found inside the `<section class='page__content'>` of `single.html`). This makes the right column exclusively the TOC."
+      - "Action 3 (Remove Redundant TOC): In `_layouts/single.html`, **DELETE** the redundant TOC generation block that currently appears inside the `<section class='page__content'>` element. This expands the main content area."
+      - "Action 4 (CSS Grid & Sticky): Add custom CSS rules to `assets/css/global.css` targeting the layout wrapper (`#main` or equivalent element in `single.html`). Apply the following rules to achieve the 3-column structure and sticky behavior (for desktop screens only):"
+      - "  - Set the wrapper to `display: grid`."
+      - "  - Define columns: `grid-template-columns: 20% 60% 20%;`."
+      - "  - Apply `position: sticky` and `top: 1em` to the left sidebar element (`.left-sidebar`) to fix it during scroll."
+      - "Action 5 (Final Verification): Ensure the layout maintains the 20:60:20 ratio, the main content is wide, the left sidebar is fixed, and the Latest Posts display correctly at the bottom of the page."
+      
+  # =====================================================================
+  # TASK 11: ADVANCED POST LAYOUT & STICKY SIDEBAR IMPLEMENTATION
+  # Mục tiêu: Sửa lỗi Taller Sidebar, áp dụng Grid 20:60:20, và làm sticky sidebar-left.
+  # =====================================================================
+  apply_modern_post_grid:
+    description: "Refactor the 'single' post layout to use a modern CSS Grid system with a fixed sidebar-left, ensuring horizontal alignment and the 20:60:20 column ratio."
+    references:
+      - "hydrostructai.github.io/_layouts/single.html"
+      - "hydrostructai.github.io/_includes/sidebar-left.html"
+      - "hydrostructai.github.io/_includes/sidebar-right.html"
+      - "assets/css/global.css" # Add custom CSS here
+      - "assets/css/main.scss" # For overriding Minimal Mistakes variables/mixins
+    steps:
+      - "Action 1 (HTML Structure): Verify or modify the HTML structure in `_layouts/single.html` to ensure the main container (`#main` or similar) wraps the left sidebar, the article content, and the right sidebar cleanly."
+      - "Action 2 (CSS Grid Implementation): Create or append custom CSS rules to a suitable location (e.g., `assets/css/global.css`) targeting the layout wrapper for single posts. Apply the following Grid rules for modern, responsive layout:"
+      - "  - `display: grid;`"
+      - "  - `grid-template-columns: 20% 60% 20%;` (For desktop screens)."
+      - "  - `gap: 1.5rem;` (Optional, for spacing)."
+      - "  - **Ensure responsiveness:** Implement a Media Query to revert to a single-column layout for screen widths below 1024px."
+      - "Action 3 (Sticky Sidebar-Left): Apply `position: sticky` to the left sidebar element (`.left-sidebar`) to fix it during vertical scrolling. Define a top offset (e.g., `top: 2em;`) to account for the header/masthead."
+      - "Action 4 (Sidebar-Right Behavior): Ensure the right sidebar remains scrollable with the main content, but is correctly positioned in the 20% right column."
+      - "Action 5 (Final Verification): Confirm that the code solves the 'taller sidebar' visual issue and implements the requested 20:60:20 split and sticky scrolling behavior for the left column."
+      
+  # =====================================================================
+  # TÁC VỤ 2: VIẾT BÀI ĐĂNG KỸ THUẬT (10/12/2025)
+  # Chủ đề: Tính toán thủy lực dốc nước và tiêu năng sau dốc
+  # Reference: 4 CSV Files (LuTK/LuKT), 1 PDF (2.3.3 PLTT...)
+  # =====================================================================
+  new_post_hydraulic_spillway:
+    description: "Tính toán thủy lực dốc nước và tiêu năng sau dốc."
+    references:
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD1-LuTK.csv"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD1-LuKT.csv"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD2-LuTK.csv"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD2-LuKT.csv"
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf"
+      - "hydrostructai.github.io/apps.md" # Để thêm link vào trang chủ
+      - "hydrostructai.github.io/_config.yml" # Tham khảo cấu hình path
+    steps:
+      - "Create file `_posts/2025-12-10-thuy-luc-doc-nuoc-tieu-nang.md`."
+      - "Front Matter: Set `date: 2025-12-10`, `lang: vi`, `categories: [Hydraulics]`, `tags: [Spillway, Tiêu năng]`, `toc: true`, `mathjax: true`."
+      - "Section 1: **Introduction (Giới thiệu):** Summarize the design parameters from the PDF and the necessity of the stilling basin."
+      - "Section 2: **Hydraulic Analysis (Phân tích):** Create a clean Markdown table comparing Velocity (V), Water Depth (h), and Froude Number (Fr) at the end of the chute for all four data sets ( GDD1/GDD2, LuTK/LuKT) using data from the 4 CSV files."
+      - "Section 3: **Energy Dissipation (Tiêu năng):** Explain the calculation for the stilling basin (Bể tiêu năng) using the conjugate depth (h2) formula and the safety check (K) based on the PDF. Use LaTeX/MathJax syntax for formulas."
+
+  # =====================================================================
+  # TÁC VỤ 3: TẠO WEB APP TÍNH TOÁN THỦY LỰC
+  # App Name: HydroSpillwayCalc
+  # Yêu cầu: Đặt ở apps/hydraulicspillway, tích hợp lên trang chủ.
+  # Reference: All CSVs & PDF (cho công thức tiêu năng)
+  # =====================================================================
+  create_hydraulic_spillway_app:
+    description: "Develop a Web App for Chute Spillway Hydraulic Jump/Energy Dissipation calculation."
+    references:
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf"
+    steps:
+      - "Action 1 (Structure): Create a new folder `apps/hydraulicspillway/`."
+      - "Action 2 (Layout): Create `apps/hydraulicspillway/index.html` with Minimal Mistakes `layout: single`, integrating the app UI."
+      - "Action 3 (UI/CSS): Design a clean, responsive HTML form UI using Bootstrap/Minimal Mistakes SCSS/CSS conventions. Inputs: $Q$, $B$ (Chute width), $h1$ (pre-jump depth), and $\alpha$ (momentum correction factor)."
+      - "Action 4 (JS Logic): Create `apps/hydraulicspillway/calc.js`. Implement the **Hydraulic Jump (Nối tiếp)** calculation using the formula for conjugate depth ($h_2$) and the Froude number ($Fr_1$) derived from the PDF (Section TÍNH TOÁN NỐI TIẾP). The core formula is $h_2 = 0.5 \cdot h_1 \cdot (\sqrt{1+8 \cdot Fr_1^2} - 1)$."
+      - "Action 5 (Integration): Add a card/link for this new app to the main `apps.md` page and the homepage (`hydrostructai.github.io/index.html`)."
+
+  # =====================================================================
+  # TÁC VỤ 4: DEBUG CHUNG (Giữ lại để sử dụng nhanh)
+  # =====================================================================
+  debug_build:
+    description: "General diagnosis for build failure or dependency issues."
+    steps:
+      - "Analyze `Gemfile` and `Gemfile.lock` for Ruby/Jekyll version conflicts."
+      - "Check `_config.yml` for syntax errors or misconfigured plugins."
+      - "Propose the correct `bundle install` and `bundle exec jekyll serve` commands for local environment fix."
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 5: DEPLOY HYDRAULIC SPILLWAY WEB APP & MATHJAX QA
+  # Yêu cầu: 1. Thêm app vào trang chủ. 2. Kiểm tra toàn bộ hiển thị công thức (MathJax).
+  # =====================================================================
+  deploy_hydraulic_spillway_content:
+    description: "Integrate the 'Hydraulic Spillway & Stilling Basin Calculator' web app onto the homepage and conduct a comprehensive site-wide MathJax rendering quality assurance check, focusing on the new post."
+    references:
+      - "hydrostructai.github.io/index.html"
+      - "hydrostructai.github.io/_includes/home-center.html" # Vị trí danh sách app
+      - "apps/hydraulicspillway/index.html" # Đường dẫn app
+      - "_posts/2025-12-11-thuy-luc-doc-nuoc-tieu-nang.md" # Bài viết cần kiểm tra công thức
+      - "hydrostructai.github.io/_includes/mathjax.html" # Config MathJax
+    steps:
+      - "Ensure the 'hydraulicspillway' web app folder is correctly placed under the `apps/` directory to be accessible at `/apps/hydraulicspillway/`."
+      - "In `_includes/home-center.html` or `index.html`, add a new Web App card/entry for the 'Hydraulic Spillway & Stilling Basin Calculator' at the very end of the app list, following the existing card style."
+      - "Card details: Title: 'Hydraulic Spillway & Stilling Basin Calculator'. Link: `/apps/hydraulicspillway/`. Description: 'Calculates the hydraulic profile for chute spillways and designs the stilling basin using the hydraulic jump method (Vietnamese standards).'"
+      - "Quality Check (QA): Review the new post `_posts/2025-12-11-thuy-luc-doc-nuoc-tieu-nang.md` to ensure all mathematical formulas, including the Hydraulic Jump formula, are rendered correctly by MathJax. Extend the check to other existing MathJax-enabled posts/pages to confirm site-wide rendering consistency."
+      - "If any formulas are not rendering, verify that `mathjax: true` is set in the front matter and that the formulas are correctly enclosed (e.g., `$$...$$` or `\\(...\\)`)."
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 6: ENHANCE SPILLWAY APP OUTPUT (TABLES & CHART)
+  # Mục tiêu: Tạo output.js để hiển thị kết quả tính toán chi tiết (bảng và biểu đồ).
+  # =====================================================================
+  add_spillway_output_visualization:
+    description: "Create 'output.js' for the Hydraulic Spillway app to display results in tables (chute profile & stilling basin) and a water surface profile chart."
+    references:
+      - "hydraulicspillway/index.html"
+      - "hydraulicspillway/calc.js"
+      - "Tinh doc nuoc-HQD5-23.9.25-V2.xls - Doc nuoc-GD1-LuTK.csv" # Mẫu cấu trúc dữ liệu dốc nước
+      - "2.3.3 PLTT doc nuoc va be tieu nang PA tran thang.pdf" # Thông số bể tiêu năng
+    steps:
+      - "Action 1 (Structure): Create a new JavaScript file `apps/hydraulicspillway/output.js`."
+      - "Action 2 (HTML Integration): Modify `apps/hydraulicspillway/index.html` to include necessary DOM elements for output: a `div` for the 'Water Profile Table', a `div` for the 'Stilling Basin Table', and a `<canvas>` element for the chart (e.g., using Chart.js or similar library)."
+      - "Action 3 (Table Logic - Chute Profile): Implement a function in `output.js` to accept profile data (Station/Lý trình, Bed Elevation/Cao trình đáy, Water Depth/h, Water Surface Elevation/Cao trình mặt nước) and dynamically generate an HTML table displaying the entire water surface profile along the chute (based on the structure observed in the CSVs)."
+      - "Action 4 (Table Logic - Stilling Basin): Implement a function in `output.js` to display the key stilling basin design parameters in a separate table: Incoming Flow ($Q$), Pre-Jump Depth ($h_1$), Froude Number ($Fr_1$), Conjugate Depth ($h_2$), Required Length ($L_b$), and Safety Check ($K$) (referencing formulas and parameters in the PDF)."
+      - "Action 5 (Visualization): Implement logic in `output.js` to render a **line chart** (e.g., using Chart.js, ensure library is included in `index.html`) displaying the **Water Surface Elevation** (Mặt nước) and **Chute Bed Elevation** (Đáy dốc) against **Station/Lý trình** (K/c cộng dồn) to visualize the profile and jump location."
+      - "Action 6 (Linkage): Ensure `calc.js` calls the functions in `output.js` upon successful calculation."
+      
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 8: FULL WEB APP UI REFACTORING AND STANDARDIZATION
+  # Mục tiêu: Tạo giao diện chung cho tất cả web apps (Modular, Modern, Scientific)
+  #           với logic kiểm tra License/WASM tích hợp.
+  # =====================================================================
+  refactor_standardize_all_apps:
+    description: "Implement a modern, scientific, single-page application (SPA) shell for all web apps under 'apps/' using a shared Liquid include and integrating advanced WASM/License control logic."
+    references:
+      - "hydrostructai.github.io/_includes/app_layout_standard.html" # Target Include File
+      - "apps/sheetpilefem/index.html" # WASM Example App for Refactoring
+      - "apps/pilegroup/pilegroup.wasm" # WASM Reference
+      - "apps/sheetpilefem/sheetpilefem.wasm" # WASM Reference
+      - "hydrostructai.github.io/_posts/" # Guide/Post Links
+      - "apps/lateralpile/validation-service.js" # Existing license check reference
+    steps:
+      - "Action 1 (Layout Creation): Create the main structural include file at `_includes/app_layout_standard.html`. This layout must load necessary global CSS/JS and define the overall wrapper for the standardized app interface."
+      - "Action 2 (Top Menu Definition): Implement a fixed, responsive top-level navigation bar (using modern CSS Flexbox/Grid for efficiency) with 5 Vietnamese-labeled buttons/tabs in the exact required order (HTML/Liquid structure only):"
+      - "  - **Về trang chủ** (Link to `{{ site.baseurl }}/`)"
+      - "  - **Hướng dẫn** (Link dynamically set via Front Matter: `{{ page.guide_post_url | relative_url }}`)"
+      - "  - **Số liệu** (Tab trigger for the data management section)"
+      - "  - **Tính toán** (Primary calculation trigger button)"
+      - "  - **Kết quả** (Tab trigger for the output section)"
+      - "Action 3 (Data & Results Structure): Within the main content area, implement the initial HTML/CSS for two primary sections: 'Số liệu' and 'Kết quả'. The 'Số liệu' section MUST contain three internal, toggleable tabs: **Quản lý tệp**, **Toàn bộ Số liệu (Dạng bảng/Textbox)**, and **License Status (Bao gồm thông tin đăng ký)**."
+      - "Action 4 (WASM/License JS Logic): Create a centralized, modular JavaScript file (e.g., `assets/js/app_core_logic.js`) responsible for handling the 'Tính toán' button click. This script must implement the following **critical logic**:"
+      - "  - **License Check Flow:** If the complexity/feature tier is unlicensed (Simulate this by checking an assumed global variable `window.appConfig.isLicensed`), the script must show a clear, polite alert/modal AND immediately switch the active tab to the **License Status Tab** within the 'Số liệu' section."
+      - "  - **WASM Call:** If licensed/free, proceed to call the appropriate app's WASM function (e.g., `Module.run_fem()` for sheetpile/pilegroup apps) while maintaining separation of concerns."
+      - "Action 5 (Footer Integration): Implement Liquid logic at the bottom of `_includes/app_layout_standard.html` to display a clean, small card/link for the **latest post** from `site.posts`."
+      - "Action 6 (Refactoring Example): Refactor the existing WASM app `apps/sheetpilefem/index.html` to switch its layout to use the new `app_layout_standard.html` include, setting a test `guide_post_url: /posts/2025-10-28-sheet-pile-fem-wasm-intro.md`."
+      - "Action 7 (Code Quality QA): Ensure all new code (Liquid, HTML, JS) is highly modular, follows modern ES6 standards, uses semantic HTML5 tags, and is clearly commented to ensure low maintenance cost and scientific integrity."
+      
+# Thêm vào cuối file cursor_prompts.yml
+
+  # =====================================================================
+  # TASK 10: FOCUSED UI REFACTORING (SIMPLIFIED CORE)
+  # Mục tiêu: Implement Option C - Giao diện chuẩn hóa đơn giản cho tất cả apps.
+  # =====================================================================
+  refactor_to_simplified_standard:
+    description: "Implement the Simplified Standard UI (Option C) across all existing web apps to achieve immediate consistency and modularity without WASM/License logic."
+    references:
+      - "hydrostructai.github.io/_includes/app_layout_standard.html"
+      - "assets/css/app-standard.css"
+      - "assets/js/app_core_logic.js"
+    steps:
+      - "Action 1 (Select Option): **CONFIRM selection of Option C (Simplified Version)** to prioritize low cost and fast implementation."
+      - "Action 2 (CSS/JS Core): Create `assets/css/app-standard.css` (minimal, modern styling for the app shell) and a simplified `assets/js/app_core_logic.js`."
+      - "Action 3 (Layout Implementation): Implement the final version of `_includes/app_layout_standard.html` containing the fixed, 5-button top menu structure (Về trang chủ -> Kết quả) and the latest post footer."
+      - "Action 4 (JS Functionality): The `app_core_logic.js` must **ONLY** handle tab switching (Số liệu, Kết quả) and the footer integration logic (Liquid for latest post)."
+      - "Action 5 (Exclusion): **EXPLICITLY OMIT/IGNORE** all JavaScript logic related to WASM loading, license checking, fee notifications, and 'free outside license' complexity from the core files."
+      - "Action 6 (Mass Refactoring): Immediately refactor **ALL** existing apps (SheetPileFEM, PileGroup, HydraulicSpillway, ShortCol 2D/3D, tools/circlearea, etc.) to use the new `app_layout_standard.html` include for their main structure."
+      - "Action 7 (Final Report): List the key files created/modified and confirm that all apps now share a unified, simplified interface."

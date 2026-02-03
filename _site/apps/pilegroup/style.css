@@ -1,0 +1,118 @@
+ /* style.css - Stylesheet cho Web App Pile Group 3D */
+
+/* Cấu hình chung */
+body { 
+    background-color: #f0f2f5; 
+}
+
+.card { 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+}
+
+/* Tùy chỉnh Tabs Bootstrap */
+.nav-tabs .nav-link { 
+    color: #495057; 
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #0d6efd;
+    color: white;
+    border-bottom-color: #0d6efd;
+}
+
+/* Sidebar bên trái */
+.sidebar-card {
+    background-color: #e6f7ff; /* Nền xanh nhạt */
+}
+
+/* Tùy chỉnh input trong các bảng dữ liệu */
+#pile-table-body input, 
+#soil-layer-body input {
+    width: 100%;
+    border: 1px solid #ddd;
+    padding: 4px;
+    border-radius: 4px;
+}
+
+#pile-table-body input:focus, 
+#soil-layer-body input:focus {
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 2px rgba(13,110,253,.25);
+}
+
+/* Container kết quả (ẩn mặc định ban đầu) */
+#results-container { 
+    display: none; 
+}
+
+/* Trạng thái kiểm toán */
+.status-success { 
+    color: #198754; 
+    font-weight: bold; 
+}
+
+.status-fail { 
+    color: #dc3545; 
+    font-weight: bold; 
+}
+
+/* Các thành phần ẩn mặc định */
+.spinner-border { 
+    display: none; 
+}
+
+#csv-file-input { 
+    display: none; 
+}
+
+/* Cấu hình bảng cuộn (Sticky Header) */
+.table-scroll-container {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.table-scroll-container thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8f9fa;
+    z-index: 1; /* Đảm bảo header nằm trên nội dung khi cuộn */
+}
+
+/* --- LOADING OVERLAY --- */
+#loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.3s ease;
+}
+
+#loading-overlay .spinner {
+    width: 80px;
+    height: 80px;
+    border: 8px solid #f3f3f3;
+    border-top: 8px solid #0d6efd;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+#loading-overlay .loading-text {
+    color: white;
+    font-size: 1.5rem;
+    margin-top: 20px;
+    font-weight: 500;
+}
+
+/* Keyframes cho hiệu ứng xoay */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

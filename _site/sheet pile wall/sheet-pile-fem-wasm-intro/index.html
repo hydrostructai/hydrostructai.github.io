@@ -1,0 +1,1022 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.27.3 by Michael Rose
+  Copyright 2013-2025 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="vi" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn | Hydro Structure AI</title>
+<meta name="description" content="1. Bài toán tường cừ">
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="vi">
+<meta property="og:site_name" content="Hydro Structure AI">
+<meta property="og:title" content="SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn">
+<meta property="og:url" content="http://localhost:4000/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/">
+
+
+  <meta property="og:description" content="1. Bài toán tường cừ">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-10-28T10:00:00+07:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hydro Structure AI Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<!-- 
+  GOOGLE ANALYTICS INJECTION
+  - Tracking data is sent to GA4 (ID: G-BNB682DVWC)
+  - To disable, remove these script tags or change the ID in _config.yml
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC');
+</script>
+
+<!-- Bootstrap 5 (Required for Global UI & Apps) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<!-- Global CSS for Site-Wide Styling & Modern Post Grid Layout -->
+<link rel="stylesheet" href="/assets/css/global.css">
+
+<!-- Busuanzi Analytics (Visitor Counter API) - Provides Site PV/UV -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  </head>
+
+  <body class="layout--single" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Nhảy tới thanh điều hướng</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Nhảy tới nội dung</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Nhảy tới chân trang</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Hydro Structure AI
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/"
+                
+                
+              >Blog</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/apps/"
+                
+                
+              >Web Apps</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >Về chúng tôi</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/tags/"
+                
+                
+              >Theo Thẻ (Tags)</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<style>
+  /* 1. Cấu hình lưới 3 cột */
+  .post-grid-container {
+    display: grid !important;
+    /* Sidebar Trái: 240px (Thu nhỏ xíu để nhường chỗ)
+       Nội dung Giữa: 1fr (Tự động chiếm hết khoảng trống còn lại)
+       Sidebar Phải: 240px 
+    */
+    grid-template-columns: 240px minmax(0, 1fr) 240px !important;
+    gap: 30px !important;
+    align-items: start;
+    
+    /* 2. Tăng chiều rộng tổng thể lên ~20% (từ 1280px -> 1600px) */
+    max-width: 1600px !important; 
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+  }
+
+  /* Sidebar Trái */
+  .post-grid-sidebar-left {
+    display: block !important;
+    grid-column: 1 / 2 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Sidebar Phải (Mục lục/Bài viết mới) - Cân xứng với sidebar trái */
+  .post-grid-sidebar-right {
+    display: block !important;
+    grid-column: 3 / 4 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Tối ưu scrollbar cho sidebars (Hiện rõ hơn để người dùng biết có thể cuộn) */
+  .post-grid-sidebar-left::-webkit-scrollbar,
+  .post-grid-sidebar-right::-webkit-scrollbar {
+    width: 8px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-track,
+  .post-grid-sidebar-right::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 10px;
+    border: 2px solid #f8f9fa;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb:hover,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb:hover {
+    background-color: #adb5bd;
+  }
+
+  /* Make items spaced out to ensure overflow */
+  .latest-post-item {
+    margin-bottom: 20px !important;
+  }
+
+  /* Nội dung bài viết (Ở giữa) */
+  .post-grid-article {
+    grid-column: 2 / 3 !important;
+    width: 100% !important; /* Đảm bảo article chiếm toàn bộ cột 2 */
+    max-width: none !important;
+    min-width: 0; /* Tránh vỡ layout khi có ảnh to */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Bài viết liên quan (Full width dưới cùng) */
+  .page__related-wrapper {
+    max-width: 1600px !important; /* Đồng bộ độ rộng với grid trên */
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .page__related {
+    border-top: 1px solid #eee;
+    padding-top: 2rem;
+  }
+ /* CHUYÊN GIA: Ép nội dung bên trong bài viết giãn 100% */
+  /* CHUYÊN GIA: Ép mọi lớp bao trong phải giãn 100% */
+  .post-grid-article,
+  .post-grid-article .page__inner-wrap,
+  .post-grid-article .page__content {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* Khử giới hạn của các thẻ nội dung cụ thể nếu có */
+  .post-grid-article header,
+  .post-grid-article section,
+  .post-grid-article footer {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  /* --- RESPONSIVE --- */
+  
+  /* Laptop nhỏ/Tablet (Ẩn cột phải, dồn không gian cho nội dung) */
+  @media (max-width: 1200px) {
+    .post-grid-container {
+      grid-template-columns: 220px 1fr !important; /* 2 Cột */
+    }
+    .post-grid-sidebar-right {
+      display: none !important; /* Tạm ẩn TOC bên phải để không chật */
+    }
+  }
+
+  /* Mobile (1 Cột dọc) */
+  @media (max-width: 768px) {
+    .post-grid-container {
+      grid-template-columns: 1fr !important;
+    }
+    .post-grid-sidebar-left, 
+    .post-grid-sidebar-right {
+      display: none !important;
+    }
+  }
+</style>
+
+<div id="main" role="main" class="post-grid-container">
+  
+  <div class="post-grid-sidebar-left">
+    <aside class="left-sidebar">
+  
+  <!-- Traffic Stats Section -->
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Traffic Stats</h4>
+    <div style="padding: 12px; background: #f9f9f9; border-radius: 4px; border: 1px solid #eee; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.8rem; color: #666; font-weight: 500;">
+              <i class="fas fa-chart-line" style="margin-right: 5px;"></i> Stats API
+            </span>
+            <span id="ga4-status-badge" style="font-size: 0.6rem; color: #666; background: #eee; padding: 1px 6px; border-radius: 10px;">Connecting...</span>
+        </div>
+        
+        <!-- API-based Counter (Busuanzi) -->
+        <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.8rem; color: #333;">Site Views (PV)</span>
+                <span id="busuanzi_value_site_pv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: #333;">Total Unique Visitors</span>
+                <span id="busuanzi_value_site_uv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+        </div>
+        
+        <script>
+          // Step 3 & 4 Verification: Verify tracking status and handle API display
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              const badge = document.getElementById('ga4-status-badge');
+              if (typeof gtag === 'function') {
+                badge.innerText = 'GA4 Active';
+                badge.style.background = '#e8f5e9';
+                badge.style.color = '#28a745';
+              } else {
+                badge.innerText = 'GA4 Offline';
+                badge.style.background = '#ffebee';
+                badge.style.color = '#d32f2f';
+              }
+            }, 2000);
+          });
+        </script>
+        
+        <div style="text-align: center; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ddd;">
+            <a href="https://analytics.google.com/analytics/web/" target="_blank" style="font-size: 0.7rem; color: #0d6efd; text-decoration: none;">
+                <i class="fab fa-google"></i> Analysis Dashboard
+            </a>
+        </div>
+    </div>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="https://analytics.google.com/analytics/web/" target="_blank" class="share-link">
+          <i class="fas fa-chart-line"></i> View GA Dashboard
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Share</h4>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="#" class="share-link" onclick="window.print(); return false;">
+          <i class="fas fa-print"></i> Print this page
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="mailto:?subject=Engineering Tools&body=Check this out!" class="share-link">
+          <i class="fas fa-envelope"></i> Send via Email
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="#" class="share-link">
+          <i class="fab fa-twitter"></i> Share on Twitter
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Facebook</h4>
+    <a href="https://facebook.com/g.technical" target="_blank" class="rec-link">
+      <i class="fab fa-facebook-square" style="color: #4267B2; font-size: 1.2rem;"></i> FB Fanpage
+    </a>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Books</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Design of Concrete Structures (Nilson)</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Foundation Analysis and Design (Bowles)</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Courses</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Coursera: Civil Engineering</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Udemy: SAP2000 Ultimate</a>
+      </li>
+    </ul>
+  </div>
+
+</aside>
+  </div>
+
+  <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="headline" content="SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn">
+    <meta itemprop="description" content="1. Bài toán tường cừ">
+    <meta itemprop="datePublished" content="2025-10-28T10:00:00+07:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/" class="u-url" itemprop="url">SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          3 phút để đọc
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="articleBody">
+        <h3 id="1-bài-toán-tường-cừ">1. Bài toán tường cừ</h3>
+
+<p>Trong kỹ thuật địa kỹ thuật và công trình ngầm, <strong>tường cừ ván (Sheet Pile Wall)</strong> là một trong những giải pháp móng sâu và tường chắn phổ biến nhất. Chúng được sử dụng để thi công hố móng, bảo vệ bờ sông, xây dựng bến cảng, và ổn định mái dốc.</p>
+
+<p>Tuy nhiên, việc phân tích và thiết kế tường cừ ván không hề đơn giản. Nó đòi hỏi sự hiểu biết sâu sắc về tương tác đất-kết cấu (Soil-Structure Interaction), áp lực đất chủ động/bị động, và áp lực nước. Các phương pháp truyền thống như Cân bằng Giới hạn (Limit Equilibrium Method - LEM) tuy đơn giản nhưng có nhiều hạn chế khi mô hình hóa các điều kiện phức tạp như đất nhiều lớp, hệ neo, hay tải trọng động.</p>
+
+<h3 id="2-phương-pháp-phần-tử-hữu-hạn-fem">2. Phương pháp Phần tử Hữu hạn (FEM)</h3>
+
+<p><strong>Phương pháp Phần tử Hữu hạn (FEM)</strong> là một công cụ mạnh mẽ để giải quyết bài toán này. Nó mô hình hóa tường cừ như một dầm liên tục (dầm Timoshenko) được đỡ bởi các gối tựa đàn hồi (các lò xo phi tuyến) đại diện cho nền đất.</p>
+
+<p>Mô hình này cho phép:</p>
+<ul>
+  <li>Mô phỏng chính xác sự phân bố lại ứng suất.</li>
+  <li>Tính toán nội lực (Mô-men, Lực cắt) và chuyển vị tại bất kỳ điểm nào dọc thân tường.</li>
+  <li>Xem xét ảnh hưởng của các lớp đất khác nhau, mực nước ngầm, và các hệ neo (anchors) hoặc thanh chống (struts).</li>
+</ul>
+
+<h3 id="3-thách-thức-tốc-độ-và-khả-năng-truy-cập">3. Thách thức: Tốc độ và Khả năng Truy cập</h3>
+
+<p>Các phần mềm FEM thương mại (như Plaxis, GeoStudio) rất mạnh mẽ nhưng cũng đắt đỏ, phức tạp và yêu cầu cài đặt nặng nề. Các công cụ tính toán dựa trên Excel/VBA tuy tiện lợi nhưng chậm chạp và khó mở rộng.</p>
+
+<p>Đây là lúc <strong>WebAssembly</strong> phát huy sức mạnh.</p>
+
+<h3 id="4-giải-pháp-sheetpilefem-c-lõi-wasm">4. Giải pháp: SheetPileFEM (C++ lõi Wasm)</h3>
+
+<p>Chúng tôi đã phát triển <strong>SheetPileFEM</strong>, một ứng dụng web-app, với lõi tính toán được viết hoàn toàn bằng <strong>C++</strong> và biên dịch sang <strong>WebAssembly</strong>.</p>
+
+<ul>
+  <li><strong>Giao diện (Frontend):</strong> Người dùng nhập liệu (thông số đất, tường, neo, tải trọng) trên giao diện web (HTML/JS) trực quan.</li>
+  <li><strong>Lõi tính (Backend):</strong> Dữ liệu được gửi đến mô-đun Wasm. Lõi C++ thực hiện toàn bộ các bước tính toán FEM tốc độ cao:
+    <ol>
+      <li>Xây dựng ma trận độ cứng tổng thể.</li>
+      <li>Áp dụng điều kiện biên và tải trọng.</li>
+      <li>Giải hệ phương trình tuyến tính để tìm chuyển vị tại các nút.</li>
+      <li>Tính toán nội lực (Mô-men, Lực cắt) từ chuyển vị.</li>
+    </ol>
+  </li>
+  <li><strong>Kết quả (Output):</strong> Wasm trả kết quả về cho JavaScript để vẽ biểu đồ nội lực, chuyển vị và hiển thị bảng kết quả chi tiết tại từng điểm nút.</li>
+</ul>
+
+<h3 id="5-mô-hình-freemium-từ-giáo-dục-đến-chuyên-nghiệp">5. Mô hình Freemium: Từ Giáo dục đến Chuyên nghiệp</h3>
+
+<p><strong>SheetPileFEM</strong> được xây dựng theo mô hình “Freemium” để phục vụ cả cộng đồng:</p>
+
+<ol>
+  <li><strong>Bản Miễn phí (Free):</strong>
+    <ul>
+      <li><strong>Đối tượng:</strong> Sinh viên, kỹ sư mới, hoặc các bài toán đơn giản.</li>
+      <li><strong>Tính năng:</strong> Đầy đủ các tính năng cơ bản như đã nêu.</li>
+      <li><strong>Giới hạn:</strong> Có thể bị giới hạn số lớp đất (ví dụ: tối đa 2 lớp), không hỗ trợ hệ neo (Anchors) và tải trọng phức tạp (Surcharge).</li>
+      <li><strong>Truy cập:</strong> Ngay tại đây, trên <code class="language-plaintext highlighter-rouge">hydrostructai.github.io</code>.</li>
+    </ul>
+  </li>
+  <li><strong>Bản Chuyên nghiệp (Pro - Dạng SaaS):</strong>
+    <ul>
+      <li><strong>Đối tượng:</strong> Kỹ sư thiết kế, công ty tư vấn chuyên nghiệp.</li>
+      <li><strong>Tính năng:</strong> Mở khóa toàn bộ giới hạn: số lớp đất không giới hạn, tính toán hệ neo đàn hồi, nhập tải trọng phức tạp, lưu/tải dự án, xuất báo cáo chuyên nghiệp.</li>
+      <li><strong>TruyCập:</strong> Sẽ được cung cấp dưới dạng Dịch vụ (SaaS) có trả phí, yêu cầu License Key để xác thực.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="6-trải-nghiệm-ngay">6. Trải nghiệm ngay</h3>
+
+<p>Chúng tôi tin tưởng rằng công cụ này sẽ là một tài nguyên học tập quý giá cho sinh viên và là một công cụ hỗ trợ nhanh chóng, tiện lợi cho các kỹ sư.</p>
+
+<p>Hãy tự mình trải nghiệm ngay bây giờ. Mọi phản hồi đều được hoan nghênh.</p>
+
+<p><a href="/apps/sheetpilefem/"><strong>Khám phá Sheet Pile FEM</strong></a></p>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Thẻ: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/c" class="page__taxonomy-item p-category" rel="tag">C++</a><span class="sep">, </span>
+    
+      <a href="/tags/fem" class="page__taxonomy-item p-category" rel="tag">FEM</a><span class="sep">, </span>
+    
+      <a href="/tags/n%E1%BB%81n-m%C3%B3ng" class="page__taxonomy-item p-category" rel="tag">Nền móng</a><span class="sep">, </span>
+    
+      <a href="/tags/saas" class="page__taxonomy-item p-category" rel="tag">SaaS</a><span class="sep">, </span>
+    
+      <a href="/tags/t%C6%B0%E1%BB%9Dng-c%E1%BB%AB-v%C3%A1n" class="page__taxonomy-item p-category" rel="tag">Tường cừ ván</a><span class="sep">, </span>
+    
+      <a href="/tags/webassembly" class="page__taxonomy-item p-category" rel="tag">WebAssembly</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Danh mục: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/sheet-pile-wall" class="page__taxonomy-item p-category" rel="tag">Sheet Pile Wall</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Ngày cập nhật:</strong> <time class="dt-published" datetime="2025-10-28T10:00:00+07:00">October 28, 2025</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  <h4 class="page__share-title">Chia sẻ tại</h4>
+
+  <a href="https://x.com/intent/tweet?text=SheetPileFEM%3A+Ph%C3%A2n+t%C3%ADch+t%C6%B0%E1%BB%9Dng+c%E1%BB%AB+v%C3%A1n+theo+ph%C6%B0%C6%A1ng+ph%C3%A1p+ph%E1%BA%A7n+t%E1%BB%AD+h%E1%BB%AFu+h%E1%BA%A1n%20http%3A%2F%2Flocalhost%3A4000%2Fsheet%2520pile%2520wall%2Fsheet-pile-fem-wasm-intro%2F" class="btn btn--x" aria-label="Share on X" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại X">
+    <i class="fab fa-fw fa-x-twitter" aria-hidden="true"></i><span> X</span>
+  </a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fsheet%2520pile%2520wall%2Fsheet-pile-fem-wasm-intro%2F" class="btn btn--facebook" aria-label="Share on Facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Facebook">
+    <i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span>
+  </a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/" class="btn btn--linkedin" aria-label="Share on LinkedIn" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại LinkedIn">
+    <i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span>
+  </a>
+
+  <a href="https://bsky.app/intent/compose?text=SheetPileFEM%3A+Ph%C3%A2n+t%C3%ADch+t%C6%B0%E1%BB%9Dng+c%E1%BB%AB+v%C3%A1n+theo+ph%C6%B0%C6%A1ng+ph%C3%A1p+ph%E1%BA%A7n+t%E1%BB%AD+h%E1%BB%AFu+h%E1%BA%A1n%20http%3A%2F%2Flocalhost%3A4000%2Fsheet%2520pile%2520wall%2Fsheet-pile-fem-wasm-intro%2F" class="btn btn--bluesky" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Bluesky">
+    <i class="fab fa-fw fa-bluesky" aria-hidden="true"></i><span> Bluesky</span>
+  </a>
+</section>
+
+      
+  <nav class="pagination">
+    
+      <a href="/ansys/khang-chan-dap-ansys/" class="pagination--pager" title="Phân tích kháng chấn đập bê tông trọng lực theo phương pháp phổ phản ứng">Trước</a>
+    
+    
+      <a href="/pile%20foundation/geotechnical/pile-group-wasm-intro/" class="pagination--pager" title="Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro">Kế tiếp</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  <div class="post-grid-sidebar-right">
+    <aside class="right-sidebar">
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Latest Posts</h4>
+    <ul class="latest-posts-list">
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">23/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Xem chi tiết các báo cáo mẫu tại đây
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">19/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/2d%20analysis/cross-section-mesh/">Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/3d%20analysis/shortcol3d-development/">Xây dựng Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tại Sao Cần Biểu Đồ Tương Tác 3D?
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">12/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/algorithms/shortcol-standard/">Xây dựng Biểu đồ Tương tác Cột (P-M) theo 3 Tiêu chuẩn: TCVN, EC2 và ACI</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Bài toán Cột Chịu Nén Lệch Tâm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/automation/revit%20api/artificial%20intelligence/hydraulic%20engineering/ai-revit/">Tự Động Hóa Thiết Kế Revit API</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Mức độ: Chuyên sâu (Advanced)
+Thời gian đọc: 10 phút
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/algorithms/hydraulic%20engineering/python/revit%20api/terrain-aware-pathfinding/">Quy hoạch Tuyến công trình Dựa trên Địa hình (Terrain-Aware Path Planning)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Làm thế nào để quy hoạch tuyến tối ưu trên địa hình phức tạp? Bài viết này chia sẻ phương...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/vba/etabs-vba/">Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnics/data%20analysis/numerical%20modeling/co-ket-crs/">Tối ưu hóa Phân tích Cố kết nền đất yếu: Tham số thực nghiệm CRS và ứng dụng thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỹ thuật địa kỹ thuật hiện đại, đặc biệt là tại khu vực Đồng bằng sông Cửu Long (ĐBSCL)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">07/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/engineering%20apps/shortcol/">Biểu Đồ Tương Tác- Phân Tích Cột Chịu Nén Lệch Tâm</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong thiết kế kết cấu bê tông cốt thép, cột là cấu kiện chịu lực phức tạp nhất do sự...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">06/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/swmm-epanet-explorer/">Công cụ Trực quan hóa Tệp dữ liệu cho SWMM5 và EPANET</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Chào mừng các bạn đến với bài viết giới thiệu về một công cụ tiện ích mới dành cho cộng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">11/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/hydraulics/thuy-luc-doc-nuoc-tieu-nang/">Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Phân tích chi tiết tính toán thủy lực dốc nước và thiết kế bể tiêu năng dựa trên lý thuyết...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">10/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/pile%20foundation/geotechnical/pile-group-wasm-intro/">Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ứng dụng Pile Group 3D (Bệ cọc đài cao) đã được chuyển đổi từ mã nguồn Turbo Pascal 7.0 kinh...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">28/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/">SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán tường cừ
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/ansys/khang-chan-dap-ansys/">Phân tích kháng chấn đập bê tông trọng lực theo phương pháp phổ phản ứng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Để thực hiện phân tích, chúng ta làm việc với mô hình phần tử hữu hạn ba chiều (FEM 3D)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">27/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/taylor-series-visualizer/">Vẽ Chuỗi Taylor</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Khái niệm Xấp xỉ Hàm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/hypocycloid-generator/">Vẽ đường cong Hypocycloid (Spirograph)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Giới thiệu Hypocycloid
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">14/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/heart-drawing/">Vẽ Trái Tim</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Phương trình Tham số
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/circle-area-tangent/">Bài toán Hình tròn Tiếp tuyến 3 đường cong</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán Hình học Giải tích Thú vị
+
+          
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</aside>
+  </div>
+
+</div>
+<div class="page__related-wrapper">
+  
+    <div class="page__related">
+      <h2 class="page__related-title">Có thể bạn cũng thích</h2>
+      <div class="grid__wrapper">
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+  </h3>
+  <p><p>Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang quản lý dựa trên nguyên tắc và hiệu suất (Principle &amp; Performance-based). Bài viết này sẽ phân tích tài liệu <em>“Tiến trình Quản lý Dự án &amp; Soạn thảo Quy trình”</em> dưới lăng kính của <strong>PMBOK Guide 7th Edition</strong>, đồng thời đối chiếu với khung pháp lý mới nhất của Việt Nam (Nghị định 175/2024/NĐ-CP).</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+  </h3>
+  <p><p>Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất trong toán học ứng dụng và kinh tế. Bài viết này sẽ giới thiệu về cơ sở toán học của LP và cách triển khai giải quyết 3 bài toán thực tế bằng thư viện SciPy trong Python.</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+  </h3>
+  <p><p><strong><a href="https://hydrostructai.com/calcpad_engineering/calcpad.html">Xem chi tiết các báo cáo mẫu tại đây</a></strong></p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+  </h3>
+  <p><h2 id="tổng-quan">Tổng Quan</h2>
+</p>
+</article>
+
+        
+      </div>
+    </div>
+  
+</div>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn",
+  "author": {
+    "@type": "Person",
+    "name": "Hydro Structure AI"
+  },
+  "datePublished": "2025-10-28T10:00:00+07:00",
+  
+  "dateModified": "2025-10-28T10:00:00+07:00",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Hydro Structure AI",
+    "logo": {
+      "@type": "ImageObject",
+      "url": ""
+    }
+  },
+  "description": "1. Bài toán tường cừ",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/"
+  }
+}
+</script>
+
+      
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Theo dõi:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="mailto:ha.nguyen@hydrostructai.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">
+  &copy; 2026 Hydro Structure AI. 
+  <span class="copyright-text">Thiết kế bởi <a href="https://github.com/HydroStructAI" rel="nofollow">HydroStructAI Team</a>.</span>
+</div>
+      </footer>
+    </div>
+
+    <script src="/assets/js/global.js"></script>
+
+<script src="/assets/js/app_core_logic.js"></script>
+
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC', { 'anonymize_ip': false});
+</script>
+
+
+  </body>
+</html>

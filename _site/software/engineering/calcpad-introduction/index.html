@@ -1,0 +1,1352 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.27.3 by Michael Rose
+  Copyright 2013-2025 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="vi" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng | Hydro Structure AI</title>
+<meta name="description" content="Xem chi tiết các báo cáo mẫu tại đây">
+
+
+  <meta name="author" content="Hydro Structure AI">
+  
+  <meta property="article:author" content="Hydro Structure AI">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="vi">
+<meta property="og:site_name" content="Hydro Structure AI">
+<meta property="og:title" content="Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng">
+<meta property="og:url" content="http://localhost:4000/software/engineering/calcpad-introduction/">
+
+
+  <meta property="og:description" content="Xem chi tiết các báo cáo mẫu tại đây">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2026-01-21T10:00:00+07:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/software/engineering/calcpad-introduction/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hydro Structure AI Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<!-- 
+  GOOGLE ANALYTICS INJECTION
+  - Tracking data is sent to GA4 (ID: G-BNB682DVWC)
+  - To disable, remove these script tags or change the ID in _config.yml
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC');
+</script>
+
+<!-- Bootstrap 5 (Required for Global UI & Apps) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<!-- Global CSS for Site-Wide Styling & Modern Post Grid Layout -->
+<link rel="stylesheet" href="/assets/css/global.css">
+
+<!-- Busuanzi Analytics (Visitor Counter API) - Provides Site PV/UV -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  </head>
+
+  <body class="layout--single" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Nhảy tới thanh điều hướng</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Nhảy tới nội dung</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Nhảy tới chân trang</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Hydro Structure AI
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/"
+                
+                
+              >Blog</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/apps/"
+                
+                
+              >Web Apps</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >Về chúng tôi</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/tags/"
+                
+                
+              >Theo Thẻ (Tags)</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<style>
+  /* 1. Cấu hình lưới 3 cột */
+  .post-grid-container {
+    display: grid !important;
+    /* Sidebar Trái: 240px (Thu nhỏ xíu để nhường chỗ)
+       Nội dung Giữa: 1fr (Tự động chiếm hết khoảng trống còn lại)
+       Sidebar Phải: 240px 
+    */
+    grid-template-columns: 240px minmax(0, 1fr) 240px !important;
+    gap: 30px !important;
+    align-items: start;
+    
+    /* 2. Tăng chiều rộng tổng thể lên ~20% (từ 1280px -> 1600px) */
+    max-width: 1600px !important; 
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+  }
+
+  /* Sidebar Trái */
+  .post-grid-sidebar-left {
+    display: block !important;
+    grid-column: 1 / 2 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Sidebar Phải (Mục lục/Bài viết mới) - Cân xứng với sidebar trái */
+  .post-grid-sidebar-right {
+    display: block !important;
+    grid-column: 3 / 4 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Tối ưu scrollbar cho sidebars (Hiện rõ hơn để người dùng biết có thể cuộn) */
+  .post-grid-sidebar-left::-webkit-scrollbar,
+  .post-grid-sidebar-right::-webkit-scrollbar {
+    width: 8px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-track,
+  .post-grid-sidebar-right::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 10px;
+    border: 2px solid #f8f9fa;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb:hover,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb:hover {
+    background-color: #adb5bd;
+  }
+
+  /* Make items spaced out to ensure overflow */
+  .latest-post-item {
+    margin-bottom: 20px !important;
+  }
+
+  /* Nội dung bài viết (Ở giữa) */
+  .post-grid-article {
+    grid-column: 2 / 3 !important;
+    width: 100% !important; /* Đảm bảo article chiếm toàn bộ cột 2 */
+    max-width: none !important;
+    min-width: 0; /* Tránh vỡ layout khi có ảnh to */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Bài viết liên quan (Full width dưới cùng) */
+  .page__related-wrapper {
+    max-width: 1600px !important; /* Đồng bộ độ rộng với grid trên */
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .page__related {
+    border-top: 1px solid #eee;
+    padding-top: 2rem;
+  }
+ /* CHUYÊN GIA: Ép nội dung bên trong bài viết giãn 100% */
+  /* CHUYÊN GIA: Ép mọi lớp bao trong phải giãn 100% */
+  .post-grid-article,
+  .post-grid-article .page__inner-wrap,
+  .post-grid-article .page__content {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* Khử giới hạn của các thẻ nội dung cụ thể nếu có */
+  .post-grid-article header,
+  .post-grid-article section,
+  .post-grid-article footer {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  /* --- RESPONSIVE --- */
+  
+  /* Laptop nhỏ/Tablet (Ẩn cột phải, dồn không gian cho nội dung) */
+  @media (max-width: 1200px) {
+    .post-grid-container {
+      grid-template-columns: 220px 1fr !important; /* 2 Cột */
+    }
+    .post-grid-sidebar-right {
+      display: none !important; /* Tạm ẩn TOC bên phải để không chật */
+    }
+  }
+
+  /* Mobile (1 Cột dọc) */
+  @media (max-width: 768px) {
+    .post-grid-container {
+      grid-template-columns: 1fr !important;
+    }
+    .post-grid-sidebar-left, 
+    .post-grid-sidebar-right {
+      display: none !important;
+    }
+  }
+</style>
+
+<div id="main" role="main" class="post-grid-container">
+  
+  <div class="post-grid-sidebar-left">
+    <aside class="left-sidebar">
+  
+  <!-- Traffic Stats Section -->
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Traffic Stats</h4>
+    <div style="padding: 12px; background: #f9f9f9; border-radius: 4px; border: 1px solid #eee; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.8rem; color: #666; font-weight: 500;">
+              <i class="fas fa-chart-line" style="margin-right: 5px;"></i> Stats API
+            </span>
+            <span id="ga4-status-badge" style="font-size: 0.6rem; color: #666; background: #eee; padding: 1px 6px; border-radius: 10px;">Connecting...</span>
+        </div>
+        
+        <!-- API-based Counter (Busuanzi) -->
+        <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.8rem; color: #333;">Site Views (PV)</span>
+                <span id="busuanzi_value_site_pv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: #333;">Total Unique Visitors</span>
+                <span id="busuanzi_value_site_uv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+        </div>
+        
+        <script>
+          // Step 3 & 4 Verification: Verify tracking status and handle API display
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              const badge = document.getElementById('ga4-status-badge');
+              if (typeof gtag === 'function') {
+                badge.innerText = 'GA4 Active';
+                badge.style.background = '#e8f5e9';
+                badge.style.color = '#28a745';
+              } else {
+                badge.innerText = 'GA4 Offline';
+                badge.style.background = '#ffebee';
+                badge.style.color = '#d32f2f';
+              }
+            }, 2000);
+          });
+        </script>
+        
+        <div style="text-align: center; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ddd;">
+            <a href="https://analytics.google.com/analytics/web/" target="_blank" style="font-size: 0.7rem; color: #0d6efd; text-decoration: none;">
+                <i class="fab fa-google"></i> Analysis Dashboard
+            </a>
+        </div>
+    </div>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="https://analytics.google.com/analytics/web/" target="_blank" class="share-link">
+          <i class="fas fa-chart-line"></i> View GA Dashboard
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Share</h4>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="#" class="share-link" onclick="window.print(); return false;">
+          <i class="fas fa-print"></i> Print this page
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="mailto:?subject=Engineering Tools&body=Check this out!" class="share-link">
+          <i class="fas fa-envelope"></i> Send via Email
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="#" class="share-link">
+          <i class="fab fa-twitter"></i> Share on Twitter
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Facebook</h4>
+    <a href="https://facebook.com/g.technical" target="_blank" class="rec-link">
+      <i class="fab fa-facebook-square" style="color: #4267B2; font-size: 1.2rem;"></i> FB Fanpage
+    </a>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Books</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Design of Concrete Structures (Nilson)</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Foundation Analysis and Design (Bowles)</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Courses</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Coursera: Civil Engineering</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Udemy: SAP2000 Ultimate</a>
+      </li>
+    </ul>
+  </div>
+
+</aside>
+  </div>
+
+  <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="headline" content="Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng">
+    <meta itemprop="description" content="Xem chi tiết các báo cáo mẫu tại đây">
+    <meta itemprop="datePublished" content="2026-01-21T10:00:00+07:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/software/engineering/calcpad-introduction/" class="u-url" itemprop="url">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          6 phút để đọc
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="articleBody">
+        <p><strong><a href="https://hydrostructai.com/calcpad_engineering/calcpad.html">Xem chi tiết các báo cáo mẫu tại đây</a></strong></p>
+
+<hr />
+
+<p>Calcpad là công cụ tính toán kỹ thuật mạnh mẽ cho phép bạn viết các phép tính phức tạp dưới dạng văn bản và tự động tạo báo cáo chuyên nghiệp.</p>
+
+<p><strong>Website Calcpad:</strong> <a href="https://www.calcpad.eu">https://www.calcpad.eu</a></p>
+
+<hr />
+
+<h2 id="-giới-thiệu-calcpad">📖 Giới thiệu Calcpad</h2>
+
+<h3 id="calcpad-là-gì">Calcpad là gì?</h3>
+<p>Calcpad cho phép bạn:</p>
+<ul>
+  <li>✅ Viết phương trình toán học dạng văn bản đơn giản</li>
+  <li>✅ Tự động tính toán và hiển thị kết quả</li>
+  <li>✅ Tạo báo cáo chuyên nghiệp (HTML + PDF)</li>
+  <li>✅ Giữ lịch sử tính toán rõ ràng</li>
+  <li>✅ Chia sẻ công việc dễ dàng qua file <code class="language-plaintext highlighter-rouge">.cpd</code></li>
+</ul>
+
+<h3 id="tại-sao-dùng-calcpad">Tại sao dùng Calcpad?</h3>
+<ul>
+  <li>📊 <strong>Rõ ràng:</strong> Mọi công thức và kết quả đều có thể nhìn thấy</li>
+  <li>🔄 <strong>Tái sử dụng:</strong> Thay đổi giá trị đầu vào → kết quả tự động cập nhật</li>
+  <li>📁 <strong>Dễ lưu trữ:</strong> Một file <code class="language-plaintext highlighter-rouge">.cpd</code> chứa mọi thứ</li>
+  <li>🌐 <strong>Chia sẻ:</strong> Tạo HTML/PDF để gửi cho đồng nghiệp</li>
+  <li>⚡ <strong>Nhanh:</strong> Viết công thức nhanh hơn Excel hoặc tính máy</li>
+</ul>
+
+<hr />
+
+<h2 id="-tính-năng-chính">🎯 Tính năng chính</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Tính năng</th>
+      <th>Mô tả</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Biến số</strong></td>
+      <td>Khai báo biến và gán giá trị</td>
+    </tr>
+    <tr>
+      <td><strong>Công thức</strong></td>
+      <td>Viết phương trình toán học</td>
+    </tr>
+    <tr>
+      <td><strong>Đơn vị</strong></td>
+      <td>Tự động chuyển đổi đơn vị</td>
+    </tr>
+    <tr>
+      <td><strong>Dự toán</strong></td>
+      <td>Kiểm tra kết quả với <code class="language-plaintext highlighter-rouge">=?</code></td>
+    </tr>
+    <tr>
+      <td><strong>Văn bản</strong></td>
+      <td>Thêm mô tả bằng dấu ngoặc kép <code class="language-plaintext highlighter-rouge">"..."</code></td>
+    </tr>
+    <tr>
+      <td><strong>Đồ thị</strong></td>
+      <td>Vẽ sơ đồ và biểu đồ</td>
+    </tr>
+    <tr>
+      <td><strong>HTML/PDF</strong></td>
+      <td>Xuất báo cáo chuyên nghiệp</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="-bắt-đầu-nhanh-5-phút">🚀 Bắt đầu nhanh (5 Phút)</h2>
+
+<h3 id="bước-1-tạo-file-cpd">Bước 1: Tạo File <code class="language-plaintext highlighter-rouge">.cpd</code></h3>
+
+<p>Tạo file text tên <code class="language-plaintext highlighter-rouge">my_analysis.cpd</code> với nội dung:</p>
+
+<pre><code class="language-calcpad">"Báo cáo Phân tích Dầm"
+'Bước 1: Nhập dữ liệu
+L = 6 "Dài nhịp (m)"
+P = 50 "Tải trọng (kN)"
+I = 0.005 "Moment quán tính (m⁴)"
+
+'Bước 2: Tính toán
+M = P * L / 4 "Moment uốn (kNm)"
+σ = M / (I / 0.3) "Ứng suất (kPa)"
+
+'Bước 3: Kiểm tra kết quả
+M = ? "Moment uốn = ?"
+σ = ? "Ứng suất = ?"
+</code></pre>
+
+<h3 id="bước-2-chạy-calcpad">Bước 2: Chạy Calcpad</h3>
+
+<p><strong>Trên Windows/Mac:</strong></p>
+<ol>
+  <li>Mở Calcpad Editor</li>
+  <li>File → Open → Chọn <code class="language-plaintext highlighter-rouge">my_analysis.cpd</code></li>
+  <li>Nhấn “Generate” hoặc Ctrl+G</li>
+  <li>Xem kết quả tạo thành file <code class="language-plaintext highlighter-rouge">my_analysis.html</code></li>
+</ol>
+
+<p><strong>Trên Linux/WSL:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>calcpad my_analysis.cpd
+</code></pre></div></div>
+
+<h3 id="bước-3-sử-dụng-calcpad-trên-vs-code">Bước 3: Sử dụng Calcpad trên VS Code</h3>
+<p>Sử dụng VS Code giúp bạn viết code nhanh hơn nhờ tính năng gợi ý (Intellisense) và xem kết quả ngay lập tức.</p>
+
+<ol>
+  <li><strong>Cài đặt:</strong> Mở VS Code, nhấn <code class="language-plaintext highlighter-rouge">Ctrl+Shift+X</code>, tìm “Calcpad” hoặc cài từ file <code class="language-plaintext highlighter-rouge">.vsix</code>.</li>
+  <li><strong>Chạy tính toán:</strong> Nhấn <strong><code class="language-plaintext highlighter-rouge">Ctrl+Shift+B</code></strong>, báo cáo HTML sẽ hiện ra ở cửa sổ bên cạnh.</li>
+  <li><strong>Mở phần mềm gốc:</strong> Nhấn <code class="language-plaintext highlighter-rouge">Ctrl+Shift+O</code> để mở file trong Calcpad Editor.</li>
+  <li><strong>Cấu hình trên WSL/Linux:</strong> 
+Nếu bạn dùng Linux hoặc WSL, cần vào <strong>Settings</strong> (<code class="language-plaintext highlighter-rouge">Ctrl+,</code>) và chỉnh lại đường dẫn:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">calcpad.cliPath</code>: <code class="language-plaintext highlighter-rouge">/usr/local/bin/calcpad</code></li>
+      <li><code class="language-plaintext highlighter-rouge">calcpad.Path</code>: <code class="language-plaintext highlighter-rouge">/usr/local/bin/calcpad</code></li>
+      <li><code class="language-plaintext highlighter-rouge">calcpad.settingsPath</code>: <code class="language-plaintext highlighter-rouge">$HOME/.calcpad/Settings.xml</code></li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="bước-4-xem-kết-quả">Bước 4: Xem Kết Quả</h3>
+<ul>
+  <li>✅ File <code class="language-plaintext highlighter-rouge">my_analysis.html</code> được tạo</li>
+  <li>✅ Mở trong trình duyệt hoặc WebView của VS Code để xem báo cáo</li>
+  <li>✅ In hoặc lưu thành PDF bằng <code class="language-plaintext highlighter-rouge">wkhtmltopdf</code></li>
+</ul>
+
+<hr />
+
+<h2 id="-cú-pháp-calcpad-cơ-bản">📝 Cú pháp Calcpad cơ bản</h2>
+
+<h3 id="1-khai-báo-biến">1. Khai Báo Biến</h3>
+
+<pre><code class="language-calcpad">L = 6              'Biến không có đơn vị
+L = 6 "m"          'Biến có đơn vị (mét)
+L = 6 "mm" = ? "m" 'Chuyển đổi đơn vị (từ mm sang m)
+</code></pre>
+
+<h3 id="2-phép-toán">2. Phép toán</h3>
+
+<pre><code class="language-calcpad">A = 5 + 3
+B = A * 2
+C = 10 / 5
+D = 2 ^ 3          'Lũy thừa (2³ = 8)
+E = √16            'Căn bậc hai
+</code></pre>
+
+<h3 id="3-cách-ghi-chú-giải-thích">3. Cách ghi chú, giải thích</h3>
+
+<pre><code class="language-calcpad">'Dòng bắt đầu với dấu ngoặc đơn (') là bình luận
+"Dòng này sẽ hiển thị trong báo cáo"
+"Bước 1: Tính diện tích"
+</code></pre>
+
+<h3 id="4-hiển-thị-kết-quả">4. Hiển thị kết quả</h3>
+
+<pre><code class="language-calcpad">M = 50 * 6 / 4    'Tính moment
+M = ?             'Hiển thị kết quả: M = 75 kNm
+</code></pre>
+
+<h3 id="5-định-dạng-đầu-ra">5. Định dạng đầu ra</h3>
+
+<pre><code class="language-calcpad">M = 75
+M = 75%           'Phần trăm: 75%
+M = 75#2          'Làm tròn 2 chữ số thập phân
+M = 75!           'Bỏ qua hiển thị (giấu kết quả)
+</code></pre>
+
+<hr />
+
+<h2 id="-ví-dụ-thực-tế">💡 Ví dụ thực tế</h2>
+
+<h3 id="ví-dụ-1-tính-diện-tích-hình-chữ-nhật">Ví dụ 1: Tính diện tích hình chữ nhật</h3>
+
+<pre><code class="language-calcpad">"Diện tích hình chữ nhật"
+b = 5 "m" 'Chiều rộng
+h = 3 "m" 'Chiều dài
+A = b * h "m²" 'Diện tích
+A = ? "Diện tích = ?"
+</code></pre>
+
+<h3 id="ví-dụ-2-tính-moment-uốn-dầm-đơn-giản">Ví dụ 2: Tính Moment uốn dầm đơn giản</h3>
+
+<pre><code class="language-calcpad">"Phân tích dầm đơn giản chịu tải trọng tập trung"
+
+'Dữ liệu đầu vào
+L = 6 "m" 'Chiều dài dầm
+P = 100 "kN" 'Tải trọng tập trung ở giữa nhịp
+a = L / 2 "m" 'Vị trí tải trọng
+
+'Tính toán phản lực
+R_A = P * (L - a) / L "kN"
+R_B = P * a / L "kN"
+
+'Moment uốn tại giữa nhịp
+M_max = P * a * (L - a) / L "kNm"
+
+'Hiển thị kết quả
+"Phản lực tại A:"
+R_A = ? 
+
+"Phản lực tại B:"
+R_B = ?
+
+"Moment uốn cực đại:"
+M_max = ?
+</code></pre>
+
+<h3 id="ví-dụ-3-tính-toán-cốt-thép-dầm-bê-tông">Ví dụ 3: Tính toán cốt thép dầm bê tông</h3>
+
+<pre><code class="language-calcpad">
+'Dữ liệu
+M = 75 "kNm" 'Moment tác dụng
+f_y = 400 "MPa" 'Cường độ chảy thép
+f_c = 30 "MPa" 'Cường độ nén bê tông
+d = 0.5 "m" 'Độ sâu hiệu dụng
+
+'Tính diện tích thép cần thiết
+M_N = M * 1000 "kN"
+A_s_min = M_N / (0.87 * f_y * d) "cm²"
+
+"Diện tích thép cần thiết:"
+A_s_min = ?
+
+"Chọn thép: 4Φ20 = 12.57 cm² ✓"
+</code></pre>
+
+<hr />
+
+<h2 id="-định-dạng-văn-bản">🎨 Định dạng văn bản</h2>
+
+<h3 id="heading-tiêu-đề">Heading (Tiêu đề)</h3>
+
+<pre><code class="language-calcpad">"Tiêu đề chính"           'Heading 1
+"_Tiêu đề phụ"           'Heading 2
+"__Tiêu đề phụ 1"      'Heading 3
+</code></pre>
+
+<h3 id="in-đậm-nghiêng">In Đậm, Nghiêng</h3>
+
+<pre><code class="language-calcpad">"Văn bản **đậm**"          'In đậm
+"Văn bản **_nghiêng_**"   'Nghiêng
+"Văn bản ***đậm nghiêng***"
+</code></pre>
+
+<h3 id="danh-sách">Danh sách</h3>
+
+<pre><code class="language-calcpad">"Danh sách gạch đầu dòng:
+• Mục 1
+• Mục 2
+• Mục 3"
+
+"Danh sách số:
+1. Mục 1
+2. Mục 2
+3. Mục 3"
+</code></pre>
+
+<hr />
+
+<h2 id="-từ-calcpad-sang-htmlpdf">🌐 Từ Calcpad sang HTML/PDF</h2>
+
+<h3 id="tại-sao-xuất-htmlpdf">Tại sao xuất HTML/PDF?</h3>
+<ul>
+  <li>📤 <strong>Chia sẻ:</strong> Gửi báo cáo cho đồng nghiệp không cần Calcpad</li>
+  <li>🖨️ <strong>In ấn:</strong> In báo cáo chuyên nghiệp từ HTML</li>
+  <li>📎 <strong>Lưu trữ:</strong> Lưu bản sao lưu định kỳ</li>
+  <li>🌐 <strong>Công bố:</strong> Đăng lên website</li>
+</ul>
+
+<h3 id="hướng-dẫn">Hướng dẫn</h3>
+
+<p><strong>Calcpad Editor:</strong></p>
+<ol>
+  <li>Mở file <code class="language-plaintext highlighter-rouge">.cpd</code></li>
+  <li>Nhấn “Generate” (Ctrl+G)</li>
+  <li>Tìm file <code class="language-plaintext highlighter-rouge">.html</code> được tạo ra cùng thư mục</li>
+</ol>
+
+<p><strong>Từ dòng lệnh:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>calcpad my_analysis.cpd
+<span class="c"># Tạo file: my_analysis.html</span>
+</code></pre></div></div>
+
+<p><strong>Tạo PDF:</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wkhtmltopdf my_analysis.html my_analysis.pdf
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="-mẹo--thủ-thuật">⚡ Mẹo &amp; Thủ thuật</h2>
+
+<h3 id="1-tái-sử-dụng-template">1. Tái sử dụng Template</h3>
+<p>Lưu file <code class="language-plaintext highlighter-rouge">.cpd</code> làm template, sau đó:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cp </span>template.cpd my_new_analysis.cpd
+</code></pre></div></div>
+<p>Chỉnh sửa giá trị đầu vào, kết quả tự động cập nhật!</p>
+
+<h3 id="2-nhóm-biến-liên-quan">2. Nhóm biến liên quan</h3>
+<pre><code class="language-calcpad">'Vật liệu bê tông
+f_c = 30 "MPa"
+E_c = 25000 "MPa"
+
+'Vật liệu thép
+f_y = 400 "MPa"
+E_s = 200000 "MPa"
+</code></pre>
+
+<h3 id="3-kiểm-tra-độc-lập">3. Kiểm tra độc lập</h3>
+<pre><code class="language-calcpad">'Tính toán chính
+M = 75 "kNm"
+
+'Kiểm tra lại bằng công thức khác
+M_check = P * L / 4
+M_check = ?
+
+'Nếu kết quả bằng nhau thì ✓ đúng
+</code></pre>
+
+<h3 id="4-ẩn-các-phép-tính-trung-gian">4. Ẩn Các Phép Tính Trung Gian</h3>
+<pre><code class="language-calcpad">temp = 5 * 10 'Ẩn không hiển thị
+result = temp / 2
+result = ? 'Chỉ hiển thị kết quả cuối
+</code></pre>
+
+<hr />
+
+<h2 id="-xử-lý-sự-cố">🛠 Xử lý sự cố</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Vấn đề</th>
+      <th>Giải pháp</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Lỗi cú pháp</strong></td>
+      <td>Kiểm tra dấu ngoặc kép, dấu phẩy, toán tử</td>
+    </tr>
+    <tr>
+      <td><strong>Không tính toán được</strong></td>
+      <td>Kiểm tra đơn vị, biến chưa khai báo</td>
+    </tr>
+    <tr>
+      <td><strong>HTML không được tạo</strong></td>
+      <td>Chắc chắn file <code class="language-plaintext highlighter-rouge">.cpd</code> không có lỗi cú pháp</td>
+    </tr>
+    <tr>
+      <td><strong>PDF lỗi định dạng</strong></td>
+      <td>Kiểm tra Calcpad đã tạo HTML thành công</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="-hỗ-trợ">👨‍💼 Hỗ trợ</h2>
+
+<p><strong>Các câu hỏi thường gặp:</strong></p>
+<ol>
+  <li>Làm cách nào để viết căn bậc hai? <code class="language-plaintext highlighter-rouge">√</code> hoặc <code class="language-plaintext highlighter-rouge">sqrt()</code></li>
+  <li>Làm cách nào để chuyển đơn vị? <code class="language-plaintext highlighter-rouge">L = 1000 "mm" = ? "m"</code></li>
+  <li>Làm cách nào để ẩn dòng tính toán? Thêm <code class="language-plaintext highlighter-rouge">!</code> vào cuối</li>
+</ol>
+
+<p>Xem thêm: <a href="https://www.calcpad.eu/docs">https://www.calcpad.eu/docs</a></p>
+
+<hr />
+
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Thẻ: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/automation" class="page__taxonomy-item p-category" rel="tag">Automation</a><span class="sep">, </span>
+    
+      <a href="/tags/calcpad" class="page__taxonomy-item p-category" rel="tag">Calcpad</a><span class="sep">, </span>
+    
+      <a href="/tags/structural-engineering" class="page__taxonomy-item p-category" rel="tag">Structural Engineering</a><span class="sep">, </span>
+    
+      <a href="/tags/technical-report" class="page__taxonomy-item p-category" rel="tag">Technical Report</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Danh mục: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/engineering" class="page__taxonomy-item p-category" rel="tag">Engineering</a><span class="sep">, </span>
+    
+      <a href="/categories/software" class="page__taxonomy-item p-category" rel="tag">Software</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Ngày cập nhật:</strong> <time class="dt-published" datetime="2026-01-21T10:00:00+07:00">January 21, 2026</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  <h4 class="page__share-title">Chia sẻ tại</h4>
+
+  <a href="https://x.com/intent/tweet?text=Gi%E1%BB%9Bi+thi%E1%BB%87u+v%C3%A0+h%C6%B0%E1%BB%9Bng+d%E1%BA%ABn+s%E1%BB%AD+d%E1%BB%A5ng+ph%E1%BA%A7n+m%E1%BB%81m+Calcpad+trong+K%E1%BB%B9+thu%E1%BA%ADt+X%C3%A2y+d%E1%BB%B1ng%20http%3A%2F%2Flocalhost%3A4000%2Fsoftware%2Fengineering%2Fcalcpad-introduction%2F" class="btn btn--x" aria-label="Share on X" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại X">
+    <i class="fab fa-fw fa-x-twitter" aria-hidden="true"></i><span> X</span>
+  </a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fsoftware%2Fengineering%2Fcalcpad-introduction%2F" class="btn btn--facebook" aria-label="Share on Facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Facebook">
+    <i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span>
+  </a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/software/engineering/calcpad-introduction/" class="btn btn--linkedin" aria-label="Share on LinkedIn" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại LinkedIn">
+    <i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span>
+  </a>
+
+  <a href="https://bsky.app/intent/compose?text=Gi%E1%BB%9Bi+thi%E1%BB%87u+v%C3%A0+h%C6%B0%E1%BB%9Bng+d%E1%BA%ABn+s%E1%BB%AD+d%E1%BB%A5ng+ph%E1%BA%A7n+m%E1%BB%81m+Calcpad+trong+K%E1%BB%B9+thu%E1%BA%ADt+X%C3%A2y+d%E1%BB%B1ng%20http%3A%2F%2Flocalhost%3A4000%2Fsoftware%2Fengineering%2Fcalcpad-introduction%2F" class="btn btn--bluesky" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Bluesky">
+    <i class="fab fa-fw fa-bluesky" aria-hidden="true"></i><span> Bluesky</span>
+  </a>
+</section>
+
+      
+  <nav class="pagination">
+    
+      <a href="/geotechnical%20engineering/computational%20mechanics/camclay/" class="pagination--pager" title="Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng">Trước</a>
+    
+    
+      <a href="/optimization/data%20science/linear-program/" class="pagination--pager" title="Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế">Kế tiếp</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  <div class="post-grid-sidebar-right">
+    <aside class="right-sidebar">
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Latest Posts</h4>
+    <ul class="latest-posts-list">
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">23/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Xem chi tiết các báo cáo mẫu tại đây
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">19/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/2d%20analysis/cross-section-mesh/">Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/3d%20analysis/shortcol3d-development/">Xây dựng Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tại Sao Cần Biểu Đồ Tương Tác 3D?
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">12/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/algorithms/shortcol-standard/">Xây dựng Biểu đồ Tương tác Cột (P-M) theo 3 Tiêu chuẩn: TCVN, EC2 và ACI</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Bài toán Cột Chịu Nén Lệch Tâm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/automation/revit%20api/artificial%20intelligence/hydraulic%20engineering/ai-revit/">Tự Động Hóa Thiết Kế Revit API</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Mức độ: Chuyên sâu (Advanced)
+Thời gian đọc: 10 phút
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/algorithms/hydraulic%20engineering/python/revit%20api/terrain-aware-pathfinding/">Quy hoạch Tuyến công trình Dựa trên Địa hình (Terrain-Aware Path Planning)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Làm thế nào để quy hoạch tuyến tối ưu trên địa hình phức tạp? Bài viết này chia sẻ phương...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/vba/etabs-vba/">Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnics/data%20analysis/numerical%20modeling/co-ket-crs/">Tối ưu hóa Phân tích Cố kết nền đất yếu: Tham số thực nghiệm CRS và ứng dụng thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỹ thuật địa kỹ thuật hiện đại, đặc biệt là tại khu vực Đồng bằng sông Cửu Long (ĐBSCL)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">07/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/engineering%20apps/shortcol/">Biểu Đồ Tương Tác- Phân Tích Cột Chịu Nén Lệch Tâm</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong thiết kế kết cấu bê tông cốt thép, cột là cấu kiện chịu lực phức tạp nhất do sự...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">06/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/swmm-epanet-explorer/">Công cụ Trực quan hóa Tệp dữ liệu cho SWMM5 và EPANET</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Chào mừng các bạn đến với bài viết giới thiệu về một công cụ tiện ích mới dành cho cộng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">11/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/hydraulics/thuy-luc-doc-nuoc-tieu-nang/">Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Phân tích chi tiết tính toán thủy lực dốc nước và thiết kế bể tiêu năng dựa trên lý thuyết...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">10/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/pile%20foundation/geotechnical/pile-group-wasm-intro/">Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ứng dụng Pile Group 3D (Bệ cọc đài cao) đã được chuyển đổi từ mã nguồn Turbo Pascal 7.0 kinh...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">28/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/">SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán tường cừ
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/ansys/khang-chan-dap-ansys/">Phân tích kháng chấn đập bê tông trọng lực theo phương pháp phổ phản ứng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Để thực hiện phân tích, chúng ta làm việc với mô hình phần tử hữu hạn ba chiều (FEM 3D)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">27/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/taylor-series-visualizer/">Vẽ Chuỗi Taylor</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Khái niệm Xấp xỉ Hàm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/hypocycloid-generator/">Vẽ đường cong Hypocycloid (Spirograph)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Giới thiệu Hypocycloid
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">14/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/heart-drawing/">Vẽ Trái Tim</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Phương trình Tham số
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/circle-area-tangent/">Bài toán Hình tròn Tiếp tuyến 3 đường cong</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán Hình học Giải tích Thú vị
+
+          
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</aside>
+  </div>
+
+</div>
+<div class="page__related-wrapper">
+  
+    <div class="page__related">
+      <h2 class="page__related-title">Có thể bạn cũng thích</h2>
+      <div class="grid__wrapper">
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+  </h3>
+  <p><p>Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang quản lý dựa trên nguyên tắc và hiệu suất (Principle &amp; Performance-based). Bài viết này sẽ phân tích tài liệu <em>“Tiến trình Quản lý Dự án &amp; Soạn thảo Quy trình”</em> dưới lăng kính của <strong>PMBOK Guide 7th Edition</strong>, đồng thời đối chiếu với khung pháp lý mới nhất của Việt Nam (Nghị định 175/2024/NĐ-CP).</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+  </h3>
+  <p><p>Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất trong toán học ứng dụng và kinh tế. Bài viết này sẽ giới thiệu về cơ sở toán học của LP và cách triển khai giải quyết 3 bài toán thực tế bằng thư viện SciPy trong Python.</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+  </h3>
+  <p><h2 id="tổng-quan">Tổng Quan</h2>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/structural%20engineering/2d%20analysis/cross-section-mesh/">Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties</a>
+  </h3>
+  <p><h2 id="tổng-quan">Tổng Quan</h2>
+<p>Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở <code class="language-plaintext highlighter-rouge">sectionproperties</code>. 
+Phân tích bao gồm:</p>
+<ol>
+  <li><strong>Định Nghĩa Vật Liệu</strong>: Bê tông với các tính chất đàn hồi</li>
+  <li><strong>Tạo Hình Học</strong>: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF)</li>
+  <li><strong>Tạo Lưới</strong>: Tạo lưới phần tử hữu hạn</li>
+  <li><strong>Tính Toán Tính Chất</strong>: Tính chất hình học, uốn và dẻo</li>
+  <li><strong>Phân Tích Độ Cứng</strong>: Độ cứng trục, uốn và xoắn</li>
+  <li><strong>Phân Tích Ứng Suất</strong>: Nhiều trường hợp tải với trực quan hóa</li>
+  <li><strong>Vòng Mohr</strong>: Trực quan hóa trạng thái ứng suất tới hạn</li>
+</ol>
+</p>
+</article>
+
+        
+      </div>
+    </div>
+  
+</div>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng",
+  "author": {
+    "@type": "Person",
+    "name": "Hydro Structure AI"
+  },
+  "datePublished": "2026-01-21T10:00:00+07:00",
+  
+  "dateModified": "2026-01-21T10:00:00+07:00",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Hydro Structure AI",
+    "logo": {
+      "@type": "ImageObject",
+      "url": ""
+    }
+  },
+  "description": "Xem chi tiết các báo cáo mẫu tại đây",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/software/engineering/calcpad-introduction/"
+  }
+}
+</script>
+
+      
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Theo dõi:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="mailto:ha.nguyen@hydrostructai.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">
+  &copy; 2026 Hydro Structure AI. 
+  <span class="copyright-text">Thiết kế bởi <a href="https://github.com/HydroStructAI" rel="nofollow">HydroStructAI Team</a>.</span>
+</div>
+      </footer>
+    </div>
+
+    <script src="/assets/js/global.js"></script>
+
+<script src="/assets/js/app_core_logic.js"></script>
+
+
+  <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC', { 'anonymize_ip': false});
+</script>
+
+
+  </body>
+</html>

@@ -1,0 +1,366 @@
+/* =================================
+   1. THIẾT LẬP CHUNG (BASE STYLES)
+   ================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* =================================
+   2. HEADER SECTION
+   ================================= */
+.tool-header {
+    background: linear-gradient(135deg, #ffb6c1 0%, #e9967a 100%);  /*(hồng nhạt đến hồng đậm hơn)  */
+    color: white;
+    padding: 2rem 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.tool-header .container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.tool-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-align: left; /* Ghi đè style h1 cũ nếu cần */
+    color: white;
+}
+
+.tool-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    font-size: 0.9rem;
+    opacity: 0.95;
+    align-items: center;
+}
+
+.tool-meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Language Switcher */
+.lang-switcher {
+    display: inline-flex;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem;
+    border-radius: 20px;
+    margin-left: auto; /* Đẩy sang phải */
+}
+
+.lang-switcher button {
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 0.85rem;
+}
+
+.lang-switcher button.active {
+    background: rgba(255, 255, 255, 0.3);
+    font-weight: 600;
+}
+
+/* View Counter Badge */
+.view-counter {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+}
+
+/* =================================
+   3. MAIN LAYOUT (APP SPECIFIC)
+   ================================= */
+.tool-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem 1rem;
+    display: flex;
+    gap: 2rem;
+    min-height: calc(100vh - 200px);
+}
+
+/* Cột Trái: Canvas (Chiếm phần lớn) */
+.canvas-section {
+    flex: 2;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #eee;
+    min-height: 500px;
+}
+
+canvas {
+    border-radius: 4px;
+    max-width: 100%; /* Responsive canvas */
+    height: auto;
+}
+
+/* Cột Phải: Controls */
+.controls-section {
+    flex: 1;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    padding: 1.5rem;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 2rem;
+    border: 1px solid #eee;
+    min-width: 320px;
+}
+
+.controls-section h3 {
+    color: #dc3545;
+    margin-bottom: 1.5rem;
+    font-size: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #dc3545;
+    margin-top: 0;
+}
+
+/* =================================
+   4. FORM ELEMENTS & INPUTS
+   ================================= */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #495057;
+    font-size: 0.9rem;
+}
+
+.input-group input[type="text"],
+.input-group input[type="number"] {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    font-family: inherit;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #dc3545;
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+}
+
+.inline-inputs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+/* Range Slider Customization */
+.input-group input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #dee2e6;
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.input-group input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #dc3545;
+    transition: background 0.2s, transform 0.1s;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.input-group input[type="range"]::-webkit-slider-thumb:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
+.value-display {
+    display: inline-block;
+    background: #f8f9fa;
+    padding: 0.1rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+    color: #dc3545;
+    margin-left: 0.5rem;
+    border: 1px solid #e9ecef;
+}
+
+/* =================================
+   5. BUTTONS
+   ================================= */
+.control-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background: #dc3545;
+    color: white;
+    flex: 1;
+    box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);
+}
+
+.btn-primary:hover {
+    background: #bb2d3b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    opacity: 0.8;
+}
+
+/* =================================
+   6. INFO & EXTRAS
+   ================================= */
+.info-box {
+    background: #fff5f6;
+    border-left: 4px solid #dc3545;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.info-box h4 {
+    color: #dc3545;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.formula {
+    font-family: 'Courier New', monospace;
+    background: white;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    border: 1px solid #ffdee2;
+    color: #c0283a;
+}
+
+/* Table of Contents (TOC) */
+.toc {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    border: 1px solid #e9ecef;
+}
+
+.toc h4 {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 5px;
+}
+
+.toc ul {
+    list-style: none;
+}
+
+.toc li {
+    padding: 0.35rem 0;
+}
+
+.toc a {
+    color: #495057;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+    display: block;
+}
+
+.toc a:hover {
+    color: #dc3545;
+    transform: translateX(5px);
+    transition: transform 0.2s;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .tool-container {
+        flex-direction: column;
+    }
+    .controls-section {
+        max-height: none;
+        position: static;
+        top: 0;
+    }
+    .canvas-section {
+        min-height: 400px;
+    }
+}
+
+@media (max-width: 768px) {
+    .tool-title { font-size: 1.5rem; }
+    .tool-meta { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .lang-switcher { margin-left: 0; margin-top: 0.5rem; }
+    .tool-container { padding: 1rem; gap: 1rem; }
+    .inline-inputs { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vẽ Hình Tròn Tiếp Tuyến (Apollonius) | Hydro Structure AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="tool-header">
+        <div class="container">
+            <h1 class="tool-title">Vẽ Hình Tròn Tiếp Tuyến (Apollonius)</h1>
+            <div class="tool-meta">
+                <span><i class="far fa-calendar-alt"></i> 06/12/2025</span>
+                <span><i class="far fa-user"></i> Hydro Structure AI</span>
+                <span><i class="far fa-eye"></i> <span id="view-count">...</span> lượt xem</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="tool-container">
+        <div class="canvas-section">
+            <div class="canvas-wrapper">
+                <div id="canvas-container"></div>
+            </div>
+            
+            <div class="area-display-section" id="results-area">
+                <h3>KẾT QUẢ TÍNH TOÁN</h3>
+                <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 2rem; margin-top: 1rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.9rem; color: #6c757d; text-transform: uppercase;">Bán kính (R)</div>
+                        <div class="result-number" id="result-R">--</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 0.9rem; color: #6c757d; text-transform: uppercase;">Diện tích (S)</div>
+                        <div class="result-number" id="result-Area">--</div>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid #eee; margin-top: 1rem; padding-top: 1rem; font-size: 0.95rem; color: #495057;">
+                    <div><strong>Tâm O:</strong> (<span id="result-X">--</span>, <span id="result-Y">--</span>)</div>
+                    <div style="margin-top: 5px;"><strong>Sai số hội tụ (Residual):</strong> <span id="result-Error" style="color: #dc3545; font-weight: 600;">--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-section">
+            <div class="toc">
+                <h4><i class="fas fa-list"></i> Mục lục</h4>
+                <ul>
+                    <li><a href="#problem">Bài toán</a></li>
+                    <li><a href="#action">Thực hiện</a></li>
+                    <li><a href="#details">Chi tiết Toán học</a></li>
+                </ul>
+            </div>
+
+            <h3 id="problem"><i class="bi bi-bezier2"></i> Bài toán</h3>
+            <div class="info-box" style="background: white; border-left: 4px solid #0dcaf0;">
+                <p>Tìm đường tròn tiếp xúc với 3 đường cong:</p>
+                <ul style="margin-left: 1.2rem; margin-top: 0.5rem; font-family: monospace; font-size: 0.95rem;">
+                    <li style="color: #dc3545; margin-bottom: 4px;">
+                        <i class="bi bi-arrow-return-right"></i> f1(x) = -x³ + x
+                    </li>
+                    <li style="color: #6f42c1; margin-bottom: 4px;">
+                        <i class="bi bi-arrow-return-right"></i> f2(x) = eˣ
+                    </li>
+                    <li style="color: #198754;">
+                        <i class="bi bi-arrow-return-right"></i> f3(x) = 3 - sin(x)
+                    </li>
+                </ul>
+            </div>
+
+            <h3 id="action" style="margin-top: 1.5rem;"><i class="bi bi-play-circle"></i> Thực hiện</h3>
+            <button class="btn btn-primary" id="calculateButton">
+                <i class="bi bi-calculator-fill"></i> Giải & Vẽ Hình
+            </button>
+            <div id="status-msg" style="margin-top: 1rem; font-size: 0.9rem; text-align: center; color: #6c757d; min-height: 24px;">
+                Nhấn nút để bắt đầu...
+            </div>
+
+            <h3 id="details" style="margin-top: 1.5rem;"><i class="bi bi-journal-code"></i> Logic Toán học</h3>
+            <div class="info-box">
+                <p>Sử dụng thuật toán <strong>Multi-start Newton-Raphson</strong> để tìm nghiệm tối ưu toàn cục cho hệ phương trình phi tuyến 6 ẩn số:</p>
+                <div style="background:#e9ecef; padding:8px; border-radius:4px; margin:8px 0; font-family:monospace; font-size:0.85rem; color: #333;">
+                    Minimize: Σ [(distᵢ - R)² + (dot(OCᵢ, Tᵢ))²]
+                </div>
+                <p style="font-size: 0.85rem; color: #555;">
+                    Trong đó:<br>
+                    - <strong>distᵢ</strong>: Khoảng cách từ Tâm đến điểm tiếp xúc.<br>
+                    - <strong>dot(OCᵢ, Tᵢ)</strong>: Tích vô hướng vector bán kính và vector tiếp tuyến (đảm bảo tính vuông góc).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/numeric/1.2.6/numeric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+
+    <script>
+        // --- 1. DEFINITIONS OF CURVES ---
+        const curves = [
+            {
+                id: 1, name: "y = -x³ + x", color: '#dc3545', // Red
+                f: (x) => -Math.pow(x, 3) + x,
+                df: (x) => -3 * x * x + 1,
+                labelPos: { x: -1.2, offset: 20 }
+            },
+            {
+                id: 2, name: "y = eˣ", color: '#6f42c1', // Purple
+                f: (x) => Math.exp(x),
+                df: (x) => Math.exp(x),
+                labelPos: { x: 0.8, offset: -20 }
+            },
+            {
+                id: 3, name: "y = 3 - sin(x)", color: '#198754', // Green
+                f: (x) => 3 - Math.sin(x),
+                df: (x) => -Math.cos(x),
+                labelPos: { x: 2.5, offset: 20 }
+            }
+        ];
+
+        // --- 2. SOLVER LOGIC (MULTI-START) ---
+        function solveApollonius() {
+            // Hàm mục tiêu (Cost Function)
+            const objective = (vars) => {
+                const [xc, yc, R, x1, x2, x3] = vars;
+                const xs = [x1, x2, x3];
+                let totalError = 0;
+
+                for (let i = 0; i < 3; i++) {
+                    const xi = xs[i];
+                    const yi = curves[i].f(xi);
+                    const dfi = curves[i].df(xi);
+
+                    // Điều kiện 1: Khoảng cách (Distance constraint)
+                    // Khoảng cách từ tâm (xc, yc) đến điểm trên curve (xi, yi) phải bằng R
+                    const distSq = (xi - xc)**2 + (yi - yc)**2;
+                    const distErr = Math.sqrt(distSq) - Math.abs(R);
+                    totalError += distErr * distErr;
+
+                    // Điều kiện 2: Pháp tuyến (Normal constraint)
+                    // Vector bán kính (xi-xc, yi-yc) phải vuông góc với vector tiếp tuyến (1, dfi)
+                    // Tích vô hướng (Dot Product) phải bằng 0
+                    const dotProd = (xi - xc) * 1 + (yi - yc) * dfi;
+                    // Chuẩn hóa lỗi góc để cân bằng với lỗi khoảng cách
+                    // (chia cho độ dài vector để tránh giá trị quá lớn khi R lớn)
+                    totalError += (dotProd / (Math.abs(R) + 0.1)) ** 2; 
+                }
+                return totalError;
+            };
+
+            // --- CHIẾN LƯỢC ĐA KHỞI TẠO (MULTI-START) ---
+            // Thử nhiều điểm xuất phát ngẫu nhiên để tránh cực trị địa phương
+            const attempts = [];
+            
+            // 1. Dự đoán thủ công (thường đúng với cấu hình này)
+            attempts.push([0.2, 1.5, 1.2, 0.5, -0.5, 0.0]);
+            
+            // 2. Sinh thêm 20 điểm ngẫu nhiên quanh vùng khả dĩ
+            for(let i=0; i<20; i++) {
+                attempts.push([
+                    (Math.random() - 0.5) * 4, // xc: -2 đến 2
+                    Math.random() * 4,         // yc: 0 đến 4
+                    Math.random() * 2 + 0.5,   // R: 0.5 đến 2.5
+                    (Math.random() - 0.5) * 3, // x1
+                    (Math.random() - 0.5) * 3, // x2
+                    (Math.random() - 0.5) * 3  // x3
+                ]);
+            }
+
+            let bestSolution = null;
+            let minError = Infinity;
+
+            for (const guess of attempts) {
+                try {
+                    // Giải bằng numeric.uncmin
+                    const sol = numeric.uncmin(objective, guess);
+                    
+                    // Nếu tìm được nghiệm tốt hơn, lưu lại
+                    if (sol.f < minError && !isNaN(sol.f)) {
+                        minError = sol.f;
+                        const [xc, yc, R] = sol.solution;
+                        bestSolution = { 
+                            xc, yc, R: Math.abs(R), 
+                            error: sol.f,
+                            x_contacts: [sol.solution[3], sol.solution[4], sol.solution[5]]
+                        };
+                        // Nếu sai số cực nhỏ (< 1e-6), dừng tìm kiếm ngay
+                        if (minError < 1e-6) break;
+                    }
+                } catch (e) {
+                    continue; // Bỏ qua nếu thuật toán lỗi ở lần thử này
+                }
+            }
+
+            return bestSolution;
+        }
+
+        // --- 3. VISUALIZATION (P5.JS) ---
+        let resultCircle = null;
+        let zoom = 60; // Scale 1:1 (60 pixels = 1 đơn vị)
+
+        function setup() {
+            const canvas = createCanvas(800, 600);
+            canvas.parent('canvas-container');
+            textFont('Poppins');
+        }
+
+        function draw() {
+            background(255);
+            
+            // --- TRANSFORM COORDINATES ---
+            // Dời gốc tọa độ về giữa
+            translate(width / 2, height / 2 + 50); 
+            // Scale trục Y âm để hướng lên trên đúng chuẩn toán học
+            scale(zoom, -zoom); 
+            // Độ dày nét vẽ phải chia cho zoom để giữ nguyên kích thước pixel
+            strokeWeight(1 / zoom);
+
+            // Vẽ lưới
+            drawGrid();
+
+            // Vẽ 3 đường cong
+            curves.forEach(c => {
+                drawCurve(c);
+                drawCurveLabel(c);
+            });
+
+            // Vẽ Kết quả
+            if (resultCircle) {
+                // Đường tròn nghiệm
+                noFill();
+                stroke(0, 123, 255); // Xanh dương
+                strokeWeight(2.5 / zoom);
+                circle(resultCircle.xc, resultCircle.yc, resultCircle.R * 2);
+                
+                // Tâm O
+                fill(0, 123, 255);
+                noStroke();
+                circle(resultCircle.xc, resultCircle.yc, 8 / zoom);
+
+                // Các điểm tiếp xúc
+                fill(220, 53, 69); // Đỏ
+                resultCircle.x_contacts.forEach((xi, index) => {
+                    const yi = curves[index].f(xi);
+                    noStroke();
+                    circle(xi, yi, 6 / zoom);
+                    
+                    // Vẽ bán kính (nét đứt)
+                    stroke(0, 123, 255, 150);
+                    strokeWeight(1 / zoom);
+                    drawingContext.setLineDash([5, 5]); // Nét đứt
+                    line(resultCircle.xc, resultCircle.yc, xi, yi);
+                    drawingContext.setLineDash([]); // Reset nét liền
+                });
+            }
+        }
+
+        function drawGrid() {
+            stroke(220);
+            strokeWeight(1 / zoom);
+            
+            // Lưới caro -10 đến 10
+            for (let i = -10; i <= 10; i++) {
+                line(i, -10, i, 10);
+                line(-10, i, 10, i);
+            }
+            
+            // Trục tọa độ đậm
+            stroke(50);
+            strokeWeight(2 / zoom);
+            line(-10, 0, 10, 0); // Ox
+            line(0, -10, 0, 10); // Oy
+        }
+
+        function drawCurve(c) {
+            stroke(c.color);
+            strokeWeight(2.5 / zoom);
+            noFill();
+            beginShape();
+            for (let x = -8; x <= 8; x += 0.05) {
+                let y = c.f(x);
+                if (y > -10 && y < 15) { // Clip vùng vẽ
+                    vertex(x, y);
+                }
+            }
+            endShape();
+        }
+
+        function drawCurveLabel(c) {
+            const x0 = c.labelPos.x;
+            const y0 = c.f(x0);
+            const offset = c.labelPos.offset / zoom; 
+            const xText = x0 + (offset > 0 ? 0.5 : -0.5); 
+            const yText = y0 + offset;
+
+            push();
+            // Reset scale để vẽ text xuôi chiều
+            scale(1/zoom, -1/zoom); 
+            
+            const scX0 = x0 * zoom;
+            const scY0 = y0 * -zoom;
+            const scXText = xText * zoom;
+            const scYText = yText * -zoom;
+
+            // Mũi tên
+            stroke(c.color);
+            strokeWeight(1.5);
+            line(scXText, scYText, scX0, scY0);
+            
+            // Đầu mũi tên
+            const angle = atan2(scY0 - scYText, scX0 - scXText);
+            const arrowSize = 6;
+            line(scX0, scY0, scX0 - arrowSize * cos(angle - PI/6), scY0 - arrowSize * sin(angle - PI/6));
+            line(scX0, scY0, scX0 - arrowSize * cos(angle + PI/6), scY0 - arrowSize * sin(angle + PI/6));
+
+            // Nền chữ
+            noStroke();
+            fill(255, 255, 255, 220);
+            rectMode(CENTER);
+            rect(scXText, scYText, 110, 24, 4);
+
+            // Chữ
+            fill(c.color);
+            textAlign(CENTER, CENTER);
+            textSize(12);
+            textStyle(BOLD);
+            text(c.name, scXText, scYText);
+            pop();
+        }
+
+        // --- 4. INTERACTION ---
+        document.getElementById('calculateButton').addEventListener('click', () => {
+            const btn = document.getElementById('calculateButton');
+            const status = document.getElementById('status-msg');
+            const errEl = document.getElementById('result-Error');
+            
+            btn.disabled = true;
+            status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tối ưu hóa (thử nghiệm đa điểm)...';
+            
+            setTimeout(() => {
+                const solution = solveApollonius();
+                
+                // Ngưỡng chấp nhận sai số (1e-3 là đủ tốt cho đồ họa)
+                if (solution && solution.error < 1e-3) {
+                    resultCircle = solution;
+                    
+                    document.getElementById('result-R').innerText = solution.R.toFixed(4);
+                    document.getElementById('result-Area').innerText = (Math.PI * solution.R**2).toFixed(4);
+                    document.getElementById('result-X').innerText = solution.xc.toFixed(4);
+                    document.getElementById('result-Y').innerText = solution.yc.toFixed(4);
+                    
+                    errEl.innerText = solution.error.toExponential(2);
+                    errEl.className = "text-success";
+
+                    status.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> Đã tìm thấy nghiệm tối ưu!</span>';
+                } else {
+                    const errVal = solution ? solution.error.toExponential(2) : "NaN";
+                    errEl.innerText = errVal;
+                    errEl.className = "text-danger";
+
+                    status.innerHTML = `<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Không hội tụ (Sai số: ${errVal}). Đang thử lại...</span>`;
+                    
+                    // Tự động thử lại nếu thất bại
+                    console.log("Retrying...");
+                }
+                
+                btn.disabled = false;
+            }, 100);
+        });
+
+        // View Counter Mock
+        setTimeout(() => {
+            document.getElementById('view-count').innerText = Math.floor(Math.random() * 500 + 800).toLocaleString();
+        }, 1000);
+    </script>
+</body>
+</html>

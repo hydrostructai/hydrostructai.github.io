@@ -1,0 +1,114 @@
+<!-- SCREENSHOT CAPTURE GUIDE for ShortCol 3D -->
+
+# Steps to Capture Split-View Dashboard Screenshot
+
+## Option 1: Manual Capture (Recommended for Best Quality)
+
+1. **Open Browser**
+   - Go to: http://localhost:8000/index.html
+   - Wait for app to load (splash screen should appear)
+
+2. **Input Sample Data** (use these values for consistency):
+   - Column Type: Rectangular
+   - B = 300 mm
+   - H = 400 mm
+   - Cover = 30 mm
+   - fck = 14.5 MPa (TCVN)
+   - fyk = 280 MPa
+   - Number of bars = 8
+   - Bar diameter = 20 mm
+   - Standard: TCVN 5574:2018
+   
+3. **Add Load Cases**:
+   - Load Case 1: P=1000 kN, Mx=50 kNm, My=20 kNm (Safe)
+   - Load Case 2: P=1200 kN, Mx=100 kNm, My=80 kNm (Unsafe)
+
+4. **Calculate**
+   - Click "Tính toán" button
+   - Wait for calculation to complete (~1-2 seconds)
+   - Loading overlay should disappear
+
+5. **Adjust View**
+   - Set angle to 45° using the "Biểu đồ tương tác tại" input
+   - This will highlight the 45° meridian in red
+
+6. **Capture Screenshot**
+   - Press: Print Screen (or Ctrl+Shift+S in Chrome)
+   - Save as: sample-3d.png
+   - Ensure full window is captured (both panels visible)
+
+## Option 2: Automated Capture using Python Selenium
+
+If you have Selenium installed:
+```python
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import time
+
+# Setup
+driver = webdriver.Chrome()
+driver.get("http://localhost:8000/index.html")
+driver.maximize_window()
+
+# Wait for app to load
+wait = WebDriverWait(driver, 10)
+wait.until(EC.presence_of_element_located((By.ID, "root")))
+time.sleep(1)
+
+# Fill form and calculate
+# ... (use Selenium to interact with elements)
+time.sleep(3)  # Wait for charts to render
+
+# Capture
+driver.save_screenshot("sample-3d.png")
+driver.quit()
+```
+
+## Option 3: Browser DevTools Capture
+
+1. Open Chrome DevTools (F12)
+2. Press Ctrl+Shift+P
+3. Type: "Capture full page screenshot"
+4. Image saves to Downloads as "sample-3d.png"
+
+---
+
+## Expected Dashboard Layout
+
+The screenshot should show:
+
+**LEFT PANEL (40%)**
+- Top: 2D Interaction Diagram chart (blue curve with fill)
+  - X-axis: Mn (moment magnitude) in kNm
+  - Y-axis: P (axial load) in kN
+  - Title: "2D Interaction Diagram (θ = 45°)"
+- Bottom: Results Table with all load cases
+  - Columns: Tổ hợp, P, Mx, My, K, Kết quả
+  - Sample: "TH1 | 1000 | 50 | 20 | 1.45 | ✓ OK" (green)
+  - Sample: "TH2 | 1200 | 100 | 80 | 0.82 | ✗ NG" (red)
+
+**RIGHT PANEL (60%)**
+- 3D Biaxial Interaction Surface
+  - Semi-transparent blue mesh
+  - 24 meridian lines (15° intervals)
+  - 45° meridian highlighted in RED (larger width)
+  - Horizontal gray parallel circles
+  - Green load points (safe) and red load points (unsafe)
+  - Green and red lines radiating from origin to loads
+
+**HEADER**
+- Left: "Kết quả Kiểm Tra" title
+- Center: "Biểu đồ tương tác tại 45 °" angle selector
+- Right: "Đạt (1)" badge green, "Không đạt (1)" badge red
+
+---
+
+## File Save Location
+
+Save the screenshot to:
+`c:\Users\Admin\source\hydrostructai.github.io\apps\shortcol3D\sample-3d.png`
+
+This will be in the same directory as index.html
+

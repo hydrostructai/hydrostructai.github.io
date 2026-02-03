@@ -1,0 +1,1183 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.27.3 by Michael Rose
+  Copyright 2013-2025 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="vi" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA | Hydro Structure AI</title>
+<meta name="description" content="Hướng dẫn các bước trích xuất dữ liệu từ mô hình kết cấu ETABS bằng Excel VBA.">
+
+
+  <meta name="author" content="Hydro Structure AI">
+  
+  <meta property="article:author" content="Hydro Structure AI">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="vi">
+<meta property="og:site_name" content="Hydro Structure AI">
+<meta property="og:title" content="Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA">
+<meta property="og:url" content="http://localhost:4000/vba/etabs-vba/">
+
+
+  <meta property="og:description" content="Hướng dẫn các bước trích xuất dữ liệu từ mô hình kết cấu ETABS bằng Excel VBA.">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-12-08T10:00:00+07:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/vba/etabs-vba/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hydro Structure AI Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<!-- 
+  GOOGLE ANALYTICS INJECTION
+  - Tracking data is sent to GA4 (ID: G-BNB682DVWC)
+  - To disable, remove these script tags or change the ID in _config.yml
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC');
+</script>
+
+<!-- Bootstrap 5 (Required for Global UI & Apps) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<!-- Global CSS for Site-Wide Styling & Modern Post Grid Layout -->
+<link rel="stylesheet" href="/assets/css/global.css">
+
+<!-- Busuanzi Analytics (Visitor Counter API) - Provides Site PV/UV -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  </head>
+
+  <body class="layout--single" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Nhảy tới thanh điều hướng</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Nhảy tới nội dung</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Nhảy tới chân trang</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Hydro Structure AI
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/"
+                
+                
+              >Blog</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/apps/"
+                
+                
+              >Web Apps</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >Về chúng tôi</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/tags/"
+                
+                
+              >Theo Thẻ (Tags)</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<style>
+  /* 1. Cấu hình lưới 3 cột */
+  .post-grid-container {
+    display: grid !important;
+    /* Sidebar Trái: 240px (Thu nhỏ xíu để nhường chỗ)
+       Nội dung Giữa: 1fr (Tự động chiếm hết khoảng trống còn lại)
+       Sidebar Phải: 240px 
+    */
+    grid-template-columns: 240px minmax(0, 1fr) 240px !important;
+    gap: 30px !important;
+    align-items: start;
+    
+    /* 2. Tăng chiều rộng tổng thể lên ~20% (từ 1280px -> 1600px) */
+    max-width: 1600px !important; 
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+  }
+
+  /* Sidebar Trái */
+  .post-grid-sidebar-left {
+    display: block !important;
+    grid-column: 1 / 2 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Sidebar Phải (Mục lục/Bài viết mới) - Cân xứng với sidebar trái */
+  .post-grid-sidebar-right {
+    display: block !important;
+    grid-column: 3 / 4 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Tối ưu scrollbar cho sidebars (Hiện rõ hơn để người dùng biết có thể cuộn) */
+  .post-grid-sidebar-left::-webkit-scrollbar,
+  .post-grid-sidebar-right::-webkit-scrollbar {
+    width: 8px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-track,
+  .post-grid-sidebar-right::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 10px;
+    border: 2px solid #f8f9fa;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb:hover,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb:hover {
+    background-color: #adb5bd;
+  }
+
+  /* Make items spaced out to ensure overflow */
+  .latest-post-item {
+    margin-bottom: 20px !important;
+  }
+
+  /* Nội dung bài viết (Ở giữa) */
+  .post-grid-article {
+    grid-column: 2 / 3 !important;
+    width: 100% !important; /* Đảm bảo article chiếm toàn bộ cột 2 */
+    max-width: none !important;
+    min-width: 0; /* Tránh vỡ layout khi có ảnh to */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Bài viết liên quan (Full width dưới cùng) */
+  .page__related-wrapper {
+    max-width: 1600px !important; /* Đồng bộ độ rộng với grid trên */
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .page__related {
+    border-top: 1px solid #eee;
+    padding-top: 2rem;
+  }
+ /* CHUYÊN GIA: Ép nội dung bên trong bài viết giãn 100% */
+  /* CHUYÊN GIA: Ép mọi lớp bao trong phải giãn 100% */
+  .post-grid-article,
+  .post-grid-article .page__inner-wrap,
+  .post-grid-article .page__content {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* Khử giới hạn của các thẻ nội dung cụ thể nếu có */
+  .post-grid-article header,
+  .post-grid-article section,
+  .post-grid-article footer {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  /* --- RESPONSIVE --- */
+  
+  /* Laptop nhỏ/Tablet (Ẩn cột phải, dồn không gian cho nội dung) */
+  @media (max-width: 1200px) {
+    .post-grid-container {
+      grid-template-columns: 220px 1fr !important; /* 2 Cột */
+    }
+    .post-grid-sidebar-right {
+      display: none !important; /* Tạm ẩn TOC bên phải để không chật */
+    }
+  }
+
+  /* Mobile (1 Cột dọc) */
+  @media (max-width: 768px) {
+    .post-grid-container {
+      grid-template-columns: 1fr !important;
+    }
+    .post-grid-sidebar-left, 
+    .post-grid-sidebar-right {
+      display: none !important;
+    }
+  }
+</style>
+
+<div id="main" role="main" class="post-grid-container">
+  
+  <div class="post-grid-sidebar-left">
+    <aside class="left-sidebar">
+  
+  <!-- Traffic Stats Section -->
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Traffic Stats</h4>
+    <div style="padding: 12px; background: #f9f9f9; border-radius: 4px; border: 1px solid #eee; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.8rem; color: #666; font-weight: 500;">
+              <i class="fas fa-chart-line" style="margin-right: 5px;"></i> Stats API
+            </span>
+            <span id="ga4-status-badge" style="font-size: 0.6rem; color: #666; background: #eee; padding: 1px 6px; border-radius: 10px;">Connecting...</span>
+        </div>
+        
+        <!-- API-based Counter (Busuanzi) -->
+        <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.8rem; color: #333;">Site Views (PV)</span>
+                <span id="busuanzi_value_site_pv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: #333;">Total Unique Visitors</span>
+                <span id="busuanzi_value_site_uv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+        </div>
+        
+        <script>
+          // Step 3 & 4 Verification: Verify tracking status and handle API display
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              const badge = document.getElementById('ga4-status-badge');
+              if (typeof gtag === 'function') {
+                badge.innerText = 'GA4 Active';
+                badge.style.background = '#e8f5e9';
+                badge.style.color = '#28a745';
+              } else {
+                badge.innerText = 'GA4 Offline';
+                badge.style.background = '#ffebee';
+                badge.style.color = '#d32f2f';
+              }
+            }, 2000);
+          });
+        </script>
+        
+        <div style="text-align: center; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ddd;">
+            <a href="https://analytics.google.com/analytics/web/" target="_blank" style="font-size: 0.7rem; color: #0d6efd; text-decoration: none;">
+                <i class="fab fa-google"></i> Analysis Dashboard
+            </a>
+        </div>
+    </div>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="https://analytics.google.com/analytics/web/" target="_blank" class="share-link">
+          <i class="fas fa-chart-line"></i> View GA Dashboard
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Share</h4>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="#" class="share-link" onclick="window.print(); return false;">
+          <i class="fas fa-print"></i> Print this page
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="mailto:?subject=Engineering Tools&body=Check this out!" class="share-link">
+          <i class="fas fa-envelope"></i> Send via Email
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="#" class="share-link">
+          <i class="fab fa-twitter"></i> Share on Twitter
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Facebook</h4>
+    <a href="https://facebook.com/g.technical" target="_blank" class="rec-link">
+      <i class="fab fa-facebook-square" style="color: #4267B2; font-size: 1.2rem;"></i> FB Fanpage
+    </a>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Books</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Design of Concrete Structures (Nilson)</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Foundation Analysis and Design (Bowles)</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Courses</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Coursera: Civil Engineering</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Udemy: SAP2000 Ultimate</a>
+      </li>
+    </ul>
+  </div>
+
+</aside>
+  </div>
+
+  <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="headline" content="Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA">
+    <meta itemprop="description" content="Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000) là nhu cầu cấp thiết. Đa số kỹ sư quen thuộc với việc dùng CSI API (OAPI) để liên kết Excel với ETABS. Tuy nhiên, API có nhược điểm lớn: chậm chạp với mô hình lớn và yêu cầu bản quyền (phải mở phần mềm ETABS lên).">
+    <meta itemprop="datePublished" content="2025-12-08T10:00:00+07:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/vba/etabs-vba/" class="u-url" itemprop="url">Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          6 phút để đọc
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="articleBody">
+        <p>Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000) là nhu cầu cấp thiết. Đa số kỹ sư quen thuộc với việc dùng CSI API (OAPI) để liên kết Excel với ETABS. Tuy nhiên, API có nhược điểm lớn: <strong>chậm chạp</strong> với mô hình lớn và <strong>yêu cầu bản quyền</strong> (phải mở phần mềm ETABS lên).</p>
+
+<p>Bài viết này sẽ giới thiệu một phương pháp “đường tắt” mạnh mẽ hơn: <strong>Đọc trực tiếp file văn bản <code class="language-plaintext highlighter-rouge">.e2k</code> bằng Excel VBA</strong>. Kỹ thuật này cho tốc độ xử lý nhanh gấp hàng chục lần và không cần cài đặt ETABS trên máy tính xử lý.</p>
+
+<h3 id="1-bản-chất-của-file-e2k">1. Bản Chất Của File E2K</h3>
+
+<p>Trước khi đi vào code, ta cần hiểu “mỏ dữ liệu” chúng ta sắp khai thác. File <code class="language-plaintext highlighter-rouge">.e2k</code> (hoặc <code class="language-plaintext highlighter-rouge">.$et</code> trong các phiên bản cũ) thực chất là một file văn bản thuần túy (Plain Text) chứa toàn bộ định nghĩa mô hình.</p>
+
+<p>Cấu trúc của nó được chia thành các khối (blocks) bắt đầu bằng dấu <code class="language-plaintext highlighter-rouge">$</code>. Ví dụ:</p>
+
+<div class="language-text highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ STORIES
+  "Story1" 3.2  0  0
+  "Story2" 3.2  3.2  0
+
+$ FRAME SECTIONS
+  "C40x60"  "Concrete Rectangular"  "C30/37"  0.4  0.6 ...
+</code></pre></div></div>
+
+<p><strong>Tư duy giải thuật:</strong> Nhiệm vụ của chúng ta là viết một “Parser” (bộ phân tích cú pháp) để đọc file này từ trên xuống dưới, phát hiện các từ khóa (như <code class="language-plaintext highlighter-rouge">$ STORIES</code>) và nhặt các con số ra đưa vào Excel.</p>
+
+<h3 id="2-chiến-lược--logic-triển-khai">2. Chiến Lược &amp; Logic Triển Khai</h3>
+
+<p>Để xử lý file text hỗn độn này, chúng ta chia bài toán thành 3 module chính:</p>
+
+<ol>
+  <li><strong>Module Đọc (Reader):</strong> Load toàn bộ nội dung file <code class="language-plaintext highlighter-rouge">.e2k</code> vào bộ nhớ máy tính (RAM) để xử lý cho nhanh, thay vì đọc từng dòng từ ổ cứng.</li>
+  <li><strong>Module Tìm Kiếm (Finder):</strong> Quét qua dữ liệu trong bộ nhớ để tìm vị trí các “Block” dữ liệu cần thiết (ví dụ: tìm tọa độ cột, tìm tiết diện).</li>
+  <li><strong>Module Trích Xuất (Extractor):</strong> Xử lý chuỗi ký tự (String manipulation) để tách các con số ra khỏi văn bản. Đây là phần khó nhất vì dữ liệu trong E2K cách nhau bằng khoảng trắng không đều.</li>
+</ol>
+
+<hr />
+
+<h3 id="3-triển-khai-code-vba-step-by-step">3. Triển Khai Code VBA (Step-by-Step)</h3>
+
+<p>Dưới đây là các hàm cốt lõi (Core Functions) đã được tôi việt hóa và tối ưu.</p>
+
+<h4 id="bước-1-hàm-đọc-file-e2k-vào-bộ-nhớ-collection">Bước 1: Hàm Đọc File E2K Vào Bộ Nhớ (Collection)</h4>
+
+<p>Chúng ta sử dụng <code class="language-plaintext highlighter-rouge">FileSystemObject</code> để mở file và đổ từng dòng vào một <code class="language-plaintext highlighter-rouge">Collection</code>. Việc này giúp các bước sau truy xuất dữ liệu cực nhanh.</p>
+
+<pre><code class="language-vba">Function ReadE2K(filePath As String) As Collection
+    ' Tạo Collection mới để chứa dữ liệu
+    Dim data As Collection
+    Set data = New Collection
+    
+    ' Sử dụng FileSystemObject để đọc file text
+    Dim fso As Object, textStream As Object
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    
+    If fso.FileExists(filePath) Then
+        Set textStream = fso.OpenTextFile(filePath, 1) ' 1 = Mode Read Only
+        
+        ' Đọc từng dòng cho đến hết file
+        Do While Not textStream.AtEndOfStream
+            data.Add textStream.ReadLine
+        Loop
+        
+        textStream.Close
+    End If
+    
+    Set ReadE2K = data
+End Function
+</code></pre>
+
+<h4 id="bước-2-bộ-công-cụ-phân-tích-chuỗi-ký-tự-parsers">Bước 2: Bộ Công Cụ Phân Tích Chuỗi Ký Tự (Parsers)</h4>
+
+<p>Đây là <strong>trái tim</strong> của thuật toán. Dữ liệu trong E2K thường có dạng:
+<code class="language-plaintext highlighter-rouge">"Dầm D22"   "Concrete"    0.22    0.5</code>
+Các giá trị cách nhau bởi dấu cách (space), nhưng số lượng dấu cách không cố định. Ta cần các hàm chuyên biệt để lấy đúng giá trị mong muốn.</p>
+
+<p><strong>Hàm lấy số thực (Double) tại vị trí bất kỳ:</strong>
+<em>Hàm này tự động bỏ qua các khoảng trắng thừa để lấy đúng con số thứ <code class="language-plaintext highlighter-rouge">n</code> trong dòng.</em></p>
+
+<pre><code class="language-vba">Function GetDecimal(line As String, numberIndex As Long) As Double
+    Dim parts() As String
+    parts = Split(line, " ") ' Cắt chuỗi bằng dấu cách
+    
+    Dim i As Long, matchCount As Integer
+    ' Duyệt qua các mảnh đã cắt
+    For i = LBound(parts) To UBound(parts)
+        If IsNumeric(parts(i)) Then ' Nếu mảnh này là số
+            matchCount = matchCount + 1
+            ' Nếu đếm đúng đến vị trí cần lấy
+            If matchCount = numberIndex Then
+                GetDecimal = CDbl(parts(i))
+                Exit Function
+            End If
+        End If
+    Next i
+    GetDecimal = 0
+End Function
+</code></pre>
+
+<p><strong>Hàm lấy chuỗi trong ngoặc kép (Quoted String):</strong>
+<em>Dùng để lấy Tên dầm, Tên tầng (thường nằm trong dấu <code class="language-plaintext highlighter-rouge">""</code>).</em></p>
+
+<pre><code class="language-vba">Function GetQuotedString(line As String, quoteIndex As Long) As String
+    Dim parts() As String
+    parts = Split(line, """") ' Cắt chuỗi bằng dấu ngoặc kép "
+    
+    Dim i As Long, matchCount As Integer
+    For i = LBound(parts) To UBound(parts)
+        ' Bỏ qua các phần rỗng
+        If Len(Trim(parts(i))) &gt; 0 Then
+            matchCount = matchCount + 1
+            ' Chuỗi trong ngoặc kép thường nằm ở vị trí chẵn trong mảng split
+            If matchCount = quoteIndex * 2 Then 
+                GetQuotedString = CStr(parts(i))
+                Exit Function
+            End If
+        End If
+    Next i
+    GetQuotedString = ""
+End Function
+</code></pre>
+
+<h4 id="bước-3-hàm-thực-thi-chính-main-process">Bước 3: Hàm Thực Thi Chính (Main Process)</h4>
+
+<p>Ví dụ dưới đây minh họa cách lấy dữ liệu <strong>Chiều cao tầng (Stories)</strong> và xuất ra Sheet Excel.</p>
+
+<pre><code class="language-vba">Sub ExtractStoryData(data As Collection)
+    Dim ws As Worksheet
+    Set ws = ThisWorkbook.Sheets("StoryData")
+    ws.Cells.Clear
+    
+    ' Tạo tiêu đề cột
+    ws.Range("A1:B1").Value = Array("Tên Tầng", "Cao Độ")
+    
+    Dim rowId As Long: rowId = 2
+    Dim i As Long, j As Long, line As String
+    
+    ' 1. QUÉT: Duyệt qua toàn bộ file trong bộ nhớ
+    For i = 1 To data.Count
+        ' 2. TÌM: Nếu thấy từ khóa "$ STORIES"
+        If InStr(1, data(i), "$ STORIES", vbTextCompare) &gt; 0 Then
+            
+            ' 3. TRÍCH XUẤT: Bắt đầu đọc các dòng ngay bên dưới
+            j = i + 1
+            ' Lặp cho đến khi gặp dòng trống hoặc hết file
+            Do While j &lt;= data.Count And data(j) &lt;&gt; ""
+                line = data(j)
+                
+                ' Dùng hàm Parser ở Bước 2 để nhặt dữ liệu
+                ' Lấy tên tầng (Chuỗi trong ngoặc kép thứ 1)
+                ws.Cells(rowId, 1).Value = GetQuotedString(line, 1) 
+                ' Lấy chiều cao (Số thực thứ 1)
+                ws.Cells(rowId, 2).Value = GetDecimal(line, 1)      
+                
+                rowId = rowId + 1
+                j = j + 1
+            Loop
+            Exit For ' Tìm xong thì thoát vòng lặp ngay cho nhẹ máy
+        End If
+    Next i
+End Sub
+</code></pre>
+
+<h3 id="4-tổng-hợp-code">4. Tổng Hợp Code</h3>
+
+<p>Để chạy chương trình, bạn tạo một Sub chính <code class="language-plaintext highlighter-rouge">Main_Run</code> để gọi các module trên:</p>
+
+<pre><code class="language-vba">Sub Main_Extract_E2K()
+    Dim filePath As String
+    ' Tự động tìm file .e2k trong cùng thư mục với file Excel này
+    filePath = ThisWorkbook.Path &amp; "\Model.e2k" 
+    
+    ' Bước 1: Đọc file vào RAM
+    Dim dataColl As Collection
+    Set dataColl = ReadE2K(filePath)
+    
+    If dataColl.Count = 0 Then Exit Sub
+    
+    ' Bước 2: Gọi các hàm trích xuất từng phần
+    ExtractStoryData dataColl
+    ' ExtractFrameSections dataColl (Bạn có thể viết thêm hàm này tương tự)
+    
+    MsgBox "Hoàn thành trích xuất dữ liệu!", vbInformation
+End Sub
+</code></pre>
+
+<h3 id="5-tại-sao-kỹ-sư-nên-dùng-cách-này">5. Tại Sao Kỹ Sư Nên Dùng Cách Này?</h3>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Đặc điểm</th>
+      <th style="text-align: left">Dùng CSI API (Cách cũ)</th>
+      <th style="text-align: left">Dùng Parser E2K (Cách này)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left"><strong>Tốc độ</strong></td>
+      <td style="text-align: left">Chậm (giao tiếp qua OLE)</td>
+      <td style="text-align: left"><strong>Cực nhanh</strong> (Xử lý Text thuần)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Bản quyền</strong></td>
+      <td style="text-align: left">Cần License ETABS &amp; Cài đặt</td>
+      <td style="text-align: left"><strong>Không cần cài ETABS</strong></td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Độ khó</strong></td>
+      <td style="text-align: left">Trung bình</td>
+      <td style="text-align: left">Khó hơn (cần hiểu logic chuỗi)</td>
+    </tr>
+    <tr>
+      <td style="text-align: left"><strong>Ứng dụng</strong></td>
+      <td style="text-align: left">Chạy Analysis, Design</td>
+      <td style="text-align: left">Lấy dữ liệu đầu vào, QA/QC mô hình</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="kết-luận">Kết luận</h3>
+
+<p>Việc đọc file E2K mở ra khả năng kiểm soát dữ liệu tuyệt đối cho kỹ sư kết cấu. Bạn có thể xây dựng các tool tự động check tiết diện, kiểm tra vật liệu, hoặc so sánh khối lượng giữa các phương án thiết kế chỉ trong vài giây mà không cần mở phần mềm ETABS nặng nề.</p>
+
+<p>Hãy thử áp dụng logic này để trích xuất <strong>Tọa độ điểm (Points)</strong> hoặc <strong>Gán tải trọng (Loads)</strong> trong dự án tiếp theo của bạn!</p>
+
+<hr />
+
+<p><em>Nguồn tham khảo logic lập trình: <a href="https://nodesautomations.com/posts/etabs-excel-read-e2k-file/">Nodes Automations</a></em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code></code></pre></div></div>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Thẻ: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/apdl" class="page__taxonomy-item p-category" rel="tag">APDL</a><span class="sep">, </span>
+    
+      <a href="/tags/etabs" class="page__taxonomy-item p-category" rel="tag">ETABS</a><span class="sep">, </span>
+    
+      <a href="/tags/vba" class="page__taxonomy-item p-category" rel="tag">VBA</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Danh mục: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/vba" class="page__taxonomy-item p-category" rel="tag">VBA</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Ngày cập nhật:</strong> <time class="dt-published" datetime="2025-12-08T10:00:00+07:00">December 8, 2025</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  <h4 class="page__share-title">Chia sẻ tại</h4>
+
+  <a href="https://x.com/intent/tweet?text=T%E1%BB%B1+%C4%90%E1%BB%99ng+H%C3%B3a+ETABS%3A+Tr%C3%ADch+xu%E1%BA%A5t+d%E1%BB%AF+li%E1%BB%87u+File+E2K+B%E1%BA%B1ng+Excel+VBA%20http%3A%2F%2Flocalhost%3A4000%2Fvba%2Fetabs-vba%2F" class="btn btn--x" aria-label="Share on X" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại X">
+    <i class="fab fa-fw fa-x-twitter" aria-hidden="true"></i><span> X</span>
+  </a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fvba%2Fetabs-vba%2F" class="btn btn--facebook" aria-label="Share on Facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Facebook">
+    <i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span>
+  </a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/vba/etabs-vba/" class="btn btn--linkedin" aria-label="Share on LinkedIn" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại LinkedIn">
+    <i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span>
+  </a>
+
+  <a href="https://bsky.app/intent/compose?text=T%E1%BB%B1+%C4%90%E1%BB%99ng+H%C3%B3a+ETABS%3A+Tr%C3%ADch+xu%E1%BA%A5t+d%E1%BB%AF+li%E1%BB%87u+File+E2K+B%E1%BA%B1ng+Excel+VBA%20http%3A%2F%2Flocalhost%3A4000%2Fvba%2Fetabs-vba%2F" class="btn btn--bluesky" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Bluesky">
+    <i class="fab fa-fw fa-bluesky" aria-hidden="true"></i><span> Bluesky</span>
+  </a>
+</section>
+
+      
+  <nav class="pagination">
+    
+      <a href="/geotechnics/data%20analysis/numerical%20modeling/co-ket-crs/" class="pagination--pager" title="Tối ưu hóa Phân tích Cố kết nền đất yếu: Tham số thực nghiệm CRS và ứng dụng thực tế">Trước</a>
+    
+    
+      <a href="/algorithms/hydraulic%20engineering/python/revit%20api/terrain-aware-pathfinding/" class="pagination--pager" title="Quy hoạch Tuyến công trình Dựa trên Địa hình (Terrain-Aware Path Planning)">Kế tiếp</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  <div class="post-grid-sidebar-right">
+    <aside class="right-sidebar">
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Latest Posts</h4>
+    <ul class="latest-posts-list">
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">23/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Xem chi tiết các báo cáo mẫu tại đây
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">19/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/2d%20analysis/cross-section-mesh/">Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/3d%20analysis/shortcol3d-development/">Xây dựng Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tại Sao Cần Biểu Đồ Tương Tác 3D?
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">12/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/algorithms/shortcol-standard/">Xây dựng Biểu đồ Tương tác Cột (P-M) theo 3 Tiêu chuẩn: TCVN, EC2 và ACI</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Bài toán Cột Chịu Nén Lệch Tâm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/automation/revit%20api/artificial%20intelligence/hydraulic%20engineering/ai-revit/">Tự Động Hóa Thiết Kế Revit API</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Mức độ: Chuyên sâu (Advanced)
+Thời gian đọc: 10 phút
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/algorithms/hydraulic%20engineering/python/revit%20api/terrain-aware-pathfinding/">Quy hoạch Tuyến công trình Dựa trên Địa hình (Terrain-Aware Path Planning)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Làm thế nào để quy hoạch tuyến tối ưu trên địa hình phức tạp? Bài viết này chia sẻ phương...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/vba/etabs-vba/">Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnics/data%20analysis/numerical%20modeling/co-ket-crs/">Tối ưu hóa Phân tích Cố kết nền đất yếu: Tham số thực nghiệm CRS và ứng dụng thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỹ thuật địa kỹ thuật hiện đại, đặc biệt là tại khu vực Đồng bằng sông Cửu Long (ĐBSCL)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">07/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/engineering%20apps/shortcol/">Biểu Đồ Tương Tác- Phân Tích Cột Chịu Nén Lệch Tâm</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong thiết kế kết cấu bê tông cốt thép, cột là cấu kiện chịu lực phức tạp nhất do sự...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">06/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/swmm-epanet-explorer/">Công cụ Trực quan hóa Tệp dữ liệu cho SWMM5 và EPANET</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Chào mừng các bạn đến với bài viết giới thiệu về một công cụ tiện ích mới dành cho cộng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">11/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/hydraulics/thuy-luc-doc-nuoc-tieu-nang/">Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Phân tích chi tiết tính toán thủy lực dốc nước và thiết kế bể tiêu năng dựa trên lý thuyết...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">10/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/pile%20foundation/geotechnical/pile-group-wasm-intro/">Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ứng dụng Pile Group 3D (Bệ cọc đài cao) đã được chuyển đổi từ mã nguồn Turbo Pascal 7.0 kinh...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">28/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/">SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán tường cừ
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/ansys/khang-chan-dap-ansys/">Phân tích kháng chấn đập bê tông trọng lực theo phương pháp phổ phản ứng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Để thực hiện phân tích, chúng ta làm việc với mô hình phần tử hữu hạn ba chiều (FEM 3D)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">27/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/taylor-series-visualizer/">Vẽ Chuỗi Taylor</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Khái niệm Xấp xỉ Hàm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/hypocycloid-generator/">Vẽ đường cong Hypocycloid (Spirograph)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Giới thiệu Hypocycloid
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">14/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/heart-drawing/">Vẽ Trái Tim</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Phương trình Tham số
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/circle-area-tangent/">Bài toán Hình tròn Tiếp tuyến 3 đường cong</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán Hình học Giải tích Thú vị
+
+          
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</aside>
+  </div>
+
+</div>
+<div class="page__related-wrapper">
+  
+    <div class="page__related">
+      <h2 class="page__related-title">Có thể bạn cũng thích</h2>
+      <div class="grid__wrapper">
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+  </h3>
+  <p><p>Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang quản lý dựa trên nguyên tắc và hiệu suất (Principle &amp; Performance-based). Bài viết này sẽ phân tích tài liệu <em>“Tiến trình Quản lý Dự án &amp; Soạn thảo Quy trình”</em> dưới lăng kính của <strong>PMBOK Guide 7th Edition</strong>, đồng thời đối chiếu với khung pháp lý mới nhất của Việt Nam (Nghị định 175/2024/NĐ-CP).</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+  </h3>
+  <p><p>Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất trong toán học ứng dụng và kinh tế. Bài viết này sẽ giới thiệu về cơ sở toán học của LP và cách triển khai giải quyết 3 bài toán thực tế bằng thư viện SciPy trong Python.</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+  </h3>
+  <p><p><strong><a href="https://hydrostructai.com/calcpad_engineering/calcpad.html">Xem chi tiết các báo cáo mẫu tại đây</a></strong></p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+  </h3>
+  <p><h2 id="tổng-quan">Tổng Quan</h2>
+</p>
+</article>
+
+        
+      </div>
+    </div>
+  
+</div>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA",
+  "author": {
+    "@type": "Person",
+    "name": "Hydro Structure AI"
+  },
+  "datePublished": "2025-12-08T10:00:00+07:00",
+  
+  "dateModified": "2025-12-08T10:00:00+07:00",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Hydro Structure AI",
+    "logo": {
+      "@type": "ImageObject",
+      "url": ""
+    }
+  },
+  "description": "Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000) là nhu cầu cấp thiết. Đa số kỹ sư quen thuộc với việc dùng CSI API (OAPI) để liên kết Excel với ETABS. Tuy nhiên, API có nhược điểm lớn: chậm chạp với mô hình lớn và yêu cầu bản quyền (phải mở phần mềm ETABS lên).",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/vba/etabs-vba/"
+  }
+}
+</script>
+
+      
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Theo dõi:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="mailto:ha.nguyen@hydrostructai.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">
+  &copy; 2026 Hydro Structure AI. 
+  <span class="copyright-text">Thiết kế bởi <a href="https://github.com/HydroStructAI" rel="nofollow">HydroStructAI Team</a>.</span>
+</div>
+      </footer>
+    </div>
+
+    <script src="/assets/js/global.js"></script>
+
+<script src="/assets/js/app_core_logic.js"></script>
+
+
+  <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC', { 'anonymize_ip': false});
+</script>
+
+
+  </body>
+</html>

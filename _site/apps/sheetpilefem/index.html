@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sheet Pile FEM Analysis</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <link href="../../assets/css/global.css" rel="stylesheet">
+    
+    <link href="app.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<div id="loading-overlay">
+    <div class="spinner"></div>
+    <div class="loading-text">
+        <i class="bi bi-hourglass-split"></i> Đang khởi tạo hệ thống...
+    </div>
+</div>
+
+<div class="container my-4">
+    <div class="row">
+        <div class="col-lg-3 mb-4">
+            <div class="card p-3 sticky-top sidebar-card" style="top: 1rem;">
+                <h4>TỆP DỮ LIỆU</h4>
+                <hr>
+                
+                <div class="btn-group w-100 mb-3" role="group">
+                    <button type="button" class="btn btn-outline-primary" id="btn-new-file" title="Tạo mới">
+                        <i class="bi bi-file-earmark-plus"></i> Tệp mới
+                    </button>
+                    <button type="button" class="btn btn-outline-success" id="btn-open-file" title="Mở file" 
+                            onclick="AppUI.file.triggerOpen('hidden-file-input')">
+                        <i class="bi bi-folder-open"></i> Mở tệp
+                    </button>
+                    <button type="button" class="btn btn-outline-warning" id="btn-save-file" title="Lưu file">
+                        <i class="bi bi-save"></i> Lưu tệp
+                    </button>
+                </div>
+                <input type="file" id="hidden-file-input" accept=".csv,.inp" style="display:none;">
+                
+                <button class="btn btn-lg btn-success w-100 shadow-sm" id="btn-run-analysis" disabled>
+                    <i class="bi bi-calculator"></i> TÍNH TOÁN
+                </button>
+                
+                <div class="alert alert-info mt-3 shadow-sm" id="wasm-status">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border text-primary spinner-border-sm me-2" role="status" id="wasm-spinner"></div>
+                        <span id="wasm-status-text">Đang tải lõi tính toán...</span>
+                    </div>
+                </div>
+                <div class="alert alert-danger mt-3 shadow-sm" id="error-message" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h3 class="mb-0 text-primary"><i class="bi bi-layers-half"></i> Phân tích Tường cừ (FEM)</h3>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="inputTabs" role="tablist">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#content-general">1. Thông số chung</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-layers">2. Lớp đất</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-water">3. Mực nước</button></li>
+						<li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-anchors">4. Neo / Chống</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-loads">5. Tải tập trung</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-surcharge">6. Tải phân bố</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-license"><i class="bi bi-patch-check"></i> 7. Bản quyền</button></li>
+                    </ul>
+
+                    <div class="tab-content p-3 border border-top-0" id="inputTabsContent">
+                        
+                        <div class="tab-pane fade show active" id="content-general">
+                            <h5><i class="bi bi-bricks"></i> Thông số tường & Đào</h5>
+                            <hr>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Độ cứng EI (kN·m²/m)</label>
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="general-EI" value="67200" step="1000">
+                                        <span class="input-group-text bg-light">EI</span>
+                                    </div>
+                                    <div class="row mt-2 g-2">
+                                        <div class="col-6">
+                                            <small class="text-muted">E (kN/m²)</small>
+                                            <input type="number" class="form-control form-control-sm" id="general-E" value="210000000" readonly>
+                                        </div>
+                                        <div class="col-6">
+                                            <small class="text-muted">I (m⁴/m)</small>
+                                            <input type="number" class="form-control form-control-sm" id="general-I" value="0.00032" readonly>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Chiều dài tường L (m)</label>
+                                    <input type="number" class="form-control" id="general-L" value="15" step="0.5">
+                                    
+                                    <label class="form-label fw-bold mt-3">Độ sâu đào H (m)</label>
+                                    <input type="number" class="form-control" id="general-H" value="5" step="0.5">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content-layers">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5><i class="bi bi-layers-fill"></i> Các lớp đất nền</h5>
+                                <button class="btn btn-sm btn-success" id="btn-add-layer"><i class="bi bi-plus-lg"></i> Thêm lớp</button>
+                            </div>
+                            <div class="table-scroll-container">
+                                <table class="table table-bordered table-hover mb-0" id="soil-layer-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" width="50">STT</th>
+                                            <th>Đáy lớp (m)</th>
+                                            <th>γ (kN/m³)</th>
+                                            <th>γ' (kN/m³)</th>
+                                            <th>φ (độ)</th>
+                                            <th>c' (kN/m²)</th>
+                                            <th>k (kN/m³)</th>
+                                            <th class="text-center" width="60"><i class="bi bi-gear"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center">1</td>
+                                            <td><input type="number" class="form-control" value="5"></td>
+                                            <td><input type="number" class="form-control" value="18"></td>
+                                            <td><input type="number" class="form-control" value="8"></td>
+                                            <td><input type="number" class="form-control" value="30"></td>
+                                            <td><input type="number" class="form-control" value="0"></td>
+                                            <td><input type="number" class="form-control" value="10000"></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">2</td>
+                                            <td><input type="number" class="form-control" value="15"></td>
+                                            <td><input type="number" class="form-control" value="19"></td>
+                                            <td><input type="number" class="form-control" value="9"></td>
+                                            <td><input type="number" class="form-control" value="32"></td>
+                                            <td><input type="number" class="form-control" value="0"></td>
+                                            <td><input type="number" class="form-control" value="15000"></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content-anchors">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5><i class="bi bi-link-45deg"></i> Hệ thống Neo/Chống</h5>
+                                <button class="btn btn-sm btn-success" id="btn-add-anchor"><i class="bi bi-plus-lg"></i> Thêm neo</button>
+                            </div>
+                            <div class="table-scroll-container">
+                                <table class="table table-bordered table-hover mb-0" id="anchor-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" width="50">STT</th>
+                                            <th>Cao độ (m)</th>
+                                            <th>Góc (độ)</th>
+                                            <th>Diện tích (m²)</th>
+                                            <th>E (kN/m²)</th>
+                                            <th>Khoảng cách (m)</th>
+                                            <th class="text-center" width="60"><i class="bi bi-gear"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center">1</td>
+                                            <td><input type="number" class="form-control" value="1.0"></td>
+                                            <td><input type="number" class="form-control" value="0"></td>
+                                            <td><input type="number" class="form-control" value="0.01"></td>
+                                            <td><input type="text" class="form-control" value="2.1E8"></td>
+                                            <td><input type="number" class="form-control" value="3.0"></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content-loads">
+                             <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5><i class="bi bi-arrow-down-circle-fill"></i> Tải trọng tập trung (Line Load)</h5>
+                                <button class="btn btn-sm btn-success" id="btn-add-load"><i class="bi bi-plus-lg"></i> Thêm tải</button>
+                            </div>
+                            <div class="table-scroll-container">
+                                <table class="table table-bordered table-hover mb-0" id="load-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" width="50">STT</th>
+                                            <th>Độ sâu z (m)</th>
+                                            <th>Giá trị Q (kN/m)</th>
+                                            <th class="text-center" width="60"><i class="bi bi-gear"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content-water">
+                            <h5><i class="bi bi-droplet-half"></i> Mực nước ngầm</h5>
+                            <hr>
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <div class="card bg-light border-0">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-primary">Phía sau tường (Hw1)</h6>
+                                            <input type="number" class="form-control form-control-lg text-center" id="water-hw1" value="5">
+                                            <small class="text-muted">Độ sâu từ đỉnh tường</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-light border-0">
+                                        <div class="card-body text-center">
+                                            <h6 class="text-success">Phía trước tường (Hw2)</h6>
+                                            <input type="number" class="form-control form-control-lg text-center" id="water-hw2" value="1">
+                                            <small class="text-muted">Độ sâu từ đỉnh tường</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content-surcharge">
+                             <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5><i class="bi bi-distribute-vertical"></i> Tải phân bố (Surcharge)</h5>
+                                <button class="btn btn-sm btn-success" id="btn-add-surcharge"><i class="bi bi-plus-lg"></i> Thêm tải</button>
+                            </div>
+                            <div class="table-scroll-container">
+                                <table class="table table-bordered table-hover mb-0" id="surcharge-table">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th class="text-center" width="50">STT</th>
+                                            <th>Từ z1 (m)</th>
+                                            <th>Đến z2 (m)</th>
+                                            <th>Giá trị q (kN/m²)</th>
+                                            <th class="text-center" width="60"><i class="bi bi-gear"></i></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="text-center">1</td>
+                                            <td><input type="number" class="form-control" value="0"></td>
+                                            <td><input type="number" class="form-control" value="5"></td>
+                                            <td><input type="number" class="form-control" value="6"></td>
+                                            <td class="text-center">
+                                                <button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade" id="content-license">
+                            <div class="row">
+                                <div class="col-md-8 mx-auto">
+                                    <div class="card border-warning">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0 fw-bold"><i class="bi bi-star-fill"></i> Kích hoạt bản quyền PRO</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Email đăng ký:</label>
+                                                <input type="email" class="form-control" id="user-email" placeholder="email@example.com">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">License Key:</label>
+                                                <input type="text" class="form-control font-monospace" id="license-key" placeholder="XXXX-XXXX-XXXX">
+                                            </div>
+                                            <button class="btn btn-primary w-100" id="btn-check-license">Kích hoạt</button>
+                                        </div>
+                                    </div>
+                                    <div id="license-status" class="alert alert-secondary mt-3 text-center">
+                                        Trạng thái: Chưa kích hoạt (Giới hạn tính năng)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+            <div id="output-section" class="card mt-4 shadow-sm" style="display: none;">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                     <h4 class="mb-0 text-success">Kết quả phân tích</h4>
+                     <button class="btn btn-sm btn-outline-success" id="btn-export-csv" onclick="/* Logic handled in JS */">
+                        <i class="bi bi-download"></i> Xuất CSV
+                    </button>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs mb-3" id="resultTabs">
+                        <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#content-charts">Biểu đồ</button></li>
+                        <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#content-summary">Số liệu chi tiết</button></li>
+                    </ul>
+                    
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="content-charts">
+                            <div class="row g-4">
+                                <div class="col-md-6"><canvas id="chart-displacement"></canvas></div>
+                                <div class="col-md-6"><canvas id="chart-moment"></canvas></div>
+                                <div class="col-md-6"><canvas id="chart-shear"></canvas></div>
+                                <div class="col-md-6"><canvas id="chart-pressure"></canvas></div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="content-summary">
+                            <pre id="json-output" class="bg-light p-3 rounded border" style="max-height: 400px; overflow-y: auto;"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../../assets/js/global.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // Thêm Lớp đất (Layers)
+    document.getElementById("btn-add-layer").addEventListener("click", () => {
+        const tbody = document.querySelector('#soil-layer-table tbody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td class="text-center"></td>
+            <td><input type="number" class="form-control" value="0"></td>
+            <td><input type="number" class="form-control" value="18"></td>
+            <td><input type="number" class="form-control" value="8"></td>
+            <td><input type="number" class="form-control" value="30"></td>
+            <td><input type="number" class="form-control" value="0"></td>
+            <td><input type="number" class="form-control" value="10000"></td>
+            <td class="text-center"><button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        `;
+        AppUI.table.reindex(tbody);
+    });
+
+    // Thêm Neo (Anchors)
+    document.getElementById("btn-add-anchor").addEventListener("click", () => {
+        // Check License (Demo logic)
+        if (!AppUI.license.isPro() && document.querySelector('#anchor-table tbody').rows.length >= 1) {
+            AppUI.toast.show("Phiên bản FREE chỉ cho phép 1 neo. Vui lòng kích hoạt PRO!", "warning");
+            return;
+        }
+
+        const tbody = document.querySelector('#anchor-table tbody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td class="text-center"></td>
+            <td><input type="number" class="form-control" value="1.0"></td>
+            <td><input type="number" class="form-control" value="0"></td>
+            <td><input type="number" class="form-control" value="0.01"></td>
+            <td><input type="text" class="form-control" value="2.1E8"></td>
+            <td><input type="number" class="form-control" value="3.0"></td>
+            <td class="text-center"><button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        `;
+        AppUI.table.reindex(tbody);
+    });
+
+    // Thêm Tải trọng tập trung (Loads)
+    document.getElementById("btn-add-load").addEventListener("click", () => {
+        const tbody = document.querySelector('#load-table tbody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td class="text-center"></td>
+            <td><input type="number" class="form-control" value="0"></td>
+            <td><input type="number" class="form-control" value="10"></td>
+            <td class="text-center"><button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        `;
+        AppUI.table.reindex(tbody);
+    });
+
+    // Thêm Tải phân bố (Surcharge)
+    document.getElementById("btn-add-surcharge").addEventListener("click", () => {
+        const tbody = document.querySelector('#surcharge-table tbody');
+        const row = tbody.insertRow();
+        row.innerHTML = `
+            <td class="text-center"></td>
+            <td><input type="number" class="form-control" value="0"></td>
+            <td><input type="number" class="form-control" value="5"></td>
+            <td><input type="number" class="form-control" value="6"></td>
+            <td class="text-center"><button class="btn btn-outline-danger btn-sm border-0" onclick="AppUI.table.removeRow(this)"><i class="bi bi-trash"></i></button></td>
+        `;
+        AppUI.table.reindex(tbody);
+    });
+});
+</script>
+
+<script src="sheetpilefem.js"></script>
+<script src="app-check.js"></script>
+<script src="app-cal.js"></script>
+<script src="app-out.js"></script>
+
+</body>
+</html>

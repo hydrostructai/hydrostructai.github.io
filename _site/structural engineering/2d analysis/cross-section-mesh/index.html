@@ -1,0 +1,1292 @@
+<!doctype html>
+<!--
+  Minimal Mistakes Jekyll Theme 4.27.3 by Michael Rose
+  Copyright 2013-2025 Michael Rose - mademistakes.com | @mmistakes
+  Free for personal and commercial use under the MIT license
+  https://github.com/mmistakes/minimal-mistakes/blob/master/LICENSE
+-->
+
+<html lang="vi" class="no-js">
+  <head>
+    <meta charset="utf-8">
+
+<!-- begin _includes/seo.html --><title>Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties | Hydro Structure AI</title>
+<meta name="description" content="Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở sectionproperties.  Phân tích bao gồm:    Định Nghĩa Vật Liệu: Bê tông với các tính chất đàn hồi   Tạo Hình Học: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF)   Tạo Lưới: Tạo lưới phần tử hữu hạn   Tính Toán Tính Chất: Tính chất hình học, uốn và dẻo   Phân Tích Độ Cứng: Độ cứng trục, uốn và xoắn   Phân Tích Ứng Suất: Nhiều trường hợp tải với trực quan hóa   Vòng Mohr: Trực quan hóa trạng thái ứng suất tới hạn">
+
+
+  <meta name="author" content="Hydro Structure AI">
+  
+  <meta property="article:author" content="Hydro Structure AI">
+  
+
+
+<meta property="og:type" content="article">
+<meta property="og:locale" content="vi">
+<meta property="og:site_name" content="Hydro Structure AI">
+<meta property="og:title" content="Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties">
+<meta property="og:url" content="http://localhost:4000/structural%20engineering/2d%20analysis/cross-section-mesh/">
+
+
+  <meta property="og:description" content="Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở sectionproperties.  Phân tích bao gồm:    Định Nghĩa Vật Liệu: Bê tông với các tính chất đàn hồi   Tạo Hình Học: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF)   Tạo Lưới: Tạo lưới phần tử hữu hạn   Tính Toán Tính Chất: Tính chất hình học, uốn và dẻo   Phân Tích Độ Cứng: Độ cứng trục, uốn và xoắn   Phân Tích Ứng Suất: Nhiều trường hợp tải với trực quan hóa   Vòng Mohr: Trực quan hóa trạng thái ứng suất tới hạn">
+
+
+
+
+
+
+
+  <meta property="article:published_time" content="2025-12-19T10:00:00+07:00">
+
+
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/structural%20engineering/2d%20analysis/cross-section-mesh/">
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- end _includes/seo.html -->
+
+
+
+  <link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Hydro Structure AI Feed">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + ' js ';
+  
+</script>
+
+<!-- For all browsers -->
+<link rel="stylesheet" href="/assets/css/main.css">
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@latest/css/all.min.css"></noscript>
+
+
+
+    <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+<!-- 
+  GOOGLE ANALYTICS INJECTION
+  - Tracking data is sent to GA4 (ID: G-BNB682DVWC)
+  - To disable, remove these script tags or change the ID in _config.yml
+-->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC');
+</script>
+
+<!-- Bootstrap 5 (Required for Global UI & Apps) -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<!-- Global CSS for Site-Wide Styling & Modern Post Grid Layout -->
+<link rel="stylesheet" href="/assets/css/global.css">
+
+<!-- Busuanzi Analytics (Visitor Counter API) - Provides Site PV/UV -->
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  </head>
+
+  <body class="layout--single" dir="ltr">
+    <nav class="skip-links">
+  <ul>
+    <li><a href="#site-nav" class="screen-reader-shortcut">Nhảy tới thanh điều hướng</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Nhảy tới nội dung</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Nhảy tới chân trang</a></li>
+  </ul>
+</nav>
+
+    
+
+<div class="masthead">
+  <div class="masthead__inner-wrap">
+    <div class="masthead__menu">
+      <nav id="site-nav" class="greedy-nav">
+        
+        <a class="site-title" href="/">
+          Hydro Structure AI
+          
+        </a>
+        <ul class="visible-links"><li class="masthead__menu-item">
+              <a
+                href="/"
+                
+                
+              >Blog</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/apps/"
+                
+                
+              >Web Apps</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/about/"
+                
+                
+              >Về chúng tôi</a>
+            </li><li class="masthead__menu-item">
+              <a
+                href="/tags/"
+                
+                
+              >Theo Thẻ (Tags)</a>
+            </li></ul>
+        
+        <button class="greedy-nav__toggle hidden" type="button">
+          <span class="visually-hidden">Menu</span>
+          <div class="navicon"></div>
+        </button>
+        <ul class="hidden-links hidden"></ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+
+    <div class="initial-content">
+      
+
+
+
+
+
+<style>
+  /* 1. Cấu hình lưới 3 cột */
+  .post-grid-container {
+    display: grid !important;
+    /* Sidebar Trái: 240px (Thu nhỏ xíu để nhường chỗ)
+       Nội dung Giữa: 1fr (Tự động chiếm hết khoảng trống còn lại)
+       Sidebar Phải: 240px 
+    */
+    grid-template-columns: 240px minmax(0, 1fr) 240px !important;
+    gap: 30px !important;
+    align-items: start;
+    
+    /* 2. Tăng chiều rộng tổng thể lên ~20% (từ 1280px -> 1600px) */
+    max-width: 1600px !important; 
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+  }
+
+  /* Sidebar Trái */
+  .post-grid-sidebar-left {
+    display: block !important;
+    grid-column: 1 / 2 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Sidebar Phải (Mục lục/Bài viết mới) - Cân xứng với sidebar trái */
+  .post-grid-sidebar-right {
+    display: block !important;
+    grid-column: 3 / 4 !important;
+    position: sticky !important;
+    top: 80px !important;
+    height: calc(100vh - 100px) !important;
+    overflow-y: auto !important;
+    padding: 15px !important;
+    background: #ffffff !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 8px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  /* Tối ưu scrollbar cho sidebars (Hiện rõ hơn để người dùng biết có thể cuộn) */
+  .post-grid-sidebar-left::-webkit-scrollbar,
+  .post-grid-sidebar-right::-webkit-scrollbar {
+    width: 8px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-track,
+  .post-grid-sidebar-right::-webkit-scrollbar-track {
+    background: #f8f9fa;
+    border-radius: 10px;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb {
+    background-color: #ced4da;
+    border-radius: 10px;
+    border: 2px solid #f8f9fa;
+  }
+  .post-grid-sidebar-left::-webkit-scrollbar-thumb:hover,
+  .post-grid-sidebar-right::-webkit-scrollbar-thumb:hover {
+    background-color: #adb5bd;
+  }
+
+  /* Make items spaced out to ensure overflow */
+  .latest-post-item {
+    margin-bottom: 20px !important;
+  }
+
+  /* Nội dung bài viết (Ở giữa) */
+  .post-grid-article {
+    grid-column: 2 / 3 !important;
+    width: 100% !important; /* Đảm bảo article chiếm toàn bộ cột 2 */
+    max-width: none !important;
+    min-width: 0; /* Tránh vỡ layout khi có ảnh to */
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Bài viết liên quan (Full width dưới cùng) */
+  .page__related-wrapper {
+    max-width: 1600px !important; /* Đồng bộ độ rộng với grid trên */
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+  .page__related {
+    border-top: 1px solid #eee;
+    padding-top: 2rem;
+  }
+ /* CHUYÊN GIA: Ép nội dung bên trong bài viết giãn 100% */
+  /* CHUYÊN GIA: Ép mọi lớp bao trong phải giãn 100% */
+  .post-grid-article,
+  .post-grid-article .page__inner-wrap,
+  .post-grid-article .page__content {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  /* Khử giới hạn của các thẻ nội dung cụ thể nếu có */
+  .post-grid-article header,
+  .post-grid-article section,
+  .post-grid-article footer {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  /* --- RESPONSIVE --- */
+  
+  /* Laptop nhỏ/Tablet (Ẩn cột phải, dồn không gian cho nội dung) */
+  @media (max-width: 1200px) {
+    .post-grid-container {
+      grid-template-columns: 220px 1fr !important; /* 2 Cột */
+    }
+    .post-grid-sidebar-right {
+      display: none !important; /* Tạm ẩn TOC bên phải để không chật */
+    }
+  }
+
+  /* Mobile (1 Cột dọc) */
+  @media (max-width: 768px) {
+    .post-grid-container {
+      grid-template-columns: 1fr !important;
+    }
+    .post-grid-sidebar-left, 
+    .post-grid-sidebar-right {
+      display: none !important;
+    }
+  }
+</style>
+
+<div id="main" role="main" class="post-grid-container">
+  
+  <div class="post-grid-sidebar-left">
+    <aside class="left-sidebar">
+  
+  <!-- Traffic Stats Section -->
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Traffic Stats</h4>
+    <div style="padding: 12px; background: #f9f9f9; border-radius: 4px; border: 1px solid #eee; margin: 10px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 0.8rem; color: #666; font-weight: 500;">
+              <i class="fas fa-chart-line" style="margin-right: 5px;"></i> Stats API
+            </span>
+            <span id="ga4-status-badge" style="font-size: 0.6rem; color: #666; background: #eee; padding: 1px 6px; border-radius: 10px;">Connecting...</span>
+        </div>
+        
+        <!-- API-based Counter (Busuanzi) -->
+        <div style="margin-bottom: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                <span style="font-size: 0.8rem; color: #333;">Site Views (PV)</span>
+                <span id="busuanzi_value_site_pv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.8rem; color: #333;">Total Unique Visitors</span>
+                <span id="busuanzi_value_site_uv" style="font-weight: bold; color: #2231d2; font-family: monospace;">...</span>
+            </div>
+        </div>
+        
+        <script>
+          // Step 3 & 4 Verification: Verify tracking status and handle API display
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              const badge = document.getElementById('ga4-status-badge');
+              if (typeof gtag === 'function') {
+                badge.innerText = 'GA4 Active';
+                badge.style.background = '#e8f5e9';
+                badge.style.color = '#28a745';
+              } else {
+                badge.innerText = 'GA4 Offline';
+                badge.style.background = '#ffebee';
+                badge.style.color = '#d32f2f';
+              }
+            }, 2000);
+          });
+        </script>
+        
+        <div style="text-align: center; margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ddd;">
+            <a href="https://analytics.google.com/analytics/web/" target="_blank" style="font-size: 0.7rem; color: #0d6efd; text-decoration: none;">
+                <i class="fab fa-google"></i> Analysis Dashboard
+            </a>
+        </div>
+    </div>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="https://analytics.google.com/analytics/web/" target="_blank" class="share-link">
+          <i class="fas fa-chart-line"></i> View GA Dashboard
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Share</h4>
+    <ul class="share-list">
+      <li class="share-item">
+        <a href="#" class="share-link" onclick="window.print(); return false;">
+          <i class="fas fa-print"></i> Print this page
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="mailto:?subject=Engineering Tools&body=Check this out!" class="share-link">
+          <i class="fas fa-envelope"></i> Send via Email
+        </a>
+      </li>
+      <li class="share-item">
+        <a href="#" class="share-link">
+          <i class="fab fa-twitter"></i> Share on Twitter
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Facebook</h4>
+    <a href="https://facebook.com/g.technical" target="_blank" class="rec-link">
+      <i class="fab fa-facebook-square" style="color: #4267B2; font-size: 1.2rem;"></i> FB Fanpage
+    </a>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Books</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Design of Concrete Structures (Nilson)</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-book"></i> Foundation Analysis and Design (Bowles)</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading">Recommend Courses</h4>
+    <ul class="rec-list">
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Coursera: Civil Engineering</a>
+      </li>
+      <li class="rec-item">
+        <a href="#" class="rec-link"><i class="fas fa-graduation-cap"></i> Udemy: SAP2000 Ultimate</a>
+      </li>
+    </ul>
+  </div>
+
+</aside>
+  </div>
+
+  <article class="page h-entry post-grid-article" itemscope itemtype="https://schema.org/Article">
+    <meta itemprop="headline" content="Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties">
+    <meta itemprop="description" content="Tổng QuanBài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở sectionproperties. Phân tích bao gồm:  Định Nghĩa Vật Liệu: Bê tông với các tính chất đàn hồi  Tạo Hình Học: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF)  Tạo Lưới: Tạo lưới phần tử hữu hạn  Tính Toán Tính Chất: Tính chất hình học, uốn và dẻo  Phân Tích Độ Cứng: Độ cứng trục, uốn và xoắn  Phân Tích Ứng Suất: Nhiều trường hợp tải với trực quan hóa  Vòng Mohr: Trực quan hóa trạng thái ứng suất tới hạn">
+    <meta itemprop="datePublished" content="2025-12-19T10:00:00+07:00">
+    
+
+    <div class="page__inner-wrap">
+      
+        <header>
+          <h1 id="page-title" class="page__title p-name" itemprop="headline">
+            <a href="http://localhost:4000/structural%20engineering/2d%20analysis/cross-section-mesh/" class="u-url" itemprop="url">Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties
+</a>
+          </h1>
+          
+
+  <p class="page__meta">
+    
+
+    
+
+    
+      
+      
+
+      <span class="page__meta-readtime">
+        <i class="far fa-clock" aria-hidden="true"></i>
+        
+          9 phút để đọc
+        
+      </span>
+    
+  </p>
+
+
+        </header>
+      
+
+      <section class="page__content e-content" itemprop="articleBody">
+        <h2 id="tổng-quan">Tổng Quan</h2>
+<p>Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở <code class="language-plaintext highlighter-rouge">sectionproperties</code>. 
+Phân tích bao gồm:</p>
+<ol>
+  <li><strong>Định Nghĩa Vật Liệu</strong>: Bê tông với các tính chất đàn hồi</li>
+  <li><strong>Tạo Hình Học</strong>: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF)</li>
+  <li><strong>Tạo Lưới</strong>: Tạo lưới phần tử hữu hạn</li>
+  <li><strong>Tính Toán Tính Chất</strong>: Tính chất hình học, uốn và dẻo</li>
+  <li><strong>Phân Tích Độ Cứng</strong>: Độ cứng trục, uốn và xoắn</li>
+  <li><strong>Phân Tích Ứng Suất</strong>: Nhiều trường hợp tải với trực quan hóa</li>
+  <li><strong>Vòng Mohr</strong>: Trực quan hóa trạng thái ứng suất tới hạn</li>
+</ol>
+
+<h2 id="tiết-diện-thiết-kế">Tiết Diện Thiết Kế</h2>
+
+<p><strong>Tiết Diện dầm Bê Tông</strong></p>
+<ul>
+  <li>Vật liệu: Bê tông (E = 30,1 GPa, ν = 0,2)</li>
+  <li>Kích thước lưới: 60 mm²</li>
+  <li>Tải Áp Dụng:
+    <ul>
+      <li>Lực dọc trục: 10 kN</li>
+      <li>Mô-men Uốn (M_xx): 10 kN·m</li>
+      <li>Lực cắt theo phương x (V_x): 25 kN</li>
+      <li>Lực cắt theo phương y (V_y): 50 kN</li>
+    </ul>
+  </li>
+</ul>
+
+<hr />
+
+<h2 id="1-nhập-các-thư-viện-cần-thiết">1. Nhập Các Thư Viện Cần Thiết</h2>
+
+<p>Nhập tất cả các thư viện cần thiết để tạo hình học, tạo lưới và phân tích phần tử hữu hạn.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="n">matplotlib.pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="n">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Circle</span>
+<span class="kn">from</span> <span class="n">shapely.geometry</span> <span class="kn">import</span> <span class="n">Polygon</span>
+
+<span class="c1"># Nhập các mô-đun sectionproperties cho tạo hình học và định nghĩa vật liệu
+</span><span class="kn">from</span> <span class="n">sectionproperties.pre.geometry</span> <span class="kn">import</span> <span class="n">Geometry</span>
+<span class="kn">from</span> <span class="n">sectionproperties.pre.pre</span> <span class="kn">import</span> <span class="n">Material</span>
+
+<span class="c1"># In thông báo xác nhận các thư viện đã được nhập thành công
+</span><span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Thư viện được nhập thành công</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Phiên bản NumPy: </span><span class="si">{</span><span class="n">np</span><span class="p">.</span><span class="n">__version__</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Phiên bản Matplotlib: </span><span class="si">{</span><span class="n">plt</span><span class="p">.</span><span class="n">matplotlib</span><span class="p">.</span><span class="n">__version__</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="2-định-nghĩa-tính-chất-vật-liệu">2. Định Nghĩa Tính Chất Vật Liệu</h2>
+
+<p>Tạo vật liệu Bê tông với các tính chất đàn hồi, cơ học và vật lý được chỉ định theo thông số kỹ thuật.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Định nghĩa các tính chất vật liệu cho bê tông (theo thông số kỹ thuật của nhiệm vụ)
+</span><span class="n">concrete_properties</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Bê Tông</span><span class="sh">"</span><span class="p">,</span>
+    <span class="sh">"</span><span class="s">elastic_modulus</span><span class="sh">"</span><span class="p">:</span> <span class="mf">30.1e3</span><span class="p">,</span>    <span class="c1"># MPa - Mô-đun đàn hồi (Young's modulus)
+</span>    <span class="sh">"</span><span class="s">poissons_ratio</span><span class="sh">"</span><span class="p">:</span> <span class="mf">0.2</span><span class="p">,</span>        <span class="c1"># Tỷ lệ Poisson - độ co ngót 
+</span>    <span class="sh">"</span><span class="s">density</span><span class="sh">"</span><span class="p">:</span> <span class="mf">2.4e-6</span><span class="p">,</span>            <span class="c1"># kg/mm³ - Mật độ của bê tông
+</span>    <span class="sh">"</span><span class="s">yield_strength</span><span class="sh">"</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span>         <span class="c1"># MPa - Sức chịu nén của bê tông
+</span>    <span class="sh">"</span><span class="s">color</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">lightgrey</span><span class="sh">"</span>          <span class="c1"># Màu sắc để vẽ trên biểu đồ
+</span><span class="p">}</span>
+
+<span class="c1"># Tạo đối tượng Material sectionproperties với các tính chất vật liệu định nghĩa ở trên
+</span><span class="n">concrete</span> <span class="o">=</span> <span class="nc">Material</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">],</span>
+    <span class="n">elastic_modulus</span><span class="o">=</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">"</span><span class="s">elastic_modulus</span><span class="sh">"</span><span class="p">],</span>
+    <span class="n">poissons_ratio</span><span class="o">=</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">"</span><span class="s">poissons_ratio</span><span class="sh">"</span><span class="p">],</span>
+    <span class="n">density</span><span class="o">=</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">"</span><span class="s">density</span><span class="sh">"</span><span class="p">],</span>
+    <span class="n">yield_strength</span><span class="o">=</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">"</span><span class="s">yield_strength</span><span class="sh">"</span><span class="p">],</span>
+    <span class="n">color</span><span class="o">=</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">"</span><span class="s">color</span><span class="sh">"</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="c1"># In bảng tóm tắt các tính chất vật liệu để xác minh
+</span><span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">=</span><span class="sh">"</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">TÍNH CHẤT VẬT LIỆU - BÊ TÔNG</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">=</span><span class="sh">"</span><span class="o">*</span><span class="mi">70</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Tên:                     </span><span class="si">{</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">'</span><span class="s">name</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Mô-đun Đàn Hồi (E):      </span><span class="si">{</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">'</span><span class="s">elastic_modulus</span><span class="sh">'</span><span class="p">]</span><span class="si">:</span><span class="p">,.</span><span class="mi">1</span><span class="n">f</span><span class="si">}</span><span class="s"> MPa</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Tỷ Lệ Poisson (ν):       </span><span class="si">{</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">'</span><span class="s">poissons_ratio</span><span class="sh">'</span><span class="p">]</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">f</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Mật Độ (ρ):              </span><span class="si">{</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">'</span><span class="s">density</span><span class="sh">'</span><span class="p">]</span><span class="si">:</span><span class="p">.</span><span class="mi">2</span><span class="n">e</span><span class="si">}</span><span class="s"> kg/mm³</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Sức Chịu Nén (f_y):      </span><span class="si">{</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">'</span><span class="s">yield_strength</span><span class="sh">'</span><span class="p">]</span><span class="si">:</span><span class="p">,.</span><span class="mi">1</span><span class="n">f</span><span class="si">}</span><span class="s"> MPa</span><span class="sh">"</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Màu:                     </span><span class="si">{</span><span class="n">concrete_properties</span><span class="p">[</span><span class="sh">'</span><span class="s">color</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="3-xây-dựng-hình-học-tiết-diện-dầm">3. Xây Dựng Hình Học Tiết Diện dầm</h2>
+
+<p>Tải hình học tiết diện dầm từ tệp DXF. Hình học tiết diện dầm bê tông cầu điển hình với các đặc trưng sau:</p>
+<ul>
+  <li>Mặt trên rộng để chịu tải</li>
+  <li>Lõi trung tâm rỗng để giảm khối lượng</li>
+  <li>Các góc bo tròn cho sự mượt mà</li>
+  <li>Các bức tường bên dày để chịu lực cắt</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Tải hình học từ tệp DXF
+</span>    <span class="n">geom</span> <span class="o">=</span> <span class="n">Geometry</span><span class="p">.</span><span class="nf">from_dxf</span><span class="p">(</span><span class="n">dxf_filepath</span><span class="o">=</span><span class="sh">"</span><span class="s">./dxf/box-girder.dxf</span><span class="sh">"</span><span class="p">)</span> 
+    <span class="c1"># Gán vật liệu bê tông cho hình học
+</span>    <span class="n">geom</span><span class="p">.</span><span class="n">material</span> <span class="o">=</span> <span class="n">concrete</span> 
+    <span class="c1"># Vẽ hình học trên màn hình
+</span>    <span class="n">geom</span><span class="p">.</span><span class="nf">plot_geometry</span><span class="p">()</span> 
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Hình học được tải từ tệp DXF thành công</span><span class="sh">"</span><span class="p">)</span>
+<span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="c1"># Nếu tệp DXF không tìm thấy, in thông báo lỗi
+</span>    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Không thể tải tệp DXF: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Sử dụng hình học được xác định lập trình...</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Mặt cắt ngang dầm:</p>
+
+<figure class="img-zoom-125">
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-section.png" alt="box-girder-section" />
+  </a>
+  <figcaption>Cross Section<sup>2</sup>.</figcaption>
+</figure>
+<hr />
+
+<h2 id="4-tạo-lưới-phần-tử-hữu-hạn">4. Tạo Lưới Phần Tử Hữu Hạn</h2>
+
+<p>Lưới hóa (meshing) là một bước cực kỳ quan trọng trong phân tích phần tử hữu hạn (FEA). Nó chia nhỏ hình học phức tạp thành các phần tử đơn giản mà máy tính có thể xử lý. Lưới trực tiếp ảnh hưởng đến:</p>
+<ul>
+  <li><strong>Độ chính xác</strong>: Lưới mịn cho kết quả chính xác hơn</li>
+  <li><strong>Độ tin cậy</strong>: Lưới kém có thể cho kết quả sai</li>
+  <li><strong>Thời gian tính toán</strong>: Lưới mịn tăng thời gian xử lý</li>
+</ul>
+
+<p>Cân bằng mật độ lưới là chìa khóa để tối ưu hóa: lưới mịn trong các vùng quan trọng nhưng lưới thô ở các vùng ít quan trọng.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Nhập module Section từ sectionproperties.analysis để thực hiện FEA
+</span><span class="kn">from</span> <span class="n">sectionproperties.analysis</span> <span class="kn">import</span> <span class="n">Section</span>
+<span class="c1"># Tạo lưới với kích thước phần tử 60 mm² (tối ưu cho độ chính xác và tốc độ)
+</span><span class="n">geom</span><span class="p">.</span><span class="nf">create_mesh</span><span class="p">(</span><span class="n">mesh_sizes</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span> 
+<span class="c1"># Tạo đối tượng Section cho phân tích phần tử hữu hạn
+</span><span class="n">sec</span> <span class="o">=</span> <span class="nc">Section</span><span class="p">(</span><span class="n">geom</span><span class="p">)</span> 
+<span class="c1"># Hiển thị lưới trên màn hình để kiểm tra chất lượng
+</span><span class="n">sec</span><span class="p">.</span><span class="nf">plot_mesh</span><span class="p">()</span> 
+<span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+<p>Lưới phần tử hữu hạn mặt cắt ngang dầm:</p>
+
+<figure class="img-zoom-125">
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mesh.png" alt="box-girder-mesh" />
+  </a>
+  <figcaption>Mesh<sup>2</sup>.</figcaption>
+</figure>
+<hr />
+
+<h2 id="5-tính-toán-các-tính-chất-hình-học">5. Tính Toán Các Tính Chất Hình Học</h2>
+
+<p>Sau khi tạo lưới phần tử, chúng ta có thể tính toán các tính chất hình học quan trọng của tiết diện, bao gồm:</p>
+<ul>
+  <li><strong>Tính chất hình học</strong>: Diện tích, tâm, mô-men quán tính</li>
+  <li><strong>Tính chất uốn</strong>: Hằng số uốn và tính chất liên quan</li>
+  <li><strong>Tính chất dẻo</strong>: Mô-men dẻo và vị trí tâm dẻo</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Tính toán tính chất hình học của tiết diện (diện tích, tâm, mô-men quán tính)
+</span><span class="n">sec</span><span class="p">.</span><span class="nf">calculate_geometric_properties</span><span class="p">()</span> 
+<span class="c1"># Tính toán tính chất uốn của tiết diện (deplanation, bimoment, torsion constant)
+</span><span class="n">sec</span><span class="p">.</span><span class="nf">calculate_warping_properties</span><span class="p">()</span> 
+<span class="c1"># Tính toán tính chất dẻo của tiết diện (plastic section modulus, plastic centroid)
+</span><span class="n">sec</span><span class="p">.</span><span class="nf">calculate_plastic_properties</span><span class="p">()</span> 
+<span class="c1"># Hiển thị tất cả kết quả tính toán với định dạng 2 chữ số thập phân
+</span><span class="n">sec</span><span class="p">.</span><span class="nf">display_results</span><span class="p">(</span><span class="n">fmt</span><span class="o">=</span><span class="sh">"</span><span class="s">.2f</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="6-các-đặc-trưng-độ-cứng">6. Các Đặc trưng Độ Cứng</h2>
+
+<p>Độ cứng là một chỉ số quan trọng cho biết tiết diện sẽ chống lại biến dạng như thế nào. Chúng ta sẽ tính ba loại độ cứng chính:</p>
+<ul>
+  <li><strong>Độ cứng trục (EA)</strong>: Chống lại lực kéo/nén</li>
+  <li><strong>Độ cứng uốn (EI)</strong>: Chống lại mô-men uốn</li>
+  <li><strong>Độ cứng xoắn (GJ)</strong>: Chống lại mô-men xoắn</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Tính độ cứng trục EA = E × A (chống lại lực kéo/nén)
+</span><span class="n">ea</span> <span class="o">=</span> <span class="n">sec</span><span class="p">.</span><span class="nf">get_ea</span><span class="p">()</span> 
+<span class="c1"># Tính độ cứng uốn EI = E × I (chống lại mô-men uốn) - chỉ lấy Ixx (quanh trục x)
+</span><span class="n">eixx</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sec</span><span class="p">.</span><span class="nf">get_eic</span><span class="p">()</span> 
+<span class="c1"># Tính hằng số uốn EJ = E × J (liên quan đến uốn)
+</span><span class="n">ej</span> <span class="o">=</span> <span class="n">sec</span><span class="p">.</span><span class="nf">get_ej</span><span class="p">()</span> 
+<span class="c1"># Tính độ cứng xoắn GJ = G × J (chống lại mô-men xoắn)
+</span><span class="n">gj</span> <span class="o">=</span> <span class="n">sec</span><span class="p">.</span><span class="nf">get_g_eff</span><span class="p">()</span> <span class="o">/</span> <span class="n">sec</span><span class="p">.</span><span class="nf">get_e_eff</span><span class="p">()</span> <span class="o">*</span> <span class="n">ej</span> 
+<span class="c1"># In các kết quả độ cứng ở dạng ký hiệu khoa học
+</span><span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Độ cứng trục (E.A): </span><span class="si">{</span><span class="n">ea</span><span class="si">:</span><span class="p">.</span><span class="mi">3</span><span class="n">e</span><span class="si">}</span><span class="s"> N</span><span class="sh">"</span><span class="p">)</span> 
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Độ cứng uốn (E.I): </span><span class="si">{</span><span class="n">eixx</span><span class="si">:</span><span class="p">.</span><span class="mi">3</span><span class="n">e</span><span class="si">}</span><span class="s"> N.mm2</span><span class="sh">"</span><span class="p">)</span> 
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Độ cứng xoắn (G.J): </span><span class="si">{</span><span class="n">gj</span><span class="si">:</span><span class="p">.</span><span class="mi">3</span><span class="n">e</span><span class="si">}</span><span class="s"> N.mm2</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="7-trực-quan-hóa-các-tâm-hình-học">7. Trực Quan Hóa Các Tâm Hình Học</h2>
+
+<p>Ngoài các tính chất cơ bản, chúng ta có thể trực quan hóa các tâm đặc biệt của tiết diện để hiểu rõ hơn về phân bố hình học:</p>
+<ul>
+  <li><strong>Tâm đàn hồi</strong>: Điểm tương tức tải trọng trục gây uốn</li>
+  <li><strong>Tâm cắt</strong>: Điểm tương ứng tác dụng lực cắt để không gây xoắn</li>
+  <li><strong>Tâm dẻo</strong>: Điểm tương ứng với chuyển động dẻo</li>
+  <li><strong>Trục chính</strong>: Hướng của các mô-men quán tính chính</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Vẽ tất cả các tâm hình học quan trọng: tâm đàn hồi, tâm cắt, tâm dẻo, và trục chính
+</span><span class="n">sec</span><span class="p">.</span><span class="nf">plot_centroids</span><span class="p">()</span>
+</code></pre></div></div>
+<p>Hiển thị trọng tâm hình học của mặt cắt:</p>
+
+<figure class="img-zoom-125">
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-centroid.png" alt="box-girder-centroid" />
+  </a>
+  <figcaption>Section Centroid<sup>2</sup>.</figcaption>
+</figure>
+<hr />
+
+<h2 id="8-phân-tích-ứng-suất">8. Phân Tích Ứng Suất</h2>
+
+<p>Cuối cùng, chúng ta sẽ tính toán và trực quan hóa các ứng suất trong tiết diện. Giả sử tiết diện này thuộc nhịp trung tâm của một dầm đơn giản được gối tựa hai đầu. Dầm chịu một sự kết hợp các tải bên ngoài:</p>
+<ul>
+  <li><strong>N = 10 kN</strong>: Tải trục (kéo hoặc nén)</li>
+  <li><strong>M_xx = 10 kN·m</strong>: Mô-men uốn quanh trục x (gây cong dầm)</li>
+  <li><strong>V_x = 25 kN</strong>: Lực cắt theo hướng x</li>
+  <li><strong>V_y = 50 kN</strong>: Lực cắt theo hướng y</li>
+</ul>
+
+<h3 id="ứng-suất-von-mises">Ứng Suất Von Mises</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Tính toán ứng suất trên toàn bộ tiết diện với các tải đã chỉ định
+# N=10kN (tải trục), Mxx=10kNm (mô-men uốn), Vx=25kN, Vy=50kN (lực cắt)
+</span><span class="n">stress</span> <span class="o">=</span> <span class="n">sec</span><span class="p">.</span><span class="nf">calculate_stress</span><span class="p">(</span><span class="n">n</span><span class="o">=</span><span class="mf">10e3</span><span class="p">,</span> <span class="n">mxx</span><span class="o">=</span><span class="mf">10e6</span><span class="p">,</span> <span class="n">vx</span><span class="o">=</span><span class="mf">25e3</span><span class="p">,</span> <span class="n">vy</span><span class="o">=</span><span class="mf">50e3</span><span class="p">)</span> 
+<span class="c1"># Vẽ ứng suất Von Mises (tổng ứng suất tương đương) trên toàn bộ tiết diện
+# normalize=False: không chuẩn hóa, hiển thị giá trị thực tế
+</span><span class="n">stress</span><span class="p">.</span><span class="nf">plot_stress</span><span class="p">(</span><span class="n">stress</span><span class="o">=</span><span class="sh">"</span><span class="s">vm</span><span class="sh">"</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="sh">"</span><span class="s">{x:.2f}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Biểu đồ ứng suất của mặt cắt Dầm:</p>
+
+<figure class="img-zoom-125">
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress.png" alt="box-girder-stress" />
+  </a>
+  <figcaption>Box Girder Stress<sup>2</sup>.</figcaption>
+</figure>
+
+<h3 id="trực-quan-hóa-vectơ-ứng-suất-cắt">Trực Quan Hóa Vectơ Ứng Suất Cắt</h3>
+
+<p>Ngoài ứng suất Von Mises, chúng ta cũng có thể hiển thị các vectơ ứng suất cắt để thấy rõ hơn nơi và cách ứng suất cắt tập trung:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Vẽ trường vectơ ứng suất cắt theo hướng y (Vy) và ứng suất cắt Zxy
+# Các vectơ cho thấy hướng và độ lớn của ứng suất cắt tại mỗi điểm
+</span><span class="n">stress</span><span class="p">.</span><span class="nf">plot_stress_vector</span><span class="p">(</span><span class="n">stress</span><span class="o">=</span><span class="sh">"</span><span class="s">vy_zxy</span><span class="sh">"</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="sh">"</span><span class="s">{x:.2f}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+<p>Biểu đồ Vectơ ứng suất cắt của mặt cắt Dầm:</p>
+
+<figure class="img-zoom-125">
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-stress-vector.png" alt="box-girder-stress-vector" />
+  </a>
+  <figcaption>Stress Vector<sup>2</sup>.</figcaption>
+</figure>
+
+<h3 id="vòng-tròn-mohr-ứng-suất">Vòng tròn Mohr Ứng suất</h3>
+
+<p>Vòng tròn Mohr là biểu đồ hình học giúp xác định ứng suất chính, ứng suất cắt cực đại, và trạng thái ứng suất tại một điểm cụ thể. Chúng ta sẽ vẽ Vòng Mohr tại điểm (x=500, y=325) - một điểm tới hạn trong tiết diện:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Vẽ Vòng Mohr tại điểm cụ thể (500, 325) mm để xác định ứng suất chính
+# Điểm này được chọn vì gần ranh giới của tiết diện nơi ứng suất thường cao
+</span><span class="n">stress</span><span class="p">.</span><span class="nf">plot_mohrs_circles</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mi">325</span><span class="p">)</span> 
+<span class="c1"># Hiển thị tất cả các biểu đồ
+</span><span class="n">plt</span><span class="p">.</span><span class="nf">show</span><span class="p">()</span>
+</code></pre></div></div>
+<p>Biểu đồ Vòng tròn Mohr ứng suất:</p>
+
+<figure class="img-zoom-125">
+  <a href="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png">
+    <img src="/assets/images/posts/2025-12-19-cross-section-mesh/box-girder-mohr.png" alt="box-girder-mohr" />
+  </a>
+  <figcaption>Mohr Circle<sup>2</sup>.</figcaption>
+</figure>
+<hr />
+
+<h2 id="9-tóm-tắt-và-kết-luận">9. Tóm Tắt và Kết Luận</h2>
+
+<p>Phân tích này kiểm tra chi tiết tiết diện dầm bê tông cầu trong các điều kiện tải kết hợp phức tạp bằng cách sử dụng các nguyên tắc phân tích phần tử hữu hạn (FEA). Các kết quả chính được tóm tắt dưới đây:</p>
+
+<p><strong>Hình Học Tiết Diện:</strong></p>
+<ul>
+  <li>Tải từ tệp DXF (nếu khả dụng) hoặc được tạo lập trình</li>
+  <li>Tiết diện dầm hình chữ nhật rỗng - tối ưu chi phí</li>
+  <li>Các góc bo tròn - giảm tập trung ứng suất</li>
+  <li>Bề dày tường bên - chịu lực cắt và uốn</li>
+</ul>
+
+<p><strong>Tính Chất Vật Liệu Bê Tông:</strong></p>
+<ul>
+  <li>Mô-đun Đàn Hồi (E): 30,1 kGPa = 30.100 MPa</li>
+  <li>Tỷ Lệ Poisson (ν): 0,2 - độ co ngót của vật liệu</li>
+  <li>Sức Chịu Nén: 32 MPa - sức chịu đựng tối đa</li>
+  <li>Trọng lượng riêng: 2,4e-6 kg/mm³ - khối lượng trên đơn vị thể tích</li>
+</ul>
+
+<p><strong>Tính Chất Tiết Diện Tính Toán:</strong></p>
+<ul>
+  <li>Diện tích mặt cắt ngang (A) - chống lại tải trục</li>
+  <li>Vị trí tâm (Cx, Cy) - điểm trọng tâm hình học</li>
+  <li>Mô-men quán tính (Ixx, Iyy, Ixy) - chống lại uốn</li>
+  <li>Hằng số uốn (J) - chống lại xoắn</li>
+</ul>
+
+<p><strong>Các Trường Hợp Tải Áp Dụng:</strong></p>
+<ul>
+  <li>Lực Trục: N = 10 kN</li>
+  <li>Mô-men Uốn (quanh trục x): M_xx = 10 kN·m</li>
+  <li>Lực Cắt theo x: V_x = 25 kN</li>
+  <li>Lực Cắt theo y: V_y = 50 kN</li>
+</ul>
+
+<p>Phân tích hoàn chỉnh tạo ra các kết quả sau:</p>
+<ol>
+  <li><strong>Trực Quan Hóa Hình Học</strong>: Xác nhận hình học tiết diện dầm rỗng với các thành phần chính</li>
+  <li><strong>Lưới Phần Tử Hữu Hạn</strong>: Chia tiết diện thành các phần tử 60 mm² để tinh chỉnh đầy đủ</li>
+  <li><strong>Ma Trận Độ Cứng</strong>: Tính toán độ cứng trục (EA), uốn (EI), và xoắn (GJ)</li>
+  <li><strong>Phân Bố Ứng Suất Von Mises</strong>: Hiển thị vùng chịu ứng suất cao trên toàn bộ tiết diện</li>
+  <li><strong>Trường Vectơ Ứng Suất Cắt</strong>: Cho thấy mô hình tập trung ứng suất cắt</li>
+  <li><strong>Phân Tích Tâm Hình Học</strong>: Xác định vị trí các tâm đàn hồi, dẻo, cắt và trục chính</li>
+  <li><strong>Vòng tròn Mohr Ứng suất</strong>: Xác định ứng suất chính tại điểm tới hạn (500, 325)</li>
+</ol>
+
+        
+      </section>
+
+      <footer class="page__meta">
+        
+        
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-tags" aria-hidden="true"></i> Thẻ: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/tags/cross-section" class="page__taxonomy-item p-category" rel="tag">Cross Section</a><span class="sep">, </span>
+    
+      <a href="/tags/mesh" class="page__taxonomy-item p-category" rel="tag">Mesh</a>
+    
+    </span>
+  </p>
+
+
+
+
+  
+
+
+  
+
+  <p class="page__taxonomy">
+    <strong><i class="fas fa-fw fa-folder-open" aria-hidden="true"></i> Danh mục: </strong>
+    <span itemprop="keywords">
+    
+      <a href="/categories/2d-analysis" class="page__taxonomy-item p-category" rel="tag">2D Analysis</a><span class="sep">, </span>
+    
+      <a href="/categories/structural-engineering" class="page__taxonomy-item p-category" rel="tag">Structural Engineering</a>
+    
+    </span>
+  </p>
+
+
+        
+
+  <p class="page__date"><strong><i class="fas fa-fw fa-calendar-alt" aria-hidden="true"></i> Ngày cập nhật:</strong> <time class="dt-published" datetime="2025-12-19T10:00:00+07:00">December 19, 2025</time></p>
+
+      </footer>
+
+      <section class="page__share">
+  <h4 class="page__share-title">Chia sẻ tại</h4>
+
+  <a href="https://x.com/intent/tweet?text=Ph%C3%A2n+T%C3%ADch+Ti%E1%BA%BFt+Di%E1%BB%87n+d%E1%BA%A7m+S%E1%BB%AD+D%E1%BB%A5ng+Th%C6%B0+vi%E1%BB%87n+Python+SectionProperties%20http%3A%2F%2Flocalhost%3A4000%2Fstructural%2520engineering%2F2d%2520analysis%2Fcross-section-mesh%2F" class="btn btn--x" aria-label="Share on X" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại X">
+    <i class="fab fa-fw fa-x-twitter" aria-hidden="true"></i><span> X</span>
+  </a>
+
+  <a href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Flocalhost%3A4000%2Fstructural%2520engineering%2F2d%2520analysis%2Fcross-section-mesh%2F" class="btn btn--facebook" aria-label="Share on Facebook" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Facebook">
+    <i class="fab fa-fw fa-facebook" aria-hidden="true"></i><span> Facebook</span>
+  </a>
+
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/structural%20engineering/2d%20analysis/cross-section-mesh/" class="btn btn--linkedin" aria-label="Share on LinkedIn" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại LinkedIn">
+    <i class="fab fa-fw fa-linkedin" aria-hidden="true"></i><span> LinkedIn</span>
+  </a>
+
+  <a href="https://bsky.app/intent/compose?text=Ph%C3%A2n+T%C3%ADch+Ti%E1%BA%BFt+Di%E1%BB%87n+d%E1%BA%A7m+S%E1%BB%AD+D%E1%BB%A5ng+Th%C6%B0+vi%E1%BB%87n+Python+SectionProperties%20http%3A%2F%2Flocalhost%3A4000%2Fstructural%2520engineering%2F2d%2520analysis%2Fcross-section-mesh%2F" class="btn btn--bluesky" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Chia sẻ tại Bluesky">
+    <i class="fab fa-fw fa-bluesky" aria-hidden="true"></i><span> Bluesky</span>
+  </a>
+</section>
+
+      
+  <nav class="pagination">
+    
+      <a href="/structural%20engineering/3d%20analysis/shortcol3d-development/" class="pagination--pager" title="Xây dựng Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương">Trước</a>
+    
+    
+      <a href="/geotechnical%20engineering/computational%20mechanics/camclay/" class="pagination--pager" title="Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng">Kế tiếp</a>
+    
+  </nav>
+
+
+    </div>
+
+    
+  </article>
+
+  <div class="post-grid-sidebar-right">
+    <aside class="right-sidebar">
+  <div class="sidebar-module">
+    <h4 class="sidebar-heading header-highlight">Latest Posts</h4>
+    <ul class="latest-posts-list">
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">23/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/01/2026</span>
+        <h5 class="lp-title">
+          <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Xem chi tiết các báo cáo mẫu tại đây
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">21/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">19/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/2d%20analysis/cross-section-mesh/">Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/3d%20analysis/shortcol3d-development/">Xây dựng Biểu đồ Tương tác Không gian 3D (P-Mx-My) cho Cột BTCT chịu nén hai phương</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Tại Sao Cần Biểu Đồ Tương Tác 3D?
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">12/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/structural%20engineering/algorithms/shortcol-standard/">Xây dựng Biểu đồ Tương tác Cột (P-M) theo 3 Tiêu chuẩn: TCVN, EC2 và ACI</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Bài toán Cột Chịu Nén Lệch Tâm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/automation/revit%20api/artificial%20intelligence/hydraulic%20engineering/ai-revit/">Tự Động Hóa Thiết Kế Revit API</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Mức độ: Chuyên sâu (Advanced)
+Thời gian đọc: 10 phút
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">09/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/algorithms/hydraulic%20engineering/python/revit%20api/terrain-aware-pathfinding/">Quy hoạch Tuyến công trình Dựa trên Địa hình (Terrain-Aware Path Planning)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Làm thế nào để quy hoạch tuyến tối ưu trên địa hình phức tạp? Bài viết này chia sẻ phương...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/vba/etabs-vba/">Tự Động Hóa ETABS: Trích xuất dữ liệu File E2K Bằng Excel VBA</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỷ nguyên số hóa ngành xây dựng, việc trích xuất dữ liệu từ mô hình kết cấu (ETABS, SAP2000)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">08/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/geotechnics/data%20analysis/numerical%20modeling/co-ket-crs/">Tối ưu hóa Phân tích Cố kết nền đất yếu: Tham số thực nghiệm CRS và ứng dụng thực tế</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong kỹ thuật địa kỹ thuật hiện đại, đặc biệt là tại khu vực Đồng bằng sông Cửu Long (ĐBSCL)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">07/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/engineering%20apps/shortcol/">Biểu Đồ Tương Tác- Phân Tích Cột Chịu Nén Lệch Tâm</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Trong thiết kế kết cấu bê tông cốt thép, cột là cấu kiện chịu lực phức tạp nhất do sự...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">06/12/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/swmm-epanet-explorer/">Công cụ Trực quan hóa Tệp dữ liệu cho SWMM5 và EPANET</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Chào mừng các bạn đến với bài viết giới thiệu về một công cụ tiện ích mới dành cho cộng...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">11/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/hydraulics/thuy-luc-doc-nuoc-tieu-nang/">Tính Toán Thủy Lực Dốc Nước và Bể Tiêu Năng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Phân tích chi tiết tính toán thủy lực dốc nước và thiết kế bể tiêu năng dựa trên lý thuyết...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">10/11/2025</span>
+        <h5 class="lp-title">
+          <a href="/pile%20foundation/geotechnical/pile-group-wasm-intro/">Pile group 3D: Tính toán móng cọc đài cao theo công thức Zavriev - Spiro</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Ứng dụng Pile Group 3D (Bệ cọc đài cao) đã được chuyển đổi từ mã nguồn Turbo Pascal 7.0 kinh...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">28/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/sheet%20pile%20wall/sheet-pile-fem-wasm-intro/">SheetPileFEM: Phân tích tường cừ ván theo phương pháp phần tử hữu hạn</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán tường cừ
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/10/2025</span>
+        <h5 class="lp-title">
+          <a href="/ansys/khang-chan-dap-ansys/">Phân tích kháng chấn đập bê tông trọng lực theo phương pháp phổ phản ứng</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            Để thực hiện phân tích, chúng ta làm việc với mô hình phần tử hữu hạn ba chiều (FEM 3D)...
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">27/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/taylor-series-visualizer/">Vẽ Chuỗi Taylor</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Khái niệm Xấp xỉ Hàm
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">26/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/hypocycloid-generator/">Vẽ đường cong Hypocycloid (Spirograph)</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Giới thiệu Hypocycloid
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">14/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/heart-drawing/">Vẽ Trái Tim</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Phương trình Tham số
+
+          
+        </div>
+      </li>
+      
+      <li class="latest-post-item">
+        <span class="lp-date">13/09/2025</span>
+        <h5 class="lp-title">
+          <a href="/tools/circle-area-tangent/">Bài toán Hình tròn Tiếp tuyến 3 đường cong</a>
+        </h5>
+        <div class="lp-excerpt">
+          
+            1. Bài toán Hình học Giải tích Thú vị
+
+          
+        </div>
+      </li>
+      
+    </ul>
+  </div>
+</aside>
+  </div>
+
+</div>
+<div class="page__related-wrapper">
+  
+    <div class="page__related">
+      <h2 class="page__related-title">Có thể bạn cũng thích</h2>
+      <div class="grid__wrapper">
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/project%20management/construction%20laws/pmp-qlda/">Quản lý dự án xây dựng: Từ quy trình cứng đến tư duy PMBOK 7th</a>
+  </h3>
+  <p><p>Ngành xây dựng đang chứng kiến sự chuyển dịch mạnh mẽ từ quản lý dựa trên quy trình (Process-based) sang quản lý dựa trên nguyên tắc và hiệu suất (Principle &amp; Performance-based). Bài viết này sẽ phân tích tài liệu <em>“Tiến trình Quản lý Dự án &amp; Soạn thảo Quy trình”</em> dưới lăng kính của <strong>PMBOK Guide 7th Edition</strong>, đồng thời đối chiếu với khung pháp lý mới nhất của Việt Nam (Nghị định 175/2024/NĐ-CP).</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/optimization/data%20science/linear-program/">Giải thuật Quy hoạch Tuyến tính ứng dụng vào bài toán thực tế</a>
+  </h3>
+  <p><p>Quy hoạch tuyến tính (Linear Programming - LP) là một trong những kỹ thuật tối ưu hóa quan trọng nhất trong toán học ứng dụng và kinh tế. Bài viết này sẽ giới thiệu về cơ sở toán học của LP và cách triển khai giải quyết 3 bài toán thực tế bằng thư viện SciPy trong Python.</p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/software/engineering/calcpad-introduction/">Giới thiệu và hướng dẫn sử dụng phần mềm Calcpad trong Kỹ thuật Xây dựng</a>
+  </h3>
+  <p><p><strong><a href="https://hydrostructai.com/calcpad_engineering/calcpad.html">Xem chi tiết các báo cáo mẫu tại đây</a></strong></p>
+</p>
+</article>
+
+        
+          <article class="archive-item">
+  <h3>
+    <a href="/geotechnical%20engineering/computational%20mechanics/camclay/">Mô Hình Đất Sét Cam-Clay: Phân Tích Ứng Suất-Biến Dạng</a>
+  </h3>
+  <p><h2 id="tổng-quan">Tổng Quan</h2>
+</p>
+</article>
+
+        
+      </div>
+    </div>
+  
+</div>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Phân Tích Tiết Diện dầm Sử Dụng Thư viện Python SectionProperties",
+  "author": {
+    "@type": "Person",
+    "name": "Hydro Structure AI"
+  },
+  "datePublished": "2025-12-19T10:00:00+07:00",
+  
+  "dateModified": "2025-12-19T10:00:00+07:00",
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Hydro Structure AI",
+    "logo": {
+      "@type": "ImageObject",
+      "url": ""
+    }
+  },
+  "description": "Tổng Quan Bài viết minh họa phân tích cấu trúc tự động của tiết diện dầm bê tông sử dụng gói Python mã nguồn mở sectionproperties. Phân tích bao gồm: Định Nghĩa Vật Liệu: Bê tông với các tính chất đàn hồi Tạo Hình Học: Tiết diện dầm được định nghĩa theo chương trình (thay thế nhập DXF) Tạo Lưới: Tạo lưới phần tử hữu hạn Tính Toán Tính Chất: Tính chất hình học, uốn và dẻo Phân Tích Độ Cứng: Độ cứng trục, uốn và xoắn Phân Tích Ứng Suất: Nhiều trường hợp tải với trực quan hóa Vòng Mohr: Trực quan hóa trạng thái ứng suất tới hạn",
+  
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "http://localhost:4000/structural%20engineering/2d%20analysis/cross-section-mesh/"
+  }
+}
+</script>
+
+      
+    </div>
+
+    
+
+    <div id="footer" class="page__footer">
+      <footer>
+        <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+        <div class="page__footer-follow">
+  <ul class="social-icons">
+    
+      <li><strong>Theo dõi:</strong></li>
+    
+
+    
+      
+        
+          <li><a href="mailto:ha.nguyen@hydrostructai.com" rel="nofollow noopener noreferrer"><i class="fas fa-fw fa-envelope-square" aria-hidden="true"></i> Email</a></li>
+        
+      
+    
+
+    <li><a href="/feed.xml"><i class="fas fa-fw fa-rss-square" aria-hidden="true"></i> Feed</a></li>
+  </ul>
+</div>
+
+<div class="page__footer-copyright">
+  &copy; 2026 Hydro Structure AI. 
+  <span class="copyright-text">Thiết kế bởi <a href="https://github.com/HydroStructAI" rel="nofollow">HydroStructAI Team</a>.</span>
+</div>
+      </footer>
+    </div>
+
+    <script src="/assets/js/global.js"></script>
+
+<script src="/assets/js/app_core_logic.js"></script>
+
+
+  <!-- mathjax support -->
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-BNB682DVWC"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-BNB682DVWC', { 'anonymize_ip': false});
+</script>
+
+
+  </body>
+</html>

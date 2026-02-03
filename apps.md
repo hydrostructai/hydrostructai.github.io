@@ -116,7 +116,7 @@ header:
               <li>Xuất thuyết minh tính toán</li>
             </ul>
           </div>
-          <a href="/apps/shortcol3D/" class="btn--app">Mở Ứng Dụng</a>
+          <a href="{{ site.baseurl }}/apps/landing.html" class="btn--app">Xem chi tiết</a>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ header:
               <li>Giao diện nhập liệu đơn giản</li>
             </ul>
           </div>
-          <a href="/apps/shortcol2D/" class="btn--app">Mở Ứng Dụng</a>
+          <a href="{{ site.baseurl }}/apps/landing.html" class="btn--app">Xem chi tiết</a>
         </div>
       </div>
 
@@ -166,7 +166,7 @@ header:
               <li>Biểu đồ chuyển vị & nội lực</li>
             </ul>
           </div>
-          <a href="/apps/lateralpile/" class="btn--app">Mở Ứng Dụng</a>
+          <a href="{{ site.baseurl }}/apps/landing.html" class="btn--app">Xem chi tiết</a>
         </div>
       </div>
 
@@ -191,7 +191,7 @@ header:
               <li>Tính toán dòng thấm</li>
             </ul>
           </div>
-          <a href="/apps/sheetpilefem/" class="btn--app">Mở Ứng Dụng</a>
+          <a href="{{ site.baseurl }}/apps/landing.html" class="btn--app">Xem chi tiết</a>
         </div>
       </div>
 
@@ -216,7 +216,7 @@ header:
               <li>Tính phản lực đầu cọc</li>
             </ul>
           </div>
-          <a href="/apps/pilegroup/" class="btn--app">Mở Ứng Dụng</a>
+          <a href="{{ site.baseurl }}/apps/landing.html" class="btn--app">Xem chi tiết</a>
         </div>
       </div>
 
@@ -241,7 +241,7 @@ header:
               <li>Kiểm tra hệ số ngập an toàn</li>
             </ul>
           </div>
-          <a href="/apps/hydraulicspillway/" class="btn--app">Mở Ứng Dụng</a>
+          <a href="{{ site.baseurl }}/apps/landing.html" class="btn--app">Xem chi tiết</a>
         </div>
       </div>
 

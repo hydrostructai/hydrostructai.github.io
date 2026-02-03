@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ShortCol 2D - Cột Lệch Tâm Phẳng</title>
+
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <link href="../../assets/css/global.css" rel="stylesheet" />
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+    <style>
+      #svg-preview-container {
+        background: #fff;
+        border: 1px dashed #ced4da;
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 250px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="loading-overlay" style="visibility: hidden; opacity: 0">
+      <div class="spinner"></div>
+      <div class="loading-text">
+        <i class="bi bi-cpu"></i> Đang tính toán biểu đồ tương tác...
+      </div>
+    </div>
+
+    <!-- Header Section -->
+    <div
+      class="bg-white border-bottom px-3 py-3 shadow-sm d-flex justify-content-between align-items-center sticky-top"
+      style="z-index: 40"
+    >
+      <div class="d-flex align-items-center gap-3">
+        <div
+          style="
+            width: 40px;
+            height: 40px;
+            background-color: #0d6efd;
+            border-radius: 8px;
+          "
+          class="d-flex align-items-center justify-content-center text-white"
+        >
+          <i class="bi bi-bar-chart-steps fs-5"></i>
+        </div>
+        <div>
+          <h1 class="mb-0 fs-6 fw-bold text-dark">ShortCol 2D</h1>
+          <p class="mb-0 text-muted small">Biểu độ tương tác 2D | P-M</p>
+        </div>
+      </div>
+      <div>
+        <span class="badge bg-secondary">v1.0</span>
+      </div>
+    </div>
+
+    <div class="container my-4">
+      <div class="row">
+        <div class="col-lg-3 mb-4">
+          <div class="card p-3 sticky-top sidebar-card" style="top: 1rem">
+            <h4>Dữ liệu & Tác vụ</h4>
+            <hr />
+
+            <div class="btn-group w-100 mb-3" role="group">
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                title="Tạo mới"
+                onclick="window.location.reload()"
+              >
+                <i class="bi bi-file-earmark-plus"></i> New
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-success"
+                title="Mở file"
+                onclick="AppUI.file.triggerOpen('hidden-file-input')"
+              >
+                <i class="bi bi-folder-open"></i> Open
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-warning"
+                id="btn-save-file"
+                title="Lưu file"
+              >
+                <i class="bi bi-save"></i> Save
+              </button>
+            </div>
+            <input
+              type="file"
+              id="hidden-file-input"
+              accept=".json"
+              style="display: none"
+            />
+
+            <div class="mb-3">
+              <label class="form-label fw-bold text-muted small"
+                >TIÊU CHUẨN TÍNH TOÁN</label
+              >
+              <select id="select-standard" class="form-select form-select-sm" size= "3">
+                <option value="TCVN">TCVN 5574:2018 (Việt Nam)</option>
+                <option value="EC2">EC2:2004/2015 (Châu Âu)</option>
+                <option value="ACI">ACI 318-19 (Mỹ)</option>
+              </select>
+              <small class="form-text text-muted d-block mt-1">
+                <i class="bi bi-info-circle"></i> Chọn chuẩn thiết kế để tính
+                toán biểu đồ tương tác
+              </small>
+            </div>
+
+            <button
+              class="btn btn-lg btn-primary w-100 shadow-sm mb-3"
+              id="btn-calculate"
+            >
+              <i class="bi bi-lightning-charge-fill"></i> TÍNH TOÁN
+            </button>
+
+            <div class="card border-0 bg-light">
+              <div class="card-body p-2">
+                <div
+                  class="d-flex justify-content-between align-items-center mb-2"
+                >
+                  <small class="fw-bold text-muted">MINH HỌA TIẾT DIỆN</small>
+                  <span class="badge bg-secondary" id="preview-badge"
+                    >Rect</span
+                  >
+                </div>
+                <div id="svg-preview-container"></div>
+                <div class="text-center mt-2">
+                  <small class="text-muted" id="reinforcement-info">...</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-9">
+          <div class="card shadow-sm mb-4">
+            <div
+              class="card-header bg-white d-flex justify-content-between align-items-center"
+            >
+              <h3 class="mb-0 text-primary">
+                <i class="bi bi-bar-chart-steps"></i> Cột Chịu Nén Lệch Tâm
+              </h3>
+
+              <div class="btn-group" role="group">
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="colType"
+                  id="type-rect"
+                  value="rect"
+                  checked
+                />
+                <label class="btn btn-outline-primary btn-sm" for="type-rect"
+                  ><i class="bi bi-square"></i> Chữ nhật</label
+                >
+
+                <input
+                  type="radio"
+                  class="btn-check"
+                  name="colType"
+                  id="type-circ"
+                  value="circ"
+                />
+                <label class="btn btn-outline-primary btn-sm" for="type-circ"
+                  ><i class="bi bi-circle"></i> Tròn</label
+                >
+              </div>
+            </div>
+
+            <div class="card-body">
+              <ul class="nav nav-tabs" id="inputTabs" role="tablist">
+                <li class="nav-item">
+                  <button
+                    class="nav-link active"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tab-geometry"
+                  >
+                    1. Tiết diện & Vật liệu
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tab-reinforcement"
+                  >
+                    2. Cốt thép
+                  </button>
+                </li>
+                <li class="nav-item">
+                  <button
+                    class="nav-link"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tab-loads"
+                  >
+                    3. Tải trọng
+                  </button>
+                </li>
+              </ul>
+
+              <div class="tab-content p-3 border border-top-0">
+                <div class="tab-pane fade show active" id="tab-geometry">
+                  <div class="row g-4">
+                    <div class="col-md-6">
+                      <h6 class="text-secondary border-bottom pb-2">
+                        <i class="bi bi-arrows-fullscreen"></i> Kích thước hình
+                        học (mm)
+                      </h6>
+
+                      <div id="rect-inputs">
+                        <div class="row g-2 mb-2">
+                          <div class="col-6">
+                            <label class="form-label">Cạnh B:</label>
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="input-B"
+                              value="300"
+                              step="50"
+                            />
+                          </div>
+                          <div class="col-6">
+                            <label class="form-label">Cạnh H:</label>
+                            <input
+                              type="number"
+                              class="form-control"
+                              id="input-H"
+                              value="400"
+                              step="50"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div id="circ-inputs" style="display: none">
+                        <div class="mb-2">
+                          <label class="form-label">Đường kính D:</label>
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="input-D"
+                            value="400"
+                            step="50"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="mb-2">
+                        <label class="form-label">Lớp bảo vệ (Cover) a:</label>
+                        <div class="input-group">
+                          <input
+                            type="number"
+                            class="form-control"
+                            id="input-Cover"
+                            value="30"
+                            step="5"
+                          />
+                          <span class="input-group-text">mm</span>
+                        </div>
+                        <div class="form-text">
+                          Khoảng cách từ mép bê tông đến tâm cốt thép.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-6">
+                      <h6 class="text-secondary border-bottom pb-2">
+                        <i class="bi bi-bricks"></i> Vật liệu (MPa)
+                      </h6>
+                      <div class="mb-3">
+                        <label class="form-label">Cường độ Bê tông (Rb):</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="input-Rb"
+                          value="14.5"
+                          step="0.5"
+                        />
+                        <div class="form-text">
+                          Ví dụ: B20 = 11.5, B25 = 14.5
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Cường độ Thép (Rs):</label>
+                        <input
+                          type="number"
+                          class="form-control"
+                          id="input-Rs"
+                          value="280"
+                          step="10"
+                        />
+                        <div class="form-text">
+                          Ví dụ: CB300 = 260, CB400 = 350
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab-reinforcement">
+                  <div class="alert alert-info d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill me-2 fs-4"></i>
+                    <div>
+                      Thép được bố trí <strong>đối xứng</strong> và
+                      <strong>rải đều chu vi</strong>. <br /><small
+                        >Hệ thống sẽ tự động tính toán tọa độ từng thanh
+                        thép.</small
+                      >
+                    </div>
+                  </div>
+
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold"
+                        >Tổng số thanh (Nb):</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control form-control-lg text-primary fw-bold"
+                        id="input-Nb"
+                        value="8"
+                        min="4"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold"
+                        >Đường kính (d, mm):</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control form-control-lg"
+                        id="input-dbar"
+                        value="18"
+                        step="2"
+                      />
+                    </div>
+                    <div class="col-md-4">
+                      <label class="form-label fw-bold"
+                        >Diện tích 1 thanh (mm²):</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control form-control-lg bg-light"
+                        id="input-As"
+                        value="254.5"
+                        readonly
+                      />
+                    </div>
+                  </div>
+
+                  <div class="mt-4">
+                    <h6>
+                      Hàm lượng cốt thép:
+                      <span id="reinforcement-ratio" class="badge bg-success"
+                        >1.2%</span
+                      >
+                    </h6>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade" id="tab-loads">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-3"
+                  >
+                    <h6 class="mb-0">Danh sách Tổ hợp tải trọng</h6>
+                    <button class="btn btn-sm btn-success" id="btn-add-load">
+                      <i class="bi bi-plus-circle"></i> Thêm Tổ hợp
+                    </button>
+                  </div>
+
+                  <div class="table-scroll-container">
+                    <table
+                      class="table table-bordered table-striped table-hover mb-0"
+                      id="load-table"
+                    >
+                      <thead class="table-primary">
+                        <tr>
+                          <th class="text-center" width="50">#</th>
+                          <th>Tên Tổ hợp</th>
+                          <th class="text-end">Momen Mu (kNm)</th>
+                          <th class="text-end">Lực dọc Pu (kN)</th>
+                          <th class="text-center" width="60">
+                            <i class="bi bi-trash"></i>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody></tbody>
+                    </table>
+                  </div>
+                  <div class="form-text mt-2 text-danger">
+                    <i class="bi bi-exclamation-triangle"></i> Lưu ý: Pu > 0 là
+                    lực Nén. Mu lấy giá trị tuyệt đối khi tính toán.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="output-section" class="row" style="display: none">
+            <div class="col-lg-7 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div class="card-header bg-white">
+                  <h5 class="mb-0 text-success">
+                    <i class="bi bi-graph-up"></i> Biểu đồ Tương tác
+                  </h5>
+                </div>
+                <div class="card-body">
+                  <div style="position: relative; height: 450px; width: 100%">
+                    <canvas id="interactionChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-5 mb-4">
+              <div class="card h-100 shadow-sm">
+                <div
+                  class="card-header bg-white d-flex justify-content-between align-items-center"
+                >
+                  <h5 class="mb-0 text-success">
+                    <i class="bi bi-check2-circle"></i> Kết quả
+                  </h5>
+                  <button
+                    class="btn btn-sm btn-outline-secondary"
+                    id="btn-export-csv"
+                  >
+                    <i class="bi bi-download"></i> CSV
+                  </button>
+                </div>
+                <div class="card-body p-0">
+                  <div class="table-responsive" style="max-height: 450px">
+                    <table class="table table-hover mb-0" id="result-table">
+                      <thead class="table-light sticky-top">
+                        <tr>
+                          <th>TH</th>
+                          <th class="text-end">Mu</th>
+                          <th class="text-end">Pu</th>
+                          <th class="text-center">Hệ số k</th>
+                          <th class="text-center">TT</th>
+                        </tr>
+                      </thead>
+                      <tbody id="result-body"></tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="card-footer bg-light text-muted small">
+                  <strong>k = Radius(Sức kháng) / Radius(Tải trọng)</strong>.
+                  Nếu k ≥ 1.0: ĐẠT.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../assets/js/global.js"></script>
+
+    <!-- Load order: app-cal.js (Pure Math) -> app-out.js (Display) -> app-inp.js (Controller/UI) -->
+    <script src="app-cal.js"></script>
+    <script src="app-out.js"></script>
+    <script src="app-inp.js"></script>
+  </body>
+</html>
