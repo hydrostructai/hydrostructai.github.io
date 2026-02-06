@@ -61,21 +61,21 @@ Bayesian inference is a method of statistical inference in which Bayes' theorem 
 $$ P(\theta | D) = \frac{P(D | \theta) P(\theta)}{P(D)} $$
 
 Where / Trong đó:
-*   $P(\theta | D)$: **Posterior** - Probability of parameter $\theta$ given data $D$. (*Xác suất của tham số $\theta$ khi đã biết dữ liệu $D$.*)
-*   $P(D | \theta)$: **Likelihood** - Probability of observing data $D$ given parameter $\theta$. (*Xác suất quan sát dữ liệu $D$ nếu tham số là $\theta$.*)
-*   $P(\theta)$: **Prior** - Initial belief about $\theta$ before seeing data. (*Niềm tin ban đầu về $\theta$ trước khi thấy dữ liệu.*)
-*   $P(D)$: **Evidence** - Normalizing constant. (*Hằng số chuẩn hóa, thường rất khó tính toán trực tiếp trong không gian nhiều chiều.*)
+*   $$P(\theta | D)$$: **Posterior** - Probability of parameter $$\theta$$ given data $$D$$. (*Xác suất của tham số $$\theta$$ khi đã biết dữ liệu $$D$$.*)
+*   $$P(D | \theta)$$: **Likelihood** - Probability of observing data $$D$$ given parameter $$\theta$$. (*Xác suất quan sát dữ liệu $$D$$ nếu tham số là $$\theta$$.*)
+*   $$P(\theta)$$: **Prior** - Initial belief about $$\theta$$ before seeing data. (*Niềm tin ban đầu về $$\theta$$ trước khi thấy dữ liệu.*)
+*   $$P(D)$$: **Evidence** - Normalizing constant. (*Hằng số chuẩn hóa, thường rất khó tính toán trực tiếp trong không gian nhiều chiều.*)
 
 ---
 
 ## 4. Markov Chain Monte Carlo (MCMC)
 
 ### Why MCMC? / Tại sao cần MCMC?
-In Bayesian statistics, calculating the posterior distribution $P(\theta | D)$ directly is often difficult because the denominator $P(D)$ requires integration over the entire parameter space.  
-*Trong thống kê Bayes, việc tính toán trực tiếp phân phối hậu nghiệm $P(\theta | D)$ thường gặp khó khăn do mẫu số $P(D)$ đòi hỏi tích phân qua toàn bộ không gian tham số (vốn có thể có số chiều rất lớn).*
+In Bayesian statistics, calculating the posterior distribution $$P(\theta | D)$$ directly is often difficult because the denominator $$P(D)$$ requires integration over the entire parameter space.  
+*Trong thống kê Bayes, việc tính toán trực tiếp phân phối hậu nghiệm $$P(\theta | D)$$ thường gặp khó khăn do mẫu số $$P(D)$$ đòi hỏi tích phân qua toàn bộ không gian tham số (vốn có thể có số chiều rất lớn).*
 
-MCMC solves this by sampling from the posterior distribution without calculating the normalizing constant $P(D)$.  
-*MCMC giải quyết vấn đề này bằng cách lấy mẫu từ phân phối hậu nghiệm mà không cần tính hằng số chuẩn hóa $P(D)$.*
+MCMC solves this by sampling from the posterior distribution without calculating the normalizing constant $$P(D)$$.  
+*MCMC giải quyết vấn đề này bằng cách lấy mẫu từ phân phối hậu nghiệm mà không cần tính hằng số chuẩn hóa $$P(D)$$.*
 
 ### How it works / Cách thức hoạt động
 MCMC combines two methods:  
@@ -120,12 +120,12 @@ In other words, we design a "robot" that jumps randomly in the parameter space. 
 
 ## 6. Simulation Summary (Tóm tắt tính toán Mô phỏng)
 
-This section summarizes a simple Metropolis-Hastings implementation to fit a linear model ($y = mx + c$) to noisy data.  
-*Phần này tóm tắt quá trình thực hiện thuật toán Metropolis-Hastings đơn giản để khớp mô hình đường thẳng ($y = mx + c$) vào dữ liệu nhiễu.*
+This section summarizes a simple Metropolis-Hastings implementation to fit a linear model ($$y = mx + c$$) to noisy data.  
+*Phần này tóm tắt quá trình thực hiện thuật toán Metropolis-Hastings đơn giản để khớp mô hình đường thẳng ($$y = mx + c$$) vào dữ liệu nhiễu.*
 
 ### 6.1. Synthetic Data / Dữ liệu giả định
-Data generated with 30 points and error bars representing measurement uncertainty ($\sigma=1$).  
-*Dữ liệu được tạo ra với 30 điểm. Các thanh sai số thể hiện độ không đảm bảo đo ($\sigma=1$).*
+Data generated with 30 points and error bars representing measurement uncertainty ($$\sigma=1$$).  
+*Dữ liệu được tạo ra với 30 điểm. Các thanh sai số thể hiện độ không đảm bảo đo ($$\sigma=1$$).*
 
 <figure>
   <img src="{{ site.baseurl }}/assets/images/posts/2026-02-06-markov-chain-MC/mcmc_1_data.png" alt="Synthetic Data">
