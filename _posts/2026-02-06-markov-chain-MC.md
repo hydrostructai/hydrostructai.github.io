@@ -61,8 +61,8 @@ Bayesian inference is a method of statistical inference in which Bayes' theorem 
 $$ P(\theta | D) = \frac{P(D | \theta) P(\theta)}{P(D)} $$
 
 Where / Trong đó:
-*   $$P(\theta | D)$$: **Posterior** - Probability of parameter $$\theta$$ given data $$D$$. (*Xác suất của tham số $$\theta$$ khi đã biết dữ liệu $$D$$.*)
-*   $$P(D | \theta)$$: **Likelihood** - Probability of observing data $$D$$ given parameter $$\theta$$. (*Xác suất quan sát dữ liệu $$D$$ nếu tham số là $$\theta$$.*)
+*   $$P(\theta \mid D)$$: **Posterior** - Probability of parameter $$\theta$$ given data $$D$$. (*Xác suất của tham số $$\theta$$ khi đã biết dữ liệu $$D$$.*)
+*   $$P(D \mid \theta)$$: **Likelihood** - Probability of observing data $$D$$ given parameter $$\theta$$. (*Xác suất quan sát dữ liệu $$D$$ nếu tham số là $$\theta$$.*)
 *   $$P(\theta)$$: **Prior** - Initial belief about $$\theta$$ before seeing data. (*Niềm tin ban đầu về $$\theta$$ trước khi thấy dữ liệu.*)
 *   $$P(D)$$: **Evidence** - Normalizing constant. (*Hằng số chuẩn hóa, thường rất khó tính toán trực tiếp trong không gian nhiều chiều.*)
 
